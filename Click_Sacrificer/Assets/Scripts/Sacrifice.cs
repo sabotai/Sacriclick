@@ -10,14 +10,26 @@ public class Sacrifice : MonoBehaviour {
 	private Vector3 clickOrigScale;
 	public AudioClip[] screams;
 	public Text sacCountDisplay;
+	public Text cpsDisplay;
 	AudioSource audio;
+	private GameObject sun;
+	public float cpmDuration = 5;
+	public float startTime;
+	public float cpmMag = 0.01f;
+	float cpm;
 
 	public int sacCount = 0;
 
 	// Use this for initialization
 	void Start () {
 		clickOrigScale = clickable.transform.localScale;
+		sun = GameObject.Find("Sun");
 		audio = GetComponent<AudioSource>();
+		cpm = 0;
+		startTime = Time.time;
+
+		sacCountDisplay.text = "Sacrifices:  " + sacCount;
+		cpsDisplay.text = "Clicks-Per-Second:  " + cpm/60;
 	}
 
 	// Update is called once per frame
@@ -57,11 +69,25 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = "Sacrifices:  " + sacCount;
 				//}
 				Instantiate(headPrefab, beamHit.point, Quaternion.identity);
+
+				//increase Clicks-per-minute
+				if (Time.time < startTime + cpmDuration){
+					cpm++;
+				}
 			}
 
 		}
 
 
+		if (Time.time >= startTime + cpmDuration){
+			startTime = Time.time;
+			cpm = cpm * (60/cpmDuration);
+			Debug.Log("cpm = " + cpm);
+			sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
+
+			cpsDisplay.text = "Clicks-Per-Second:  " + cpm/60;
+			cpm = 0f;
+		}
 	}
 
 }
