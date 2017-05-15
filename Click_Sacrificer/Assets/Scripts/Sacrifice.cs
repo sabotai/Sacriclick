@@ -9,6 +9,7 @@ public class Sacrifice : MonoBehaviour {
 	public GameObject clickable;
 	private Vector3 clickOrigScale;
 	public AudioClip[] screams;
+	public bool advance = false;
 	public Text sacCountDisplay;
 	public Text cpsDisplay;
 	AudioSource audio;
@@ -17,6 +18,7 @@ public class Sacrifice : MonoBehaviour {
 	public float startTime;
 	public float cpmMag = 0.01f;
 	float cpm;
+
 
 	public int sacCount = 0;
 
@@ -34,6 +36,7 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		advance = false;
 		//we use rays to project invisible lines at a distance
 		//in this case, we are using the ScreenPointToRay function of our main camera
 		//to convert the mouse position on the screen into a direction projected through the screen 
@@ -55,7 +58,7 @@ public class Sacrifice : MonoBehaviour {
 
 
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
-			if (beamHit.collider.gameObject == clickable && Input.GetMouseButton(0)){
+			if (beamHit.collider.gameObject == clickable && Input.GetMouseButtonDown(0)){
 				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
 				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
 				//pulsate = true;
@@ -69,7 +72,7 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = "Sacrifices:  " + sacCount;
 				//}
 				Instantiate(headPrefab, beamHit.point, Quaternion.identity);
-
+				advance= true;
 				//increase Clicks-per-minute
 				if (Time.time < startTime + cpmDuration){
 					cpm++;

@@ -11,13 +11,17 @@ public class Pathfinder : MonoBehaviour {
 	public bool loop = false;
 	public GameObject movable;
 	public float waySpeed = 1f;
-	int currentWaypoint;
+	public int currentWaypoint = 0;
 	public Vector3 velo;
+	GameObject sacrificer;
+	bool advance = false;
 
 	// Use this for initialization
 	void Start () {
-		currentWaypoint = 0;
+		if (wayParent == null) wayParent = GameObject.Find("WayParent").transform;
 		if (moveSelf) movable = transform.gameObject;
+
+		if (sacrificer == null) sacrificer = GameObject.Find("Main Camera");
 		/*
 		waypoints = new GameObject[wayParent.transform.childCount];
 
@@ -30,9 +34,15 @@ public class Pathfinder : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetMouseButton(0)){
-			AutoAdvancePos();
+		if (Input.GetMouseButtonDown(0)){
+			if (sacrificer.GetComponent<Sacrifice>().advance && !advance){
+				advance = true;
+				Debug.Log("next waypoint");
+				currentWaypoint++;
+			}
 		}
+			AutoAdvancePos();
+
 	}
 
 	void AdvancePos(){
@@ -71,17 +81,18 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	void AutoAdvancePos(){
-								movable.GetComponent<Rigidbody>().isKinematic = false;
+						movable.GetComponent<Rigidbody>().isKinematic = false;
 
 						if (currentWaypoint < wayParent.childCount) {
-								//Debug.Log ("current toothbrush waypoint = " + currentWaypoint);
 								Vector3 target = wayParent.GetChild(currentWaypoint).position;
 								Vector3 moveDirection = target - movable.transform.position;
-								if (moveDirection.magnitude > 0.3f){
 									velo = movable.GetComponent<Rigidbody>().velocity;
 					
 									if (moveDirection.magnitude < 0.3f) {
-											currentWaypoint++;
+											//currentWaypoint++;
+											advance = false;
+											//sacrificer.GetComponent<Sacrifice>().advance = false;
+											Debug.Log("Waypoint -> " + currentWaypoint);
 
 									} else {
 											velo = moveDirection.normalized * waySpeed;
@@ -89,10 +100,6 @@ public class Pathfinder : MonoBehaviour {
 
 									movable.GetComponent<Rigidbody>().velocity = velo;
 									moveDirection = target - movable.transform.position;
-								} else {
-									
-									movable.GetComponent<Rigidbody>().isKinematic = true;
-								}
 						} else {
 							if(loop){
 								currentWaypoint = 1;
