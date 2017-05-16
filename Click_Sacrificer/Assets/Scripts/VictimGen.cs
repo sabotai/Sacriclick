@@ -9,6 +9,7 @@ public class VictimGen : MonoBehaviour {
 	public Transform wayParent;
 	public Transform[] wayChildren; 
 	GameObject[] victims;
+	GameObject victimBox;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +20,7 @@ public class VictimGen : MonoBehaviour {
 
 			}
 		}
+		victimBox = GameObject.Find("Victims");
 		victims = new GameObject[howMany];
 		for (int i = 0; i < victims.Length; i++){
 			float pct = ((float)i/(float)victims.Length) * wayChildren.Length;
@@ -31,6 +33,7 @@ public class VictimGen : MonoBehaviour {
 				//start them in between the nodes
 				Vector3 point = Vector3.Lerp (wayChildren[node].position, wayChildren[node + 1].position, intra);
 				victims[i] = Instantiate(victimPrefab, point, Quaternion.identity);
+				victims[i].transform.SetParent(victimBox.transform);
 				GameObject newPoint = new GameObject();
 				newPoint.name = "NewWaypoint-" + i;
 				newPoint.transform.position = point;
