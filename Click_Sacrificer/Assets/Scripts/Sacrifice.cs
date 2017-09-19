@@ -17,7 +17,8 @@ public class Sacrifice : MonoBehaviour {
 	public float cpmDuration = 5;
 	public float startTime;
 	public float cpmMag = 0.01f;
-	float cpm;
+	public float cpm;
+	public bool easyMode = false;
 
 
 	public int sacCount = 0;
@@ -58,7 +59,14 @@ public class Sacrifice : MonoBehaviour {
 
 
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
-			if (beamHit.collider.gameObject == clickable && Input.GetMouseButtonDown(0)){
+			bool clicking;
+			if (easyMode){
+				clicking = Input.GetMouseButton(0);
+			} else {
+				clicking = Input.GetMouseButtonDown(0);
+			}
+
+			if (beamHit.collider.gameObject == clickable && clicking){
 				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
 				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
 				//pulsate = true;
