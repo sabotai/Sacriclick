@@ -94,7 +94,8 @@ public class Sacrifice : MonoBehaviour {
 			startTime = Time.time;
 			cpm = cpm * (60/cpmDuration);
 			Debug.Log("cpm = " + cpm);
-			sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
+			if (sun.GetComponent<Sun>() != null)
+				sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
 
 			cpsDisplay.text = "Clicks-Per-Second:  " + cpm/60;
 			cpm = 0f;

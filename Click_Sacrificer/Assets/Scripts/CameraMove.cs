@@ -7,7 +7,7 @@ public class CameraMove : MonoBehaviour {
 	public Transform nearFocus;
 	public Transform farFocus;
 	public float farZoomAmt = 10.41f;
-	public float closeZoomAmt = 1f;
+	public float closeZoomAmt = 2f;
 	private float oldZoom;
 
 	// Use this for initialization
