@@ -19,8 +19,9 @@ public class Sacrifice : MonoBehaviour {
 	public float cpmMag = 0.01f;
 	public float cpm;
 	public bool easyMode = false;
-
-
+	public bool limitAvailSac = true;
+	public bool sacReady = false;
+	[System.NonSerialized] public bool isAnyoneReady = true;
 	public int sacCount = 0;
 
 	// Use this for initialization
@@ -31,12 +32,14 @@ public class Sacrifice : MonoBehaviour {
 		cpm = 0;
 		startTime = Time.time;
 
-		sacCountDisplay.text = "Sacrifices:  " + sacCount;
-		cpsDisplay.text = "Clicks-Per-Second:  " + cpm/60;
+		sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+		cpsDisplay.text = "Sacrifices-Per-Second:	" + cpm/60;
 	}
 
 	// Update is called once per frame
 	void Update () {
+
+		
 		advance = false;
 		//we use rays to project invisible lines at a distance
 		//in this case, we are using the ScreenPointToRay function of our main camera
@@ -67,23 +70,12 @@ public class Sacrifice : MonoBehaviour {
 			}
 
 			if (beamHit.collider.gameObject == clickable && clicking){
-				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
-				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
-				//pulsate = true;
-
-				//dont pulsate again before it has returned to its orig scale to prevent warping
-				//if (clickOrigScale == clickable.transform.localScale){
-				StartCoroutine(Pulsate.Pulse(beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
-				audio.pitch = Random.Range(0.8f, 1.2f);
-				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
-				sacCount++;
-				sacCountDisplay.text = "Sacrifices:  " + sacCount;
-				//}
-				Instantiate(headPrefab, beamHit.point, Quaternion.identity);
-				advance= true;
-				//increase Clicks-per-minute
-				if (Time.time < startTime + cpmDuration){
-					cpm++;
+				if (!limitAvailSac || sacReady){ //if limited, check if ready
+					if (isAnyoneReady){
+						DoSacrifice(beamHit);
+						sacReady = false;
+						Debug.Log("sac reset");
+					}
 				}
 			}
 
@@ -93,13 +85,37 @@ public class Sacrifice : MonoBehaviour {
 		if (Time.time >= startTime + cpmDuration){
 			startTime = Time.time;
 			cpm = cpm * (60/cpmDuration);
-			Debug.Log("cpm = " + cpm);
+			//Debug.Log("cpm = " + cpm);
 			if (sun.GetComponent<Sun>() != null)
 				sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
 
-			cpsDisplay.text = "Clicks-Per-Second:  " + cpm/60;
+			cpsDisplay.text = "Sacrifices-Per-Second:	" + cpm/60;
 			cpm = 0f;
 		}
+		
+		//make it no longer ready
+		isAnyoneReady = false;
+	}
+
+	public void DoSacrifice(RaycastHit _beamHit){
+				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
+				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
+				//pulsate = true;
+
+				//dont pulsate again before it has returned to its orig scale to prevent warping
+				//if (clickOrigScale == clickable.transform.localScale){
+				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
+				audio.pitch = Random.Range(0.8f, 1.2f);
+				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
+				sacCount++;
+				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+				//}
+				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
+				advance = true;
+				//increase Clicks-per-minute
+				if (Time.time < startTime + cpmDuration){
+					cpm++;
+				}
 	}
 
 }

@@ -36,7 +36,7 @@ public class CameraMove : MonoBehaviour {
 
 		float newZoom = Camera.main.GetComponent<Sacrifice>().cpm / 5f;
 		float zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
-		Debug.Log("zoomAmt = " + zoom);
+		//Debug.Log("zoomAmt = " + zoom);
 		Vector3 focus = Vector3.Slerp(nearFocus.position, farFocus.position, zoom);
 		gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(closeZoomAmt, farZoomAmt, zoom);
 		transform.LookAt(focus);

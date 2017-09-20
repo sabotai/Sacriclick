@@ -28,7 +28,7 @@ public class VictimGen : MonoBehaviour {
 			int node = (int)(pct);
 			//how far to go in between the nodes
 			float intra = (pct) - (float)node;
-			Debug.Log("#" + i + " ; pct = " + pct + " ; node = " + node + " ; intra = " + intra);
+			//Debug.Log("#" + i + " ; pct = " + pct + " ; node = " + node + " ; intra = " + intra);
 			if (node + 1 < wayChildren.Length){ //starting at 0 vs 1
 				//start them in between the nodes
 				Vector3 point = Vector3.Lerp (wayChildren[node].position, wayChildren[node + 1].position, intra);
