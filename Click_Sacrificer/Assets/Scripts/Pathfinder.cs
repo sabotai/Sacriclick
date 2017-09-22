@@ -61,7 +61,8 @@ public class Pathfinder : MonoBehaviour {
 		if (!advance){
 			//if there is a hole in the sequence, move up
 			if (!sacrificer.GetComponent<Sacrifice>().isAnyoneReady){
-				currentWaypoint++;
+				//currentWaypoint++;
+				currentWaypoint = Mathf.Min(currentWaypoint, wayParent.childCount);
 				sacrificer.GetComponent<Sacrifice>().isAnyoneReady = true;
 			}
 		}

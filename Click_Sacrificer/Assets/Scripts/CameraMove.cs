@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour {
 
-	public Transform nearFocus;
-	public Transform farFocus;
-	public float farZoomAmt = 10.41f;
-	public float closeZoomAmt = 2f;
+	public Transform startFocus;
+	public Transform endFocus;
+	public float startZoomAmt = 2f;
+	public float endZoomAmt = 10.41f;
 	private float oldZoom;
+	public bool perspectiveCam = true;
 
 	// Use this for initialization
 	void Start () {
@@ -37,9 +38,14 @@ public class CameraMove : MonoBehaviour {
 		float newZoom = Camera.main.GetComponent<Sacrifice>().cpm / 5f;
 		float zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
 		//Debug.Log("zoomAmt = " + zoom);
-		Vector3 focus = Vector3.Slerp(nearFocus.position, farFocus.position, zoom);
-		gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(closeZoomAmt, farZoomAmt, zoom);
-		transform.LookAt(focus);
+		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
+		if (perspectiveCam){
+			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+		} else {
+			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+		}
+
+		//transform.LookAt(focus);
 
 		oldZoom = zoom;
 	}

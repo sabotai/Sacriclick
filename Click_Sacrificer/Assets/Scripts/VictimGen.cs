@@ -20,6 +20,8 @@ public class VictimGen : MonoBehaviour {
 
 			}
 		}
+
+		//spawn this many victims in between the nodes
 		victimBox = GameObject.Find("Victims");
 		victims = new GameObject[howMany];
 		for (int i = 0; i < victims.Length; i++){
@@ -33,6 +35,7 @@ public class VictimGen : MonoBehaviour {
 				//start them in between the nodes
 				Vector3 point = Vector3.Lerp (wayChildren[node].position, wayChildren[node + 1].position, intra);
 				victims[i] = Instantiate(victimPrefab, point, Quaternion.identity);
+				victims[i].name += " " + i;
 				victims[i].transform.SetParent(victimBox.transform);
 				GameObject newPoint = new GameObject();
 				newPoint.name = "NewWaypoint-" + i;
