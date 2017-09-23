@@ -22,6 +22,7 @@ public class VictimGen : MonoBehaviour {
 		}
 
 		//spawn this many victims in between the nodes
+		//needs 1 extra at the front to exist in between
 		victimBox = GameObject.Find("Victims");
 		victims = new GameObject[howMany];
 		for (int i = 0; i < victims.Length; i++){

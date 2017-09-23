@@ -21,8 +21,8 @@ public class Sacrifice : MonoBehaviour {
 	public bool easyMode = false;
 	public bool limitAvailSac = true;
 	public bool sacReady = false;
-	[System.NonSerialized] public bool isAnyoneReady = true;
 	public int sacCount = 0;
+
 
 	// Use this for initialization
 	void Start () {
@@ -34,6 +34,7 @@ public class Sacrifice : MonoBehaviour {
 
 		sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 		cpsDisplay.text = "Sacrifices-Per-Second:	" + cpm/60;
+
 	}
 
 	// Update is called once per frame
@@ -69,13 +70,13 @@ public class Sacrifice : MonoBehaviour {
 				clicking = Input.GetMouseButtonDown(0);
 			}
 
+
 			if (beamHit.collider.gameObject == clickable && clicking){
 				if (!limitAvailSac || sacReady){ //if limited, check if ready
-					if (isAnyoneReady){
 						DoSacrifice(beamHit);
 						sacReady = false;
 						Debug.Log("sac reset");
-					}
+					
 				}
 			}
 
@@ -93,8 +94,6 @@ public class Sacrifice : MonoBehaviour {
 			cpm = 0f;
 		}
 		
-		//make it no longer ready
-		isAnyoneReady = false;
 	}
 
 	public void DoSacrifice(RaycastHit _beamHit){

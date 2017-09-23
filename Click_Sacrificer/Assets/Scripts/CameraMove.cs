@@ -44,7 +44,9 @@ public class CameraMove : MonoBehaviour {
 		} else {
 			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
 		}
+		transform.position = focus;
 
+        transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
 		//transform.LookAt(focus);
 
 		oldZoom = zoom;

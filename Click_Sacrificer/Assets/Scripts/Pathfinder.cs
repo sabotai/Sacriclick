@@ -17,6 +17,7 @@ public class Pathfinder : MonoBehaviour {
 	[SerializeField] bool advance = false;
 	public bool releaseDestroy = true;
 	public bool auto = false;
+	[System.NonSerialized] public bool imReady = false;
 	public float advanceTimeOut = 1f;
 	float advanceTimer = 0f;
 
@@ -44,28 +45,18 @@ public class Pathfinder : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (auto || Input.GetMouseButtonDown(0)){
 
-			if (currentWaypoint == wayParent.childCount - 1) {
-				sacrificer.GetComponent<Sacrifice>().isAnyoneReady = true;
-				Debug.Log(this.gameObject.name + " is ready");
-			}
-			//if an advance is requested from sacrifice and they are done advancing
-			if (sacrificer.GetComponent<Sacrifice>().advance && !advance){
-				advance = true;
-				//Debug.Log("next waypoint");
-				currentWaypoint++;
-			}
-		}
+			if (auto || Input.GetMouseButtonDown(0)){
 
-		if (!advance){
-			//if there is a hole in the sequence, move up
-			if (!sacrificer.GetComponent<Sacrifice>().isAnyoneReady){
-				//currentWaypoint++;
-				currentWaypoint = Mathf.Min(currentWaypoint, wayParent.childCount);
-				sacrificer.GetComponent<Sacrifice>().isAnyoneReady = true;
+				//if an advance is requested from sacrifice and they are done advancing
+				if (sacrificer.GetComponent<Sacrifice>().advance && !advance){
+					advance = true;
+					//Debug.Log("next waypoint");
+					currentWaypoint++;
+				}
 			}
-		}
+		 
+
 		AutoAdvancePos();
 	}
 /*
@@ -97,16 +88,61 @@ public class Pathfinder : MonoBehaviour {
 
 	}
 */
+
+	bool IsAnyoneAheadOfMe(){
+
+		bool isAnyoneAhead = true; // true = stay still
+		GameObject victimParent;
+		int sibIndex = this.transform.GetSiblingIndex();
+		if (sibIndex != this.transform.parent.childCount){
+			victimParent = gameObject.transform.parent.GetChild(this.transform.GetSiblingIndex() - 1).gameObject;
+			GameObject[] victimz;
+
+			victimz = new GameObject[victimParent.transform.childCount];
+			for (int i = 0; i < victimParent.transform.childCount; i++){
+				victimz[i] = victimParent.transform.GetChild(i).gameObject;
+			}
+
+				foreach (GameObject vic in victimz){
+					if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){
+						isAnyoneAhead = true;
+						Debug.Log("someone is ready");
+					}
+				}
+
+				if (!isAnyoneAhead){
+					Debug.Log("no one is ready");
+					return false;
+				} else {
+					return true;
+				}
+		} else {
+			isAnyoneAhead = true;
+			return true;
+		}
+		
+	}
 	void AutoAdvancePos(){
 						movable.GetComponent<Rigidbody>().isKinematic = false;
 
 						if (currentWaypoint < wayParent.childCount) { //if still in queue
-							//if someone is at the top of the queue, mark as ready
+
 							Vector3 target = wayParent.GetChild(currentWaypoint).position;
 							Vector3 moveDirection = target - movable.transform.position;
 							velo = movable.GetComponent<Rigidbody>().velocity;
 					
+
 							if (moveDirection.magnitude < 0.3f) {
+								/*
+								//push those forward who fell behind
+								if (!advance && !sacrificer.GetComponent<Sacrifice>().isAnyoneReady){
+									//if there is a hole in the sequence, move up
+									
+									currentWaypoint++;
+									currentWaypoint = Mathf.Min(currentWaypoint, wayParent.childCount);
+								}
+								*/
+
 								//bool ready = false;
 								//if (currentWaypoint >= wayParent.childCount - 1) ready = true;
 								//currentWaypoint++;
@@ -116,6 +152,11 @@ public class Pathfinder : MonoBehaviour {
 									isAnyoneReady = true;
 								}
 								*/
+								if (currentWaypoint < wayParent.childCount) {
+									if (!IsAnyoneAheadOfMe()){
+										currentWaypoint++;
+									}
+								}
 								advance = false;
 								//sacrificer.GetComponent<Sacrifice>().advance = false;
 								//Debug.Log("Waypoint -> " + currentWaypoint);
@@ -128,6 +169,8 @@ public class Pathfinder : MonoBehaviour {
 							movable.GetComponent<Rigidbody>().velocity = velo;
 							moveDirection = target - movable.transform.position;
 						} else {
+							imReady = false;
+
 							if (releaseDestroy){ //destroy doughnut hole
 								if (transform.childCount > 0){
 									//destroy doughnut hole
@@ -152,4 +195,5 @@ public class Pathfinder : MonoBehaviour {
 		}
 
 	}
+
 }
