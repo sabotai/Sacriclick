@@ -9,6 +9,7 @@ public class Sacrifice : MonoBehaviour {
 	public GameObject clickable;
 	private Vector3 clickOrigScale;
 	public AudioClip[] screams;
+	public AudioClip rumbleSound;
 	public bool advance = false;
 	public Text sacCountDisplay;
 	public Text cpsDisplay;
@@ -18,6 +19,7 @@ public class Sacrifice : MonoBehaviour {
 	public float startTime;
 	public float cpmMag = 0.01f;
 	public float cpm;
+	public float cps;
 	public bool easyMode = false;
 	public bool limitAvailSac = true;
 	public bool sacReady = false;
@@ -30,6 +32,7 @@ public class Sacrifice : MonoBehaviour {
 		sun = GameObject.Find("Sun");
 		audio = GetComponent<AudioSource>();
 		cpm = 0;
+		cps = 0;
 		startTime = Time.time;
 
 		sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
@@ -39,7 +42,8 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
+			cps = cpm/60f;
+		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		
 		advance = false;
 		//we use rays to project invisible lines at a distance
@@ -89,8 +93,8 @@ public class Sacrifice : MonoBehaviour {
 			//Debug.Log("cpm = " + cpm);
 			if (sun.GetComponent<Sun>() != null)
 				sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
-
-			cpsDisplay.text = "Sacrifices-Per-Second:	" + cpm/60;
+			cps = cpm/60f;
+			cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
 			cpm = 0f;
 		}
 		
@@ -106,6 +110,7 @@ public class Sacrifice : MonoBehaviour {
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
 				audio.pitch = Random.Range(0.8f, 1.2f);
 				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
+				audio.PlayOneShot(rumbleSound);
 				sacCount++;
 				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 				//}

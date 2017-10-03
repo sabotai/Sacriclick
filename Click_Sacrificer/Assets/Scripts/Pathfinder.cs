@@ -17,14 +17,17 @@ public class Pathfinder : MonoBehaviour {
 	[SerializeField] bool advance = false;
 	public bool releaseDestroy = true;
 	public bool auto = false;
+	public bool replace = false;
+	public Transform macuahuitl;
 	[System.NonSerialized] public bool imReady = false;
 	public float advanceTimeOut = 1f;
 	float advanceTimer = 0f;
+	float origWaySpeed;
 
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
-
+		if (macuahuitl == null) macuahuitl = GameObject.Find("sword").transform;
 		if (sacrificer == null) sacrificer = GameObject.Find("Main Camera");
 
 		if (wayParent == null) wayParent = GameObject.Find("WayParent").transform;
@@ -32,6 +35,7 @@ public class Pathfinder : MonoBehaviour {
 
 		//give each one a bit of randomness for personality in movements
 		waySpeed *= Random.Range(0.5f, 1.5f);
+		origWaySpeed = waySpeed;
 
 		/*
 		waypoints = new GameObject[wayParent.transform.childCount];
@@ -54,74 +58,43 @@ public class Pathfinder : MonoBehaviour {
 					//Debug.Log("next waypoint");
 					currentWaypoint++;
 				}
+			} else {
+				
+				waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
 			}
 		 
 
 		AutoAdvancePos();
 	}
-/*
-	void AdvancePos(){ //NOT BEING USED
 
-
-						if (currentWaypoint < wayParent.childCount) {
-								//Debug.Log ("current toothbrush waypoint = " + currentWaypoint);
-								Vector3 target = wayParent.GetChild(currentWaypoint).position;
-								Vector3 moveDirection = target - movable.transform.position;
-
-								int count = 0;
-								while (Vector3.Distance(target, movable.transform.position) > 0.5f){
-	
-									movable.transform.position += moveDirection.normalized * Time.deltaTime;
-									
-									moveDirection = target - movable.transform.position;
-									//Debug.Log("advancing to " + currentWaypoint + "... dist= " + Vector3.Distance(target, movable.transform.position));
-									count++;
-									if (count > 1000) return; //safeguard
-								}
-								currentWaypoint++;
-						} else {
-							if(loop){
-								currentWaypoint = 0;
-								//waySpeed *= 1.2f;
-							}
-						}
-
-	}
-*/
 
 	bool IsAnyoneAheadOfMe(){
 
-		bool isAnyoneAhead = true; // true = stay still
+		bool isAnyoneAhead = false; // true = stay still
 		GameObject victimParent;
 		int sibIndex = this.transform.GetSiblingIndex();
-		if (sibIndex != this.transform.parent.childCount){
-			victimParent = gameObject.transform.parent.GetChild(this.transform.GetSiblingIndex() - 1).gameObject;
-			GameObject[] victimz;
-
-			victimz = new GameObject[victimParent.transform.childCount];
-			for (int i = 0; i < victimParent.transform.childCount; i++){
-				victimz[i] = victimParent.transform.GetChild(i).gameObject;
-			}
-
-				foreach (GameObject vic in victimz){
-					if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){
-						isAnyoneAhead = true;
-						Debug.Log("someone is ready");
-					}
-				}
-
-				if (!isAnyoneAhead){
-					Debug.Log("no one is ready");
-					return false;
-				} else {
-					return true;
-				}
-		} else {
-			isAnyoneAhead = true;
-			return true;
+		//Debug.Log("sibindex = " + sibIndex);
+		victimParent = gameObject.transform.parent.gameObject; //find my parent
+		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+		for (int i = 0; i < victimz.Length; i++){ //assign each one
+			victimz[i] = victimParent.transform.GetChild(i).gameObject;
 		}
-		
+		foreach (GameObject vic in victimz){
+			if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){ //is there one ahead of me?
+				isAnyoneAhead = true;
+				//Debug.Log("someone is ready");
+			}
+		}
+
+
+		if (isAnyoneAhead) {
+			return true;
+		} else {
+			return false;
+		}
 	}
+		
+	
 	void AutoAdvancePos(){
 						movable.GetComponent<Rigidbody>().isKinematic = false;
 
@@ -170,14 +143,25 @@ public class Pathfinder : MonoBehaviour {
 							moveDirection = target - movable.transform.position;
 						} else {
 							imReady = false;
+							if (transform.childCount > 0){
+								StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
+								if (replace){
+									//Debug.Log("instantiating new replacement victim");
+									Vector3 point = wayParent.GetChild(0).position;
+									GameObject newVic = Instantiate(gameObject, point, Quaternion.identity);
+									newVic.name += " " + currentWaypoint;
+									newVic.transform.SetParent(gameObject.transform.parent);
+									newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
+								}
 
-							if (releaseDestroy){ //destroy doughnut hole
-								if (transform.childCount > 0){
-									//destroy doughnut hole
-									Destroy(transform.GetChild(0).gameObject);
+								if (releaseDestroy){ //destroy doughnut hole
+									
+										//destroy doughnut hole
+
+										GetComponent<MeshRenderer> ().material.color = Color.red;
+										Destroy(transform.GetChild(0).gameObject);
 								}
 							}
-
 							//reached the end of the line (front of the line?)
 							if(loop){
 								currentWaypoint = 1;
