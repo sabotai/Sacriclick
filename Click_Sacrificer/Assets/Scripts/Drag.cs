@@ -13,6 +13,7 @@ public class Drag : MonoBehaviour {
 	Transform cam;
 	Transform endCam;
 	public float maxPanRight;
+	float velocityY = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -43,6 +44,8 @@ public class Drag : MonoBehaviour {
 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
  				if( Input.GetMouseButtonDown(0)){
 					dragItem = beamHit.transform.gameObject;
+					panCam = Vector3.zero;
+					amtPanned = 0f;
 					hoverItem = null;
  					origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
 
@@ -77,10 +80,11 @@ public class Drag : MonoBehaviour {
 						endCam.position += panCam;
 						amtPanned += panCam.x;
 				} else {
+					Debug.Log("pan outside border");
 					//prevent it from getting stuck at either end
 					//if (amtPanned < 0f)	panCam -= panCam * 2f;
 					//if (amtPanned > maxPanRight) panCam -= panCam * 2f;
-					panCam -= panCam * 1.5f;
+					panCam -= panCam * 2f;
 					//amtPanned += panCam.x;
 					/*
 					if (amtPanned < 0f){
@@ -106,10 +110,14 @@ public class Drag : MonoBehaviour {
 
 				//release
 				if (Input.GetMouseButtonUp(0)){
+					panCam = Vector3.zero;
+					/*
+					//hard reset pan position
 					cam.position += new Vector3(-amtPanned, 0f, 0f);
 					endCam.position += new Vector3(-amtPanned, 0f, 0f);
 					panCam = Vector3.zero;
 					amtPanned = panCam.x;
+					*/
 					dragItem.layer = 0; //switch back to default layer
 					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(0f,0f,0f));
 					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
@@ -119,6 +127,13 @@ public class Drag : MonoBehaviour {
 		} else {
 				//reset camera position
 				GetComponent<CameraMove>().forceAmt = 0f;
+
+
+				//soft reset pan position
+				panCam = new Vector3(Mathf.SmoothDamp(0, -amtPanned, ref velocityY, 0.3f), 0f, 0f);
+				cam.position += panCam;
+				endCam.position += panCam;				
+				amtPanned += panCam.x;
 		}
 	}
 }
