@@ -10,6 +10,8 @@ public class CameraMove : MonoBehaviour {
 	public float endZoomAmt = 10.41f;
 	private float oldZoom;
 	public bool perspectiveCam = true;
+	public bool forceShift = false;
+	public float forceAmt = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -35,9 +37,17 @@ public class CameraMove : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		//calculate the cpm / 5
 		float newZoom = Camera.main.GetComponent<Sacrifice>().cpm / 5f;
+
+		//lerp between these 2 zoom amounts by 0.75% each frame
 		float zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
+		forceAmt = Mathf.Clamp(forceAmt, 0f, 1f);
+		zoom += forceAmt;
+		zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
 		//Debug.Log("zoomAmt = " + zoom);
+
+		//focus should find the new intermediate position based on the zoom amount
 		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
 		if (perspectiveCam){
 			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);

@@ -13,7 +13,7 @@ public class Pulsate : MonoBehaviour {
 	void Start () {
 
 		startScale = transform.localScale;
-		endScale = transform.localScale *= 0.75f;
+		endScale = transform.localScale * 0.1f;
 		startTime = Time.time;
 		scaleSize = Vector3.Distance(startScale, endScale);
 	}

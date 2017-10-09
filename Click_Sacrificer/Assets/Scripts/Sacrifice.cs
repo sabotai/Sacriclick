@@ -108,6 +108,8 @@ public class Sacrifice : MonoBehaviour {
 				//dont pulsate again before it has returned to its orig scale to prevent warping
 				//if (clickOrigScale == clickable.transform.localScale){
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
+
+				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.05f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
 				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				audio.PlayOneShot(rumbleSound);
