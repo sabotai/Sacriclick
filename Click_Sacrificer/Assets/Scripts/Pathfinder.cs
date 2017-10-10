@@ -19,10 +19,11 @@ public class Pathfinder : MonoBehaviour {
 	public bool auto = false;
 	public bool replace = false;
 	public Transform macuahuitl;
-	[System.NonSerialized] public bool imReady = false;
+	/*[System.NonSerialized]*/ public bool imReady = false;
 	public float advanceTimeOut = 1f;
 	float advanceTimer = 0f;
 	float origWaySpeed;
+	int howMany;
 
 
 	//added this because ontriggerenter was running before sacrificer was assigned
@@ -36,7 +37,7 @@ public class Pathfinder : MonoBehaviour {
 		//give each one a bit of randomness for personality in movements
 		waySpeed *= Random.Range(0.5f, 1.5f);
 		origWaySpeed = waySpeed;
-
+		howMany = GameObject.Find("VictimGenerator").GetComponent<VictimGenToo>().howMany;
 		/*
 		waypoints = new GameObject[wayParent.transform.childCount];
 
@@ -63,35 +64,35 @@ public class Pathfinder : MonoBehaviour {
 				waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
 			}
 		 
-
 		AutoAdvancePos();
 	}
 
 
 	bool IsAnyoneAheadOfMe(){
-
-		bool isAnyoneAhead = false; // true = stay still
-		GameObject victimParent;
-		int sibIndex = this.transform.GetSiblingIndex();
-		//Debug.Log("sibindex = " + sibIndex);
-		victimParent = gameObject.transform.parent.gameObject; //find my parent
-		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
-		for (int i = 0; i < victimz.Length; i++){ //assign each one
-			victimz[i] = victimParent.transform.GetChild(i).gameObject;
-		}
-		foreach (GameObject vic in victimz){
-			if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){ //is there one ahead of me?
-				isAnyoneAhead = true;
-				//Debug.Log("someone is ready");
+			bool isAnyoneAhead = false; // true = stay still
+			GameObject victimParent;
+			int sibIndex = this.transform.GetSiblingIndex();
+			//Debug.Log("sibindex = " + sibIndex);
+			victimParent = gameObject.transform.parent.gameObject; //find my parent
+			GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+			for (int i = 0; i < victimz.Length; i++){ //assign each one
+				victimz[i] = victimParent.transform.GetChild(i).gameObject;
 			}
-		}
+			foreach (GameObject vic in victimz){
+				if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){ //is there one ahead of me?
+					isAnyoneAhead = true;
+					//Debug.Log("someone is ready");
+				}
+			}
+			
 
 
-		if (isAnyoneAhead) {
-			return true;
-		} else {
-			return false;
-		}
+			if (isAnyoneAhead) {
+				return true;
+			} else {
+				return false;
+			}
+
 	}
 		
 	
@@ -125,7 +126,7 @@ public class Pathfinder : MonoBehaviour {
 									isAnyoneReady = true;
 								}
 								*/
-								if (currentWaypoint < wayParent.childCount) {
+								if (currentWaypoint < wayParent.childCount - 1) {
 									if (!IsAnyoneAheadOfMe()){
 										currentWaypoint++;
 									}
@@ -136,46 +137,60 @@ public class Pathfinder : MonoBehaviour {
 
 							} else {
 								//bounce by waySpeed amt?
-								velo = moveDirection.normalized * waySpeed;
+								velo = moveDirection.normalized * waySpeed; //sets the new direction
 							}
 
 							movable.GetComponent<Rigidbody>().velocity = velo;
 							moveDirection = target - movable.transform.position;
-						} else {
+						} else { //do this after it exceeds the total
 							imReady = false;
 							if (transform.childCount > 0){
 								StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
-								if (replace){
-									//Debug.Log("instantiating new replacement victim");
-									Vector3 point = wayParent.GetChild(0).position;
-									GameObject newVic = Instantiate(gameObject, point, Quaternion.identity);
-									newVic.name += " " + currentWaypoint;
-									newVic.transform.SetParent(gameObject.transform.parent);
-									newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
-								}
 
-								if (releaseDestroy){ //destroy doughnut hole
-									
-										//destroy doughnut hole
+								//reached the end of the line (front of the line?)
+								if(loop){
+									currentWaypoint = 1;
+									waySpeed *= 1.2f;
+								} else {
+									//purge the child
 
+									//instantiate the new one
+									if (replace){
+										//Debug.Log("instantiating new replacement victim");
+										Vector3 point = wayParent.GetChild(0).position;
+										GameObject newVic = Instantiate(gameObject, point, Quaternion.identity);
+										newVic.name += " " + currentWaypoint;
+										newVic.transform.SetParent(gameObject.transform.parent);
+										newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
+									}
+
+									if (releaseDestroy){ //destroy doughnut hole
+										
+										gameObject.GetComponent<Rigidbody>().AddForce(transform.up * 10f);
 										GetComponent<MeshRenderer> ().material.color = Color.red;
+										//destroy doughnut hole
 										Destroy(transform.GetChild(0).gameObject);
+										//Destroy(GetComponent<Pathfinder>());
+										if (auto){
+
+											currentWaypoint += 999;
+											//Destroy(transform.GetChild(0).gameObject);
+											transform.parent = GameObject.Find("trashBin").transform;
+										}
+									}
 								}
 							}
-							//reached the end of the line (front of the line?)
-							if(loop){
-								currentWaypoint = 1;
-								waySpeed *= 1.2f;
-							}
-						}
+					}
 
 	}
 
 	void OnTriggerStay(Collider other){
 		if (other.name == "PedestalZone"){
-			//Debug.Log("sac ready");
-			if (currentWaypoint == wayParent.childCount - 1)
-			sacrificer.GetComponent<Sacrifice>().sacReady = true;
+			if (currentWaypoint >= wayParent.childCount - 1){
+				Debug.Log("sac ready");
+				sacrificer.GetComponent<Sacrifice>().sacReady = true;
+				//imReady = true;
+			}
 		}
 
 	}

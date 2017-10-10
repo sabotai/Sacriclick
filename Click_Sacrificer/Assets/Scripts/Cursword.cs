@@ -17,10 +17,11 @@ public class Cursword : MonoBehaviour {
 	void Update () {
 
 		if (raycastMethod){
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit rayHit = new RaycastHit();
-            if (Physics.Raycast(ray, out rayHit, 1000f)){
-                swordObj.transform.position = new Vector3(rayHit.point.x, rayHit.point.y, swordObj.transform.position.z) + offset;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			RaycastHit rayHit = new RaycastHit();
+            if (Physics.Raycast(ray, out rayHit, 1000f,  LayerMask.GetMask("sword-ui"))){
+            	//Debug.Log("sword to ... " + rayHit.transform.gameObject.name);
+                swordObj.transform.position = new Vector3(rayHit.point.x, rayHit.point.y, rayHit.point.z) + offset;
             }
 
         } else {

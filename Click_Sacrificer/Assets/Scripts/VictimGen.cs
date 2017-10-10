@@ -32,11 +32,12 @@ public class VictimGen : MonoBehaviour {
 			//how far to go in between the nodes
 			float intra = (pct) - (float)node;
 			//Debug.Log("#" + i + " ; pct = " + pct + " ; node = " + node + " ; intra = " + intra);
-			if (node + 1 < wayChildren.Length){ //starting at 0 vs 1
+			if (node < wayChildren.Length - 1){ //starting at 0 vs 1
 				//start them in between the nodes
 				Vector3 point = Vector3.Lerp (wayChildren[node].position, wayChildren[node + 1].position, intra);
 				victims[i] = Instantiate(victimPrefab, point, Quaternion.identity);
 				victims[i].name += " " + i;
+				victims[i].transform.GetChild(1).gameObject.GetComponent<TextMesh>().text += (victims.Length - i);
 				victims[i].transform.SetParent(victimBox.transform);
 				GameObject newPoint = new GameObject();
 				newPoint.name = "NewWaypoint-" + i;

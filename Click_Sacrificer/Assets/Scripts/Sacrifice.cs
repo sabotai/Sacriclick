@@ -62,12 +62,12 @@ public class Sacrifice : MonoBehaviour {
 		//this both casts the ray "beam" and returns true if the ray hits any collider
 		//the second parameter is where our raycasthit information is stored
 		//the third parameter is how far to cast the ray
-		if (Physics.Raycast(beam, out beamHit, 1000f)){
+		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
 
 
 
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
-			bool clicking;
+			bool clicking = false;
 			if (easyMode){
 				clicking = Input.GetMouseButton(0);
 			} else {
@@ -107,6 +107,7 @@ public class Sacrifice : MonoBehaviour {
 
 				//dont pulsate again before it has returned to its orig scale to prevent warping
 				//if (clickOrigScale == clickable.transform.localScale){
+				Debug.Log("sacrificing...");
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.05f));

@@ -31,7 +31,7 @@ public class Drag : MonoBehaviour {
 		Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 		RaycastHit beamHit = new RaycastHit();
-		if (Physics.Raycast(beam, out beamHit, 1000f)){
+		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
 			GameObject obj = beamHit.transform.gameObject;
 
  			if (hoverItem != null){
@@ -49,7 +49,7 @@ public class Drag : MonoBehaviour {
 					hoverItem = null;
  					origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
 
-					Debug.Log("GRABBED " + obj.name);
+					//Debug.Log("GRABBED " + obj.name);
 					
 				}
 			}
@@ -66,10 +66,10 @@ public class Drag : MonoBehaviour {
 					//allow player to scroll along path
 					if (Input.mousePosition.x > Screen.width * 0.9f){
 							panCam += new Vector3(0.05f, 0f, 0f);
-							Debug.Log("panning right");
+							//Debug.Log("panning right");
 						} else if (Input.mousePosition.x < Screen.width * 0.1f){
 							panCam -= new Vector3(0.05f, 0f, 0f);
-							Debug.Log("panning left");
+							//Debug.Log("panning left");
 						} else {
 							panCam *= 0.9f;
 						}
@@ -80,7 +80,7 @@ public class Drag : MonoBehaviour {
 						endCam.position += panCam;
 						amtPanned += panCam.x;
 				} else {
-					Debug.Log("pan outside border");
+					//Debug.Log("pan outside border");
 					//prevent it from getting stuck at either end
 					//if (amtPanned < 0f)	panCam -= panCam * 2f;
 					//if (amtPanned > maxPanRight) panCam -= panCam * 2f;
@@ -106,7 +106,7 @@ public class Drag : MonoBehaviour {
 		//if something is being dragged
 		if (dragItem != null){
 				//force the front perspective
-				GetComponent<CameraMove>().forceAmt += 0.1f;
+				GetComponent<CameraMove>().forceAmt += 0.01f;
 
 				//release
 				if (Input.GetMouseButtonUp(0)){
