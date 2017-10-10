@@ -9,8 +9,9 @@ Sacriclic
                 Working:
                     Grab
                     Highlight
+                    Once picked up, set camera view to front profile view to 
                 To Do:
-                    Once picked up, set camera view to front profile view to rearrange
+                    rearrange
             Rearrange - Not started
                     Once picked up:
                         find the closest queue position to the raycast hit
