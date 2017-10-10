@@ -41,9 +41,9 @@ public class Radiate : MonoBehaviour {
 			float amt = 2f * pct; 
 			if (pct >= 0.5f){ //0.5 needs to be 1, 1, needs to be 0
 				amt = 2 - (pct * 2f);
-				Debug.Log("down pulsing?");
+				//Debug.Log("down pulsing?");
 			} 
-			Debug.Log("onePulse amt = " + amt);
+			//Debug.Log("onePulse amt = " + amt);
 			pulseColor = Color.Lerp(c1, c2, amt);
 
 			pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
@@ -68,9 +68,9 @@ public class Radiate : MonoBehaviour {
 			float amt = 2f * pct; 
 			if (pct >= 0.5f){ //0.5 needs to be 1, 1, needs to be 0
 				amt = 2 - (pct * 2f);
-				Debug.Log("down pulsing?");
+				//Debug.Log("down pulsing?");
 			} 
-			Debug.Log("onePulse amt = " + amt);
+			//Debug.Log("onePulse amt = " + amt);
 			pulseColor = Color.Lerp(c1, c2, amt);
 
 			pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
@@ -106,7 +106,7 @@ public class Radiate : MonoBehaviour {
 					//c1 = c2;
 					//c2 = colorHold;
 				}
-				Debug.Log("oneSmoothPulse amt = " + sAmt);
+				//Debug.Log("oneSmoothPulse amt = " + sAmt);
 				pulseColor = Color.Lerp(c1, c2, sAmt);
 
 				pulseObj.GetComponent<MeshRenderer>().material.color = pulseColor;
@@ -127,7 +127,7 @@ public class Radiate : MonoBehaviour {
 		radColor.r = (Mathf.Sin(rSpeed * Time.time) + 1f) / 2f;
 		radColor.g = ((Mathf.Sin(gSpeed * Time.time) + 1f) / 2f);
 		radColor.b = ((Mathf.Sin(bSpeed * Time.time) + 1f) / 2f);
-		Debug.Log("red = " + radColor.r + "  g/b = " + radColor.b);
+		//Debug.Log("red = " + radColor.r + "  g/b = " + radColor.b);
 		radObj.GetComponent<MeshRenderer> ().material.color = radColor;
 	}
 	

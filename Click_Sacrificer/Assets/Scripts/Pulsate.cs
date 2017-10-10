@@ -37,7 +37,7 @@ public class Pulsate : MonoBehaviour {
 	*/
 
 	public static IEnumerator Pulse(GameObject pulser, float duration, float magnitude) {
-		Debug.Log ("pulsing...");
+		//Debug.Log ("pulsing...");
 
 
 		float elapsed = 0.0f;
