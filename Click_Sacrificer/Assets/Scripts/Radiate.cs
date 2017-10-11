@@ -6,7 +6,9 @@ public class Radiate : MonoBehaviour {
 
 	public bool pulse = false;
 	public bool rad = false;
+	public bool flick = false;
 	public float speed = 1f;
+	public float maxLight = 1f;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +21,8 @@ public class Radiate : MonoBehaviour {
 			pulseColor(gameObject, Color.red, Color.black);
 		} else if (rad){
 			radiate(gameObject);
+		} else if (flick){
+			if (!Input.GetMouseButton(0)) flicker(gameObject, maxLight);
 		}
 	}
 
@@ -26,6 +30,7 @@ public class Radiate : MonoBehaviour {
 		Color pulseColor = pulseObj.GetComponent<MeshRenderer> ().material.color;
 		pulseColor = Color.Lerp(c1, c2, Mathf.PingPong(Time.time * speed, 1));
 		pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
+
 	}
 
 	public static IEnumerator onePulse(GameObject pulseObj, Color c1, Color c2){
@@ -109,6 +114,7 @@ public class Radiate : MonoBehaviour {
 				//Debug.Log("oneSmoothPulse amt = " + sAmt);
 				pulseColor = Color.Lerp(c1, c2, sAmt);
 
+				pulseObj.GetComponent<Light>().intensity = 1f - sAmt;
 				pulseObj.GetComponent<MeshRenderer>().material.color = pulseColor;
 				yield return null;
 			}
@@ -129,6 +135,17 @@ public class Radiate : MonoBehaviour {
 		radColor.b = ((Mathf.Sin(bSpeed * Time.time) + 1f) / 2f);
 		//Debug.Log("red = " + radColor.r + "  g/b = " + radColor.b);
 		radObj.GetComponent<MeshRenderer> ().material.color = radColor;
+	}
+
+	void flicker(GameObject flickObj, float max){
+
+   		//float smoothTime = speed;
+    	//float yVelocity = 0.0F;
+    	//float target = max;
+		float sAmt = Mathf.PingPong(Time.time * 1.2f, maxLight);
+		if (flickObj.GetComponent<Light>() != null){
+			flickObj.GetComponent<Light>().intensity = sAmt;
+		}
 	}
 	
 }

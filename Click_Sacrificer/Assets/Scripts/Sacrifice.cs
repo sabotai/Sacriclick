@@ -22,7 +22,7 @@ public class Sacrifice : MonoBehaviour {
 	public float cps;
 	public bool easyMode = false;
 	public bool limitAvailSac = true;
-	public bool sacReady = false;
+	public bool sacReady = true;
 	public int sacCount = 0;
 
 
@@ -42,7 +42,7 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-			cps = cpm/60f;
+		cps = cpm/60f;
 		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		
 		advance = false;
@@ -77,9 +77,9 @@ public class Sacrifice : MonoBehaviour {
 
 			if (beamHit.collider.gameObject == clickable && clicking){
 				if (!limitAvailSac || sacReady){ //if limited, check if ready
-						DoSacrifice(beamHit);
-						sacReady = false;
-						Debug.Log("sac reset");
+					sacReady = false;
+					DoSacrifice(beamHit);
+					//Debug.Log("sac reset");
 					
 				}
 			}
@@ -107,16 +107,19 @@ public class Sacrifice : MonoBehaviour {
 
 				//dont pulsate again before it has returned to its orig scale to prevent warping
 				//if (clickOrigScale == clickable.transform.localScale){
-				Debug.Log("sacrificing...");
+				//Debug.Log("sacrificing... " + (1 + sacCount));
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
 
-				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.05f));
+				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
 				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				audio.PlayOneShot(rumbleSound);
-				sacCount++;
-				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+				//sacCount++;
 				//}
+
+				sacCount++;
+				//sacReady = false;
+				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
 				advance = true;
 				//increase Clicks-per-minute

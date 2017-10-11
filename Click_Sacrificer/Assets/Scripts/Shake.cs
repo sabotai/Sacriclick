@@ -14,7 +14,7 @@ public class Shake : MonoBehaviour {
 	}
 
 	public static IEnumerator ShakeThis(Transform shaked, float duration, float magnitude) {
-		Debug.Log ("shaking...");
+		//Debug.Log ("shaking...");
 
 
 		float elapsed = 0.0f;

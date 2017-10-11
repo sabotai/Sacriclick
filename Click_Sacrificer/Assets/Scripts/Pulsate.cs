@@ -68,7 +68,7 @@ public class Pulsate : MonoBehaviour {
 
 	//alternative method for predefining return scale
 	public static IEnumerator Pulse(GameObject pulser, float duration, float magnitude, Vector3 definedScale) {
-		Debug.Log ("pulsing...");
+		//Debug.Log ("pulsing...");
 
 
 		float elapsed = 0.0f;

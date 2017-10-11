@@ -15,12 +15,12 @@ public class Pathfinder : MonoBehaviour {
 	public int currentWaypoint = 0;
 	public Vector3 velo;
 	GameObject sacrificer;
-	[SerializeField] bool advance = false;
+	[SerializeField] bool advancing = false;
 	public bool releaseDestroy = true;
 	public bool auto = false;
 	public bool replace = false;
 	public Transform macuahuitl;
-	[System.NonSerialized] public bool imReady = false;
+	//[System.NonSerialized] public bool imReady = false;
 	public float advanceTimeOut = 1f;
 	float advanceTimer = 0f;
 	float origWaySpeed;
@@ -58,20 +58,22 @@ public class Pathfinder : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
-			if (auto || Input.GetMouseButtonDown(0)){
+			//if (auto || Input.GetMouseButtonDown(0)){
 
-				//if an advance is requested from sacrifice and they are done advancing
-				if (sacrificer.GetComponent<Sacrifice>().advance && !advance){
-					advance = true;
+				//if an advance is requested from sacrifice and this current one is done advancing
+				if (sacrificer.GetComponent<Sacrifice>().advance && !advancing){ 
+					advancing = true;
 					//Debug.Log("next waypoint");
 					currentWaypoint++;
 				}
+				/*
 			} else {
 				//update the speed in between clicks
 				waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
 			}
+			*/
 		 
 		AutoAdvancePos();
 	}
@@ -91,11 +93,17 @@ public class Pathfinder : MonoBehaviour {
 				if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){ //is there one ahead of me?
 					isAnyoneAhead = true;
 					//Debug.Log("someone is ready");
+					if (vic.GetComponent<Pathfinder>().myCount > myCount){ //if they should be behind me, reorder
+						SwapOrder(vic, gameObject);
+					}
+				}
+
+				if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint - 1){ //is there one behind of me?
+					if (vic.GetComponent<Pathfinder>().myCount < myCount){ //if so, should they be in front of me?
+						SwapOrder(vic, gameObject);
+					}
 				}
 			}
-			
-
-
 			if (isAnyoneAhead) {
 				return true;
 			} else {
@@ -103,121 +111,144 @@ public class Pathfinder : MonoBehaviour {
 			}
 
 	}
-	bool IsAnyoneBesideMe(){
-			bool isAnyoneBeside = false; // true = stay still
-			GameObject victimParent;
-			int sibIndex = this.transform.GetSiblingIndex();
-			//Debug.Log("sibindex = " + sibIndex);
-			victimParent = gameObject.transform.parent.gameObject; //find my parent
-			GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
-			for (int i = 0; i < victimz.Length; i++){ //assign each one
-				victimz[i] = victimParent.transform.GetChild(i).gameObject;
-			}
-			int cnt = 0; //use count so it doesnt count itself
-			foreach (GameObject vic in victimz){
-				if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint){ //is there one ahead of me?
-					cnt++;
-					//Debug.Log("someone is ready");
-				}
+	void FixAnyoneBesideMe(){
+		bool isAnyoneBeside = false; // true = stay still
+		GameObject victimParent;
+		int sibIndex = this.transform.GetSiblingIndex();
+		//Debug.Log("sibindex = " + sibIndex);
+		victimParent = gameObject.transform.parent.gameObject; //find my parent
+		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+		for (int i = 0; i < victimz.Length; i++){ //assign each one
+			victimz[i] = victimParent.transform.GetChild(i).gameObject;
+		}
+		foreach (GameObject vic in victimz){
+			if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint){ //is there one ahead of me?
+				if (vic != gameObject){
+					//Debug.Log("Found a dupe!");
+					if (vic.GetComponent<Pathfinder>().myCount > myCount){
+							if (currentWaypoint < wayParent.childCount - 4) currentWaypoint++; //protected because weird clumping at sacpedestal
+					} 
 
-				if (cnt > 1)	isAnyoneBeside = true;
+				}
 			}
-			
-			if (isAnyoneBeside) {
-				return true;
-			} else {
-				return false;
-			}
+
+		}
+		
 
 	}
 	
+	void SwapOrder(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
+		int temp = swap.GetComponent<Pathfinder>().currentWaypoint;
+		swap.GetComponent<Pathfinder>().currentWaypoint = swap_.GetComponent<Pathfinder>().currentWaypoint;
+		swap_.GetComponent<Pathfinder>().currentWaypoint = temp;
+	}
+
+	void CleanOrder(){
+		if (currentWaypoint < wayParent.childCount - 1) {
+			if (!IsAnyoneAheadOfMe()){ //notice a vacancy in the line?  move up!
+				currentWaypoint++;
+			}
+			FixAnyoneBesideMe();
+		}
+	}
+
 	void AutoAdvancePos(){
-						movable.GetComponent<Rigidbody>().isKinematic = false;
+		//movable.GetComponent<Rigidbody>().isKinematic = false;
 
-						if (currentWaypoint < wayParent.childCount) { //if still in queue
+		
+		if (waySpeed > origWaySpeed) {
+				waySpeed = Mathf.Clamp(waySpeed, 0.5f, 3f);
+				waySpeed *= 0.9f;
+		} else {
+			waySpeed = origWaySpeed;
+		}
 
-							Vector3 target = wayParent.GetChild(currentWaypoint).position;
-							Vector3 moveDistance = target - movable.transform.position;
-							velo = movable.GetComponent<Rigidbody>().velocity;
+		if (currentWaypoint < wayParent.childCount) { //if still in queue
+
+			Vector3 target = wayParent.GetChild(currentWaypoint).position;
+			Vector3 moveDistance = target - movable.transform.position;
+			velo = movable.GetComponent<Rigidbody>().velocity;
+	
+			//if it is close enough to the target waypoint ... this is what allows gravity to effect the vic for a second before it gets recontrolled by the script (the bouncing effect)
+			if (moveDistance.sqrMagnitude < 0.2f) { 
+				velo *= 0.95f;
+				//Debug.Log("mag less than threshold");
+				//fix order in various ways
+				CleanOrder();
+
+
+				//if close enough, and the final pos
+				if (currentWaypoint == wayParent.childCount - 1) advancing = false;
+
+			} else {
+				//bounce by waySpeed amt?
+
+				//waySpeed = origWaySpeed + (moveDistance.magnitude * ((sacrificer.GetComponent<Sacrifice>().cpm + 1) * 7f));
+				waySpeed *= (1f + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cpm + 1)));
+				//Debug.Log("wayspeed= " + waySpeed);
+				waySpeed = Mathf.Clamp(waySpeed, 0.5f, 100f);
+				velo = moveDistance.normalized * waySpeed; //sets the new direction
+			}
+
+			movable.GetComponent<Rigidbody>().velocity = velo;
+
+		} else { //do this after it exceeds the total ... meaning it has been sacrificed
+			//imReady = false; //i am not ready anymore ... dont allow it to count as a sacrificee
+			if (transform.childCount > 0){ //use the child count to prevent it from running again
+				StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
+
+				//reached the end of the line (front of the line?)
+				if(loop){
+					currentWaypoint = 1;
+					waySpeed *= 1.2f;
+				} else {
+					//purge the child
+
+				//instantiate the new one
+				if (replace){
+					//Debug.Log("instantiating new replacement victim");
+					SpawnReplacement();
+				}
+
+				if (releaseDestroy){ //destroy doughnut hole
 					
+					gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
+					GetComponent<MeshRenderer> ().material.color = Color.red;
+					//destroy doughnut hole
+					Destroy(transform.GetChild(0).gameObject);
+					Destroy(transform.GetChild(1).gameObject);
+					//Destroy(GetComponent<Pathfinder>());
+					transform.parent = GameObject.Find("trashBin").transform;
+					Destroy(GetComponent<Pathfinder>());
+					if (auto){
 
-							if (moveDistance.magnitude < 0.3f) { //if it is close enough to the target waypoint
-								
-								
-								if (currentWaypoint < wayParent.childCount - 1) {
-									if (!IsAnyoneAheadOfMe()){ //notice a vacancy in the line?  move up!
-										currentWaypoint++;
-									}
-									if (IsAnyoneBesideMe()){ //fix the ones that were getting clumped
-										//Destroy(gameObject); //destroy was making the number of available vics shrink over time
-										if (currentWaypoint > 0){
-										 currentWaypoint--;
-										 } else {
-										 	currentWaypoint++;
-										 }
-									}
-								}
-								advance = false;
-								
-							} else {
-								//bounce by waySpeed amt?
-								velo = moveDistance.normalized * waySpeed; //sets the new direction
-							}
-
-							movable.GetComponent<Rigidbody>().velocity = velo;
-
-						} else { //do this after it exceeds the total ... meaning it has been sacrificed
-							imReady = false; //i am not ready anymore ... dont allow it to count as a sacrificee
-							if (transform.childCount > 0){ //use the child count to prevent it from running again
-								StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
-
-								//reached the end of the line (front of the line?)
-								if(loop){
-									currentWaypoint = 1;
-									waySpeed *= 1.2f;
-								} else {
-									//purge the child
-
-									//instantiate the new one
-									if (replace){
-										//Debug.Log("instantiating new replacement victim");
-										Vector3 point = wayParent.GetChild(0).position;
-										GameObject newVic = Instantiate(prefab, point, Quaternion.identity);
-										int myNewNumber = sacrificer.GetComponent<Sacrifice>().sacCount + currentWaypoint;
-										Debug.Log("instantiating #" + myNewNumber);
-										newVic.name += " " + (myNewNumber);
-										GameObject label = newVic.transform.GetChild(1).gameObject;
-										if (label.GetComponent<TextMesh>() != null) label.GetComponent<TextMesh>().text = "#" + myNewNumber;
-										newVic.GetComponent<Pathfinder>().myCount = myNewNumber;
-										newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
-										newVic.transform.SetParent(gameObject.transform.parent);
-									}
-
-									if (releaseDestroy){ //destroy doughnut hole
-										
-										gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * 100f);
-										GetComponent<MeshRenderer> ().material.color = Color.red;
-										//destroy doughnut hole
-										Destroy(transform.GetChild(0).gameObject);
-										Destroy(transform.GetChild(1).gameObject);
-										//Destroy(GetComponent<Pathfinder>());
-										transform.parent = GameObject.Find("trashBin").transform;
-										Destroy(GetComponent<Pathfinder>());
-										if (auto){
-
-											//currentWaypoint += 999;
-										}
-									}
-								}
-							}
+						//currentWaypoint += 999;
 					}
+				}
+			}
+		}
+	}
 
+	}
+
+	void SpawnReplacement(){
+
+		Vector3 point = wayParent.GetChild(0).position;
+		GameObject newVic = Instantiate(prefab, point, Quaternion.identity);
+		int myNewNumber = sacrificer.GetComponent<Sacrifice>().sacCount + currentWaypoint;
+		//Debug.Log("instantiating #" + myNewNumber);
+		newVic.name = "VicClone " + (myNewNumber);
+		GameObject label = newVic.transform.GetChild(1).gameObject;
+		if (label.GetComponent<TextMesh>() != null) label.GetComponent<TextMesh>().text = "#" + myNewNumber;
+		newVic.GetComponent<Pathfinder>().myCount = myNewNumber;
+		newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
+		newVic.transform.SetParent(gameObject.transform.parent);
 	}
 
 	void OnTriggerStay(Collider other){
 		if (other.name == "PedestalZone"){
-			if (currentWaypoint >= wayParent.childCount - 1){
-				Debug.Log("sac ready");
+			if ((currentWaypoint == wayParent.childCount - 1) && !advancing){
+				//Debug.Log("sac ready");
 				sacrificer.GetComponent<Sacrifice>().sacReady = true;
 				//imReady = true;
 			}
