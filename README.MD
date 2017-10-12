@@ -3,6 +3,8 @@ Sacriclic
     Core Mechanics
 
         Click to Sacrifice
+            Blood Meter Mechanic - Working
+            
 
         Rearrange Sacrificed Order
             Pick Up - Working

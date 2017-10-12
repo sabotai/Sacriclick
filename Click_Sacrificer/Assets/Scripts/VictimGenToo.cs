@@ -9,7 +9,7 @@ public class VictimGenToo : MonoBehaviour {
 	public Transform wayParent;
 	public GameObject[] wayChildren; 
 	GameObject[] victims;
-	GameObject victimBox;
+	public GameObject victimBox;
 	GameObject[] wayFinalChildren;
 
 	// Use this for initialization
@@ -24,8 +24,8 @@ public class VictimGenToo : MonoBehaviour {
 		wayFinalChildren = new GameObject[howMany];
 		//spawn this many victims in between the nodes
 		//needs 1 extra at the front to exist in between
-		victimBox = GameObject.Find("Victims");
-		victims = new GameObject[howMany];
+		if (victimBox == null) victimBox = GameObject.Find("Victims");
+		if (victims == null) victims = new GameObject[howMany];
 
 		for (int i = 0; i < howMany; i++){
 			float pct = ((float)i/(float)victims.Length) * wayChildren.Length;

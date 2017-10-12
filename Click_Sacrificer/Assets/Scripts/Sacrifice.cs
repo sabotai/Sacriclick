@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Sacrifice : MonoBehaviour {
 
@@ -24,6 +25,8 @@ public class Sacrifice : MonoBehaviour {
 	public bool limitAvailSac = true;
 	public bool sacReady = true;
 	public int sacCount = 0;
+	bool failed = false;
+	float failedTime = 0.0f;
 
 
 	// Use this for initialization
@@ -116,7 +119,7 @@ public class Sacrifice : MonoBehaviour {
 				audio.PlayOneShot(rumbleSound);
 				//sacCount++;
 				//}
-
+				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
 				sacCount++;
 				//sacReady = false;
 				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
@@ -126,6 +129,24 @@ public class Sacrifice : MonoBehaviour {
 				if (Time.time < startTime + cpmDuration){
 					cpm++;
 				}
+	}
+
+	public void Fail(float restartTime){
+		if (!failed){
+			failedTime = Time.time;
+			failed = true;
+		}
+
+		Camera.main.transform.DetachChildren();
+		StartCoroutine(Shake.ShakeThis(Camera.main.transform, 10f, 0.5f));
+		audio.clip = rumbleSound;
+		//audio.loop = true;
+		if (audio.isPlaying) audio.PlayOneShot(rumbleSound);
+		if (!audio.isPlaying) audio.Play();
+		Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
+		if (failedTime + restartTime < Time.time){
+			SceneManager.LoadScene(0);
+		}
 	}
 
 }
