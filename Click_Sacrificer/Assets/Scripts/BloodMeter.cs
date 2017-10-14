@@ -55,16 +55,20 @@ public class BloodMeter : MonoBehaviour {
 		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt); //make fail stuff happen
 		
 		if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
-			bloodJarNumber += 1;
-			audsrc.PlayOneShot(pourSnd);
-			bloodAmt -= bloodJarAmt;
-			//GameObject newJar = Instantiate(bloodJar, bloodSpawn.position, Quaternion.identity);
-			GameObject newJar = Instantiate(bloodJar, bloodSpawn);
-			Vector3 bldSpwn = bloodSpawn.position;
-			bldSpwn += new Vector3(0,-2f,0f) * (bloodJarNumber - 1);
-			newJar.transform.position = bldSpwn;
-			//newJar.transform.position = bloodSpawn.position;
-			//newJar.transform.parent = bloodSpawn;
+			if (bloodJarNumber < 8){
+				bloodJarNumber += 1;
+				bloodAmt -= bloodJarAmt;
+				//GameObject newJar = Instantiate(bloodJar, bloodSpawn.position, Quaternion.identity);
+				GameObject newJar = Instantiate(bloodJar, bloodSpawn);
+				audsrc.PlayOneShot(pourSnd);
+				Vector3 bldSpwn = bloodSpawn.position;
+				//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
+				bldSpwn += (newJar.transform.up * -1.2f * (bloodJarNumber - 1));
+				//Debug.Log(bldSpwn);
+				newJar.transform.position = bldSpwn;
+				//newJar.transform.position = bloodSpawn.position;
+				//newJar.transform.parent = bloodSpawn;
+			}
 
 		}
 		bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
@@ -78,15 +82,15 @@ public class BloodMeter : MonoBehaviour {
 
 		//declare and initialize our raycasthit to store hit information
 
-		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
+		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.blue);
 		RaycastHit beamHit = new RaycastHit();
 
 		if (Input.GetMouseButtonDown(0)){
 			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("3D-UI"))){
 
 				if (beamHit.collider.gameObject.tag == "jar"){
-					bloodAmt += bloodJarAmt *= jarEfficiency;
-					bloodJarAmt -= 1;
+					bloodAmt += (bloodJarAmt * jarEfficiency);
+					bloodJarNumber -= 1;
 					audsrc.PlayOneShot(shatterSnd);
 					Destroy(beamHit.collider.gameObject);
 				}

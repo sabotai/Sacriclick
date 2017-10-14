@@ -14,7 +14,8 @@ public class Sacrifice : MonoBehaviour {
 	public bool advance = false;
 	public Text sacCountDisplay;
 	public Text cpsDisplay;
-	AudioSource audio;
+	public AudioSource audio;
+	public AudioSource audio2;
 	private GameObject sun;
 	public float cpmDuration = 5;
 	public float startTime;
@@ -33,6 +34,7 @@ public class Sacrifice : MonoBehaviour {
 	void Start () {
 		clickOrigScale = clickable.transform.localScale;
 		sun = GameObject.Find("Sun");
+		audio = GetComponent<AudioSource>();
 		audio = GetComponent<AudioSource>();
 		cpm = 0;
 		cps = 0;
@@ -135,14 +137,15 @@ public class Sacrifice : MonoBehaviour {
 		if (!failed){
 			failedTime = Time.time;
 			failed = true;
+
 		}
 
 		Camera.main.transform.DetachChildren();
 		StartCoroutine(Shake.ShakeThis(Camera.main.transform, 10f, 0.5f));
-		audio.clip = rumbleSound;
+		audio2.clip = rumbleSound;
 		//audio.loop = true;
-		if (audio.isPlaying) audio.PlayOneShot(rumbleSound);
-		if (!audio.isPlaying) audio.Play();
+		if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound);
+		if (!audio2.isPlaying) audio2.Play();
 		Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		if (failedTime + restartTime < Time.time){
 			SceneManager.LoadScene(0);
