@@ -8,11 +8,12 @@ public class LookAtCamera : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		if (lookHere == null) lookHere = Camera.main.transform;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		transform.LookAt(lookHere);
+		//transform.LookAt(lookHere);
+		transform.LookAt(Camera.main.transform);
 	}
 }

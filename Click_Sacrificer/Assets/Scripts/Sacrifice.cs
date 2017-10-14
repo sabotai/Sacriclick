@@ -40,8 +40,8 @@ public class Sacrifice : MonoBehaviour {
 		cps = 0;
 		startTime = Time.time;
 
-		sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
-		cpsDisplay.text = "Sacrifices-Per-Second:	" + cpm/60;
+		sacCountDisplay.text = sacCount + "";
+		cpsDisplay.text = cpm/60 + " /second";
 
 	}
 
@@ -99,7 +99,8 @@ public class Sacrifice : MonoBehaviour {
 			if (sun.GetComponent<Sun>() != null)
 				sun.GetComponent<Sun>().speedMult = cpm * cpmMag;
 			cps = cpm/60f;
-			cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
+			//cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
+			cpsDisplay.text = cps + "/sec.";
 			cpm = 0f;
 		}
 		
@@ -124,7 +125,9 @@ public class Sacrifice : MonoBehaviour {
 				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
 				sacCount++;
 				//sacReady = false;
-				sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+
+				sacCountDisplay.text = sacCount + "";//Sacrifices";
 				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
 				advance = true;
 				//increase Clicks-per-minute
