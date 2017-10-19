@@ -35,7 +35,7 @@ public class Sacrifice : MonoBehaviour {
 		clickOrigScale = clickable.transform.localScale;
 		sun = GameObject.Find("Sun");
 		audio = GetComponent<AudioSource>();
-		audio = GetComponent<AudioSource>();
+		audio2 = GetComponent<AudioSource>();
 		cpm = 0;
 		cps = 0;
 		startTime = Time.time;
@@ -118,7 +118,7 @@ public class Sacrifice : MonoBehaviour {
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
-				audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
+				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				audio.PlayOneShot(rumbleSound);
 				//sacCount++;
 				//}

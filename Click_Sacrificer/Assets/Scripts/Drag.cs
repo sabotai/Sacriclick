@@ -14,6 +14,10 @@ public class Drag : MonoBehaviour {
 	Transform endCam;
 	public float maxPanRight;
 	float velocityY = 0.0f;
+	public AudioSource audio;
+	public AudioClip pickup;
+	public AudioClip hover;
+	public AudioClip release;
 
 	// Use this for initialization
 	void Start () {
@@ -40,9 +44,11 @@ public class Drag : MonoBehaviour {
  			}
  			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){
  				hoverItem = obj;
+ 				//audio.PlayOneShot(hover);
  				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
  				if( Input.GetMouseButtonDown(0)){
+ 					audio.PlayOneShot(pickup);
 					dragItem = beamHit.transform.gameObject;
 					panCam = Vector3.zero;
 					amtPanned = 0f;
@@ -110,6 +116,7 @@ public class Drag : MonoBehaviour {
 
 				//release
 				if (Input.GetMouseButtonUp(0)){
+ 					audio.PlayOneShot(release);
 					panCam = Vector3.zero;
 					/*
 					//hard reset pan position

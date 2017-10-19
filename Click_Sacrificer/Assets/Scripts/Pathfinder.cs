@@ -27,7 +27,9 @@ public class Pathfinder : MonoBehaviour {
 	int howMany;
 	public GameObject prefab;
 	[System.NonSerialized]public int myCount = 0;
-
+	AudioSource audio;
+	AudioClip myClip;
+	Object[] screams;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -36,7 +38,6 @@ public class Pathfinder : MonoBehaviour {
 
 		if (wayParent == null) wayParent = GameObject.Find("WayParent").transform;
 		if (moveSelf) movable = transform.gameObject;
-
 		//give each one a bit of randomness for personality in movements
 		waySpeed *= Random.Range(1.0f - randomness, 1.0f + randomness);
 		origWaySpeed = waySpeed;
@@ -55,6 +56,13 @@ public class Pathfinder : MonoBehaviour {
 	void Start(){
 
 		if (myCount == 0) myCount = transform.parent.childCount - currentWaypoint;
+		//screams = Resources.Load("/screams") as AudioClip;
+		screams = Resources.LoadAll("Screams", typeof(AudioClip));
+		Debug.Log(screams.Length + " screams");
+		// print("AudioClips " + Resources.FindObjectsOfTypeAll(typeof(AudioClip)).Length);
+		audio = GetComponent<AudioSource>();
+		myClip = (AudioClip)screams[Random.Range(0, screams.Length)];
+		audio.pitch = Random.Range(0.8f, 1.2f);
 	}
 	
 	// Update is called once per frame
@@ -211,6 +219,8 @@ public class Pathfinder : MonoBehaviour {
 				}
 
 				if (releaseDestroy){ //destroy doughnut hole
+					audio.PlayOneShot(myClip);
+
 					
 					gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 					GetComponent<MeshRenderer> ().material.color = Color.red;
