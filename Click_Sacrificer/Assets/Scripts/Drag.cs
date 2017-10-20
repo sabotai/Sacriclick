@@ -7,6 +7,7 @@ public class Drag : MonoBehaviour {
 	GameObject hoverItem;
 	Color origColor;
 	public Color highlightColor;
+	Color origEmissionColor;
 	public Material origMat;
 	Vector3 panCam;
 	float amtPanned = 0f;
@@ -38,26 +39,35 @@ public class Drag : MonoBehaviour {
 		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
 			GameObject obj = beamHit.transform.gameObject;
 
- 			if (hoverItem != null){
+ 			if (hoverItem != null){ //if hovering already
  				hoverItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
- 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(0f,0f,0f));
+ 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+ 				if (hoverItem.transform.childCount > 0) {
+	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+	 			}
  			}
- 			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){
+ 			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){ //if start hovering
  				hoverItem = obj;
- 				//audio.PlayOneShot(hover);
- 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+ 				origColor = hoverItem.GetComponent<MeshRenderer> ().material.color;
+ 				origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
+
  				if( Input.GetMouseButtonDown(0)){
  					audio.PlayOneShot(pickup);
 					dragItem = beamHit.transform.gameObject;
 					panCam = Vector3.zero;
 					amtPanned = 0f;
 					hoverItem = null;
- 					origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
-
-					//Debug.Log("GRABBED " + obj.name);
-					
+ 					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
+ 					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
+				} else {
+	 				//audio.PlayOneShot(hover);
+	 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
+	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
+					hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+					hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
 				}
+
 			}
 
 			//while dragging
@@ -66,6 +76,8 @@ public class Drag : MonoBehaviour {
 				dragItem.layer = 2; //switch to ignore raycast
 				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
 				dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
+				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
 						//dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EMISSION", new Color(1f,1f,1f));
 
 				if (amtPanned >= 0 && amtPanned <= maxPanRight){
@@ -126,9 +138,11 @@ public class Drag : MonoBehaviour {
 					amtPanned = panCam.x;
 					*/
 					dragItem.layer = 0; //switch back to default layer
-					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(0f,0f,0f));
+					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
 					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
 					dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
 					dragItem = null;
 				}
 		} else {

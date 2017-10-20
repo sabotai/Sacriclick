@@ -20,6 +20,7 @@ public class Pathfinder : MonoBehaviour {
 	public bool auto = false;
 	public bool replace = false;
 	public Transform macuahuitl;
+	public Vector3 spawnRotation;
 	//[System.NonSerialized] public bool imReady = false;
 	public float advanceTimeOut = 1f;
 	float advanceTimer = 0f;
@@ -221,12 +222,22 @@ public class Pathfinder : MonoBehaviour {
 				if (releaseDestroy){ //destroy doughnut hole
 					audio.PlayOneShot(myClip);
 
-					
+					gameObject.GetComponent<Rigidbody>().freezeRotation = false;
 					gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 					GetComponent<MeshRenderer> ().material.color = Color.red;
 					//destroy doughnut hole
-					Destroy(transform.GetChild(0).gameObject);
-					Destroy(transform.GetChild(1).gameObject);
+					//Destroy(transform.GetChild(0).gameObject);
+
+					//defreeze statue body to break into pieces
+					if (transform.GetChild(1) != null){
+						Destroy(transform.GetChild(1).gameObject);
+					}
+					if (transform.GetChild(0) != null){
+						transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
+						transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
+						transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+						transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
+					}
 					//Destroy(GetComponent<Pathfinder>());
 					transform.parent = GameObject.Find("trashBin").transform;
 					Destroy(GetComponent<Pathfinder>());
@@ -244,7 +255,7 @@ public class Pathfinder : MonoBehaviour {
 	void SpawnReplacement(){
 
 		Vector3 point = wayParent.GetChild(0).position;
-		GameObject newVic = Instantiate(prefab, point, Quaternion.identity);
+		GameObject newVic = Instantiate(prefab, point, Quaternion.Euler(spawnRotation));
 		int myNewNumber = sacrificer.GetComponent<Sacrifice>().sacCount + currentWaypoint;
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);

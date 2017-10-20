@@ -11,6 +11,7 @@ public class VictimGenToo : MonoBehaviour {
 	GameObject[] victims;
 	public GameObject victimBox;
 	GameObject[] wayFinalChildren;
+	public Vector3 defaultRotation;
 
 	// Use this for initialization
 	void Start () {
@@ -79,7 +80,7 @@ public class VictimGenToo : MonoBehaviour {
 		for (int i = 0; i < victims.Length; i++){
 				//start them in between the nodes
 				Vector3 point = wayFinalChildren[i].transform.position;
-				victims[i] = Instantiate(victimPrefab, point, Quaternion.identity);
+				victims[i] = Instantiate(victimPrefab, point, Quaternion.Euler(defaultRotation));
 				victims[i].name = "InitVictim " + (victims.Length - i);
 				victims[i].transform.GetChild(1).gameObject.GetComponent<TextMesh>().text += (victims.Length - i);
 				victims[i].transform.SetParent(victimBox.transform);
