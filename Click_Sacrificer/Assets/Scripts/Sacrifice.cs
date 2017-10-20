@@ -8,8 +8,10 @@ public class Sacrifice : MonoBehaviour {
 
 	public GameObject headPrefab;
 	public GameObject clickable;
+	public GameObject sword;
+	Vector3 swordOrigScale;
 	private Vector3 clickOrigScale;
-	public AudioClip[] screams;
+	//public AudioClip[] screams;
 	public AudioClip rumbleSound;
 	public bool advance = false;
 	public Text sacCountDisplay;
@@ -28,11 +30,13 @@ public class Sacrifice : MonoBehaviour {
 	public int sacCount = 0;
 	bool failed = false;
 	float failedTime = 0.0f;
+	GameObject failObj;
 
 
 	// Use this for initialization
 	void Start () {
 		clickOrigScale = clickable.transform.localScale;
+		swordOrigScale = sword.transform.localScale;
 		sun = GameObject.Find("Sun");
 		audio = GetComponent<AudioSource>();
 		audio2 = GetComponent<AudioSource>();
@@ -42,6 +46,8 @@ public class Sacrifice : MonoBehaviour {
 
 		sacCountDisplay.text = sacCount + "";
 		cpsDisplay.text = cpm/60 + " /second";
+		failObj = GameObject.Find("GameOver");
+		failObj.GetComponent<Text>().text = "";
 
 	}
 
@@ -115,6 +121,7 @@ public class Sacrifice : MonoBehaviour {
 				//if (clickOrigScale == clickable.transform.localScale){
 				//Debug.Log("sacrificing... " + (1 + sacCount));
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
+				StartCoroutine(Pulsate.Pulse(sword.transform.gameObject, 0.15f, 0.5f, swordOrigScale));
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
@@ -136,7 +143,9 @@ public class Sacrifice : MonoBehaviour {
 				}
 	}
 
-	public void Fail(float restartTime){
+	public void Fail(float restartTime, string failMsg){
+		failObj.GetComponent<Text>().text = failMsg;
+
 		if (!failed){
 			failedTime = Time.time;
 			failed = true;

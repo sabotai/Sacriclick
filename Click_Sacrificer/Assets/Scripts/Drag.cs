@@ -10,6 +10,7 @@ public class Drag : MonoBehaviour {
 	Color origEmissionColor;
 	public Material origMat;
 	Vector3 panCam;
+	public float insertThresh = 0.5f;
 	float amtPanned = 0f;
 	Transform cam;
 	Transform endCam;
@@ -18,7 +19,10 @@ public class Drag : MonoBehaviour {
 	public AudioSource audio;
 	public AudioClip pickup;
 	public AudioClip hover;
-	public AudioClip release;
+	public AudioClip goodRelease;
+	public AudioClip badRelease;
+	public bool panMode = false;
+	bool dragFail = false;
 
 	// Use this for initialization
 	void Start () {
@@ -53,10 +57,11 @@ public class Drag : MonoBehaviour {
  				origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
 
  				if( Input.GetMouseButtonDown(0)){
+ 					panMode = true;
  					audio.PlayOneShot(pickup);
 					dragItem = beamHit.transform.gameObject;
-					panCam = Vector3.zero;
-					amtPanned = 0f;
+					//panCam = Vector3.zero;
+					//amtPanned = 0f;
 					hoverItem = null;
  					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
  					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
@@ -79,7 +84,7 @@ public class Drag : MonoBehaviour {
 				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
 				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
 						//dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EMISSION", new Color(1f,1f,1f));
-
+				/*
 				if (amtPanned >= 0 && amtPanned <= maxPanRight){
 					//allow player to scroll along path
 					if (Input.mousePosition.x > Screen.width * 0.9f){
@@ -98,54 +103,67 @@ public class Drag : MonoBehaviour {
 						endCam.position += panCam;
 						amtPanned += panCam.x;
 				} else {
+
 					//Debug.Log("pan outside border");
 					//prevent it from getting stuck at either end
 					//if (amtPanned < 0f)	panCam -= panCam * 2f;
 					//if (amtPanned > maxPanRight) panCam -= panCam * 2f;
 					panCam -= panCam * 2f;
 					//amtPanned += panCam.x;
-					/*
-					if (amtPanned < 0f){
-						amtPanned = 0f;
-					} else if (amtPanned > maxPanRight) {
-						amtPanned = maxPanRight;
-					}
-					*/
+					
+					//if (amtPanned < 0f){
+					//	amtPanned = 0f;
+					//} else if (amtPanned > maxPanRight) {
+					//	amtPanned = maxPanRight;
+					//}
+					
 
 					cam.position += panCam;
 					endCam.position += panCam;
 					amtPanned += panCam.x;
 					panCam *= 0.75f;
 				}
+				*/
 			}
 
 		}
 
 		//if something is being dragged
 		if (dragItem != null){
-				//force the front perspective
-				GetComponent<CameraMove>().forceAmt += 0.01f;
+			//force the front perspective
+			//GetComponent<CameraMove>().forceAmt += 0.01f;
 
-				//release
-				if (Input.GetMouseButtonUp(0)){
- 					audio.PlayOneShot(release);
-					panCam = Vector3.zero;
-					/*
-					//hard reset pan position
-					cam.position += new Vector3(-amtPanned, 0f, 0f);
-					endCam.position += new Vector3(-amtPanned, 0f, 0f);
-					panCam = Vector3.zero;
-					amtPanned = panCam.x;
-					*/
-					dragItem.layer = 0; //switch back to default layer
-					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
-					dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
-					dragItem = null;
+			//release
+			if (Input.GetMouseButtonUp(0)){
+				panMode = false;
+
+				//panCam = Vector3.zero;
+				/*
+				//hard reset pan position
+				cam.position += new Vector3(-amtPanned, 0f, 0f);
+				endCam.position += new Vector3(-amtPanned, 0f, 0f);
+				panCam = Vector3.zero;
+				amtPanned = panCam.x;
+				*/
+				dragItem.layer = 0; //switch back to default layer
+				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+				dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
+				dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
+				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
+				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+
+				dragFail = !insert(dragItem);
+				if (dragFail) {
+					audio.PlayOneShot(badRelease);
+				} else {
+					audio.PlayOneShot(goodRelease);
 				}
+				dragItem = null;
+
+			}
 		} else {
+				panMode = false;
+				/*
 				//reset camera position
 				GetComponent<CameraMove>().forceAmt = 0f;
 
@@ -155,6 +173,74 @@ public class Drag : MonoBehaviour {
 				cam.position += panCam;
 				endCam.position += panCam;				
 				amtPanned += panCam.x;
+				*/
+		}
+
+		doPanMode(Input.GetKey("space") || panMode);
+
+	}
+	bool insert(GameObject relObj){
+		GameObject victimParent;
+		int sibIndex = relObj.transform.GetSiblingIndex();
+		//Debug.Log("sibindex = " + sibIndex);
+		victimParent = relObj.transform.parent.gameObject; //find my parent
+		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+		for (int i = 0; i < victimz.Length; i++){ //assign each one
+			victimz[i] = victimParent.transform.GetChild(i).gameObject;
+		}
+		foreach (GameObject vic in victimz){
+			if (Vector3.Distance(vic.transform.position, relObj.transform.position) < insertThresh){
+				if (vic != relObj){ //prevent from swapping with itself
+					Debug.Log("swapping " + sibIndex + " for " + vic.transform.GetSiblingIndex());
+					vic.GetComponent<Pathfinder>().DragInsert(relObj, vic);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	void doPanMode(bool yes){
+		if (yes){
+			//force the front perspective
+			GetComponent<CameraMove>().forceAmt += 0.01f;
+
+			//if outside the boundaries
+			if (amtPanned >= 0 && amtPanned <= maxPanRight){
+				//allow player to scroll along path
+				if (Input.mousePosition.x > Screen.width * 0.9f){
+						panCam += new Vector3(0.05f, 0f, 0f);
+						//Debug.Log("panning right");
+					} else if (Input.mousePosition.x < Screen.width * 0.1f){
+						panCam -= new Vector3(0.05f, 0f, 0f);
+						//Debug.Log("panning left");
+					} else {
+						panCam *= 0.9f;
+					}
+					//max pan speed in either direction
+					panCam = new Vector3(Mathf.Clamp(panCam.x,-0.9f, 0.9f), 0f, 0f);
+
+					cam.position += panCam;
+					endCam.position += panCam;
+					amtPanned += panCam.x;
+			} else { //if inside the boundaries ... pan the cam
+				panCam -= panCam * 2f;
+				cam.position += panCam;
+				endCam.position += panCam;
+				amtPanned += panCam.x;
+				panCam *= 0.75f;
+			}
+		} else {
+			if (dragFail)	panCam = Vector3.zero;
+
+			//reset camera position
+			GetComponent<CameraMove>().forceAmt = 0f;
+
+
+			//soft reset pan position
+			panCam = new Vector3(Mathf.SmoothDamp(0, -amtPanned, ref velocityY, 0.3f), 0f, 0f);
+			cam.position += panCam;
+			endCam.position += panCam;				
+			amtPanned += panCam.x;
 		}
 	}
 }

@@ -52,7 +52,7 @@ public class BloodMeter : MonoBehaviour {
 
 
 		if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
-		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt); //make fail stuff happen
+		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are disappointed"); //make fail stuff happen
 		
 		if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
 			if (bloodJarNumber < 8){

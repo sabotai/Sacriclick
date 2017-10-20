@@ -30,7 +30,10 @@ public class Pathfinder : MonoBehaviour {
 	[System.NonSerialized]public int myCount = 0;
 	AudioSource audio;
 	AudioClip myClip;
-	Object[] screams;
+	Object[] posScreams;
+	Object[] neuScreams;
+	Object[] negScreams;
+	bool failed = false;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -43,7 +46,7 @@ public class Pathfinder : MonoBehaviour {
 		waySpeed *= Random.Range(1.0f - randomness, 1.0f + randomness);
 		origWaySpeed = waySpeed;
 		howMany = GameObject.Find("VictimGenerator").GetComponent<VictimGenToo>().howMany;
-
+		failed = false;
 		/*
 		waypoints = new GameObject[wayParent.transform.childCount];
 
@@ -55,20 +58,25 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	void Start(){
-
+		failed = false;
 		if (myCount == 0) myCount = transform.parent.childCount - currentWaypoint;
 		//screams = Resources.Load("/screams") as AudioClip;
-		screams = Resources.LoadAll("Screams", typeof(AudioClip));
-		Debug.Log(screams.Length + " screams");
+		posScreams = Resources.LoadAll("positive", typeof(AudioClip));
+		negScreams = Resources.LoadAll("negative", typeof(AudioClip));
+		neuScreams = Resources.LoadAll("neutral", typeof(AudioClip));
+		//Debug.Log(screams.Length + " screams");
 		// print("AudioClips " + Resources.FindObjectsOfTypeAll(typeof(AudioClip)).Length);
 		audio = GetComponent<AudioSource>();
-		myClip = (AudioClip)screams[Random.Range(0, screams.Length)];
+		//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
 		audio.pitch = Random.Range(0.8f, 1.2f);
+
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-
+		if(failed) {
+			sacrificer.GetComponent<Sacrifice>().Fail(2f, "YOU SCARIFICED SOMEONE WITHOUT CONSENT!");
+		} else {
 			//if (auto || Input.GetMouseButtonDown(0)){
 
 				//if an advance is requested from sacrifice and this current one is done advancing
@@ -84,7 +92,8 @@ public class Pathfinder : MonoBehaviour {
 			}
 			*/
 		 
-		AutoAdvancePos();
+			AutoAdvancePos();
+		}
 	}
 
 
@@ -147,9 +156,25 @@ public class Pathfinder : MonoBehaviour {
 	}
 	
 	void SwapOrder(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
+		//Debug.Log("clean house: swapping " + swap.name + " for " + swap_.name);
 		int temp = swap.GetComponent<Pathfinder>().currentWaypoint;
 		swap.GetComponent<Pathfinder>().currentWaypoint = swap_.GetComponent<Pathfinder>().currentWaypoint;
 		swap_.GetComponent<Pathfinder>().currentWaypoint = temp;
+	}
+
+	public void DragInsert(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
+		Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
+		int swapCnt = swap.GetComponent<Pathfinder>().myCount;
+		int swapSibCnt = swap.transform.GetSiblingIndex();
+		int swap_SibCnt = swap_.transform.GetSiblingIndex();
+		swap.transform.SetSiblingIndex(swap_SibCnt);
+		swap_.transform.SetSiblingIndex(swapSibCnt);
+		swap.GetComponent<Pathfinder>().myCount = swap_.GetComponent<Pathfinder>().myCount;
+		swap_.GetComponent<Pathfinder>().myCount = swap.GetComponent<Pathfinder>().myCount;
+		int temp = swap.GetComponent<Pathfinder>().currentWaypoint;
+		swap.GetComponent<Pathfinder>().currentWaypoint = swap_.GetComponent<Pathfinder>().currentWaypoint;
+		swap_.GetComponent<Pathfinder>().currentWaypoint = temp;
+
 	}
 
 	void CleanOrder(){
@@ -220,30 +245,42 @@ public class Pathfinder : MonoBehaviour {
 				}
 
 				if (releaseDestroy){ //destroy doughnut hole
-					audio.PlayOneShot(myClip);
 
 					gameObject.GetComponent<Rigidbody>().freezeRotation = false;
 					gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 					GetComponent<MeshRenderer> ().material.color = Color.red;
 					//destroy doughnut hole
 					//Destroy(transform.GetChild(0).gameObject);
-
-					//defreeze statue body to break into pieces
-					if (transform.GetChild(1) != null){
-						Destroy(transform.GetChild(1).gameObject);
+					//game failed if you sacrificed one who did not conset
+					float myDeathMood = gameObject.GetComponent<Mood>().mood;
+					float mt = gameObject.GetComponent<Mood>().moodFailThresh;
+					if (myDeathMood < mt){
+						Debug.Log("sacrificed someone without consent!");
+						myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
+						failed = true;
+					} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
+						myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+					} else { //pos moods
+						myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
 					}
-					if (transform.GetChild(0) != null){
-						transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
-						transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
-						transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-						transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
-					}
-					//Destroy(GetComponent<Pathfinder>());
-					transform.parent = GameObject.Find("trashBin").transform;
-					Destroy(GetComponent<Pathfinder>());
-					if (auto){
 
-						//currentWaypoint += 999;
+					audio.PlayOneShot(myClip);
+					if (!failed){ //only complete death if not failed
+
+						//defreeze statue body to break into pieces
+						if (transform.GetChild(1) != null){
+							Destroy(transform.GetChild(1).gameObject);
+						}
+						if (transform.GetChild(0) != null){
+							transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
+							transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
+							transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+							transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
+						}
+
+						transform.parent = GameObject.Find("trashBin").transform;
+						Destroy(GetComponent<Pathfinder>());
+						Destroy(GetComponent<Mood>());
 					}
 				}
 			}
