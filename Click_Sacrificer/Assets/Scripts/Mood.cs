@@ -16,11 +16,13 @@ public class Mood : MonoBehaviour {
 	void Awake(){
 
 		//mood = transform.GetChild(1).GetComponent<ConsentMeter>().consentPct - 0.5f;
-		mood = Random.Range(-0.5f, 1f);
+			mood = Random.Range(-0.5f, 1f);
+		
 	}
 	// Use this for initialization
 	void Start () {
-		
+		if (GetComponent<Pathfinder>().myCount < 15) mood = 1f;//go easy on them for the first few
+			
 		moodDir = neighborMood();
 		//Debug.Log(this.transform.GetSiblingIndex() + ". " + mood + " w/dir of: " + moodDir);
 	}
@@ -28,13 +30,13 @@ public class Mood : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (moodShiftThresh < Mathf.Abs(moodDir)){
-				mood += moodDir * moodSpeedMult * Time.deltaTime;
+			mood += moodDir * moodSpeedMult * Time.deltaTime;
 		}
 		if (constrainMood) {
 			mood = Mathf.Clamp(mood, -1f, 1f);
 			moodDir = Mathf.Clamp(moodDir, -1f, 1f);
 		}
-			moodDir = neighborMood();
+		moodDir = neighborMood();
 	}
 
 

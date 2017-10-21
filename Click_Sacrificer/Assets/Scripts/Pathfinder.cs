@@ -61,13 +61,13 @@ public class Pathfinder : MonoBehaviour {
 		failed = false;
 		if (myCount == 0) myCount = transform.parent.childCount - currentWaypoint;
 		//screams = Resources.Load("/screams") as AudioClip;
-		posScreams = Resources.LoadAll("positive", typeof(AudioClip));
-		negScreams = Resources.LoadAll("negative", typeof(AudioClip));
-		neuScreams = Resources.LoadAll("neutral", typeof(AudioClip));
+		posScreams = Resources.LoadAll("Screams/positive", typeof(AudioClip));
+		negScreams = Resources.LoadAll("Screams/negative", typeof(AudioClip));
+		neuScreams = Resources.LoadAll("Screams/neutral", typeof(AudioClip));
 		//Debug.Log(screams.Length + " screams");
 		// print("AudioClips " + Resources.FindObjectsOfTypeAll(typeof(AudioClip)).Length);
 		audio = GetComponent<AudioSource>();
-		//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+		myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
 		audio.pitch = Random.Range(0.8f, 1.2f);
 
 	}
@@ -75,24 +75,29 @@ public class Pathfinder : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if(failed) {
-			sacrificer.GetComponent<Sacrifice>().Fail(2f, "YOU SCARIFICED SOMEONE WITHOUT CONSENT!");
+			Release();
+			sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT!");// "You sacrificed someone without their consent!");
 		} else {
-			//if (auto || Input.GetMouseButtonDown(0)){
+			if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
+				//if (auto || Input.GetMouseButtonDown(0)){
 
-				//if an advance is requested from sacrifice and this current one is done advancing
-				if (sacrificer.GetComponent<Sacrifice>().advance && !advancing){ 
-					advancing = true;
-					//Debug.Log("next waypoint");
-					currentWaypoint++;
+					//if an advance is requested from sacrifice and this current one is done advancing
+					if (sacrificer.GetComponent<Sacrifice>().advance && !advancing){ 
+						advancing = true;
+						//Debug.Log("next waypoint");
+						currentWaypoint++;
+					}
+					/*
+				} else {
+					//update the speed in between clicks
+					waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
 				}
-				/*
+				*/
+			 
+				AutoAdvancePos();
 			} else {
-				//update the speed in between clicks
-				waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
+				Release();
 			}
-			*/
-		 
-			AutoAdvancePos();
 		}
 	}
 
@@ -245,10 +250,6 @@ public class Pathfinder : MonoBehaviour {
 				}
 
 				if (releaseDestroy){ //destroy doughnut hole
-
-					gameObject.GetComponent<Rigidbody>().freezeRotation = false;
-					gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
-					GetComponent<MeshRenderer> ().material.color = Color.red;
 					//destroy doughnut hole
 					//Destroy(transform.GetChild(0).gameObject);
 					//game failed if you sacrificed one who did not conset
@@ -257,7 +258,7 @@ public class Pathfinder : MonoBehaviour {
 					if (myDeathMood < mt){
 						Debug.Log("sacrificed someone without consent!");
 						myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
-						failed = true;
+						if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
 					} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
 						myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
 					} else { //pos moods
@@ -265,8 +266,9 @@ public class Pathfinder : MonoBehaviour {
 					}
 
 					audio.PlayOneShot(myClip);
+					Release();
 					if (!failed){ //only complete death if not failed
-
+						gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 						//defreeze statue body to break into pieces
 						if (transform.GetChild(1) != null){
 							Destroy(transform.GetChild(1).gameObject);
@@ -302,6 +304,14 @@ public class Pathfinder : MonoBehaviour {
 		newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
 		newVic.transform.SetParent(gameObject.transform.parent);
 	}
+
+	void Release(){
+
+		gameObject.GetComponent<Rigidbody>().freezeRotation = false;
+		gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
+		GetComponent<MeshRenderer> ().material.color = Color.red;
+	}
+
 
 	void OnTriggerStay(Collider other){
 		if (other.name == "PedestalZone"){

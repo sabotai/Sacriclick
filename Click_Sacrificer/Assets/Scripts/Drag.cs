@@ -60,8 +60,6 @@ public class Drag : MonoBehaviour {
  					panMode = true;
  					audio.PlayOneShot(pickup);
 					dragItem = beamHit.transform.gameObject;
-					//panCam = Vector3.zero;
-					//amtPanned = 0f;
 					hoverItem = null;
  					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
  					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
@@ -81,49 +79,11 @@ public class Drag : MonoBehaviour {
 				dragItem.layer = 2; //switch to ignore raycast
 				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
 				dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
-				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-						//dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EMISSION", new Color(1f,1f,1f));
-				/*
-				if (amtPanned >= 0 && amtPanned <= maxPanRight){
-					//allow player to scroll along path
-					if (Input.mousePosition.x > Screen.width * 0.9f){
-							panCam += new Vector3(0.05f, 0f, 0f);
-							//Debug.Log("panning right");
-						} else if (Input.mousePosition.x < Screen.width * 0.1f){
-							panCam -= new Vector3(0.05f, 0f, 0f);
-							//Debug.Log("panning left");
-						} else {
-							panCam *= 0.9f;
-						}
-						//max pan speed in either direction
-						panCam = new Vector3(Mathf.Clamp(panCam.x,-0.9f, 0.9f), 0f, 0f);
-
-						cam.position += panCam;
-						endCam.position += panCam;
-						amtPanned += panCam.x;
-				} else {
-
-					//Debug.Log("pan outside border");
-					//prevent it from getting stuck at either end
-					//if (amtPanned < 0f)	panCam -= panCam * 2f;
-					//if (amtPanned > maxPanRight) panCam -= panCam * 2f;
-					panCam -= panCam * 2f;
-					//amtPanned += panCam.x;
-					
-					//if (amtPanned < 0f){
-					//	amtPanned = 0f;
-					//} else if (amtPanned > maxPanRight) {
-					//	amtPanned = maxPanRight;
-					//}
-					
-
-					cam.position += panCam;
-					endCam.position += panCam;
-					amtPanned += panCam.x;
-					panCam *= 0.75f;
+				if (dragItem.transform.childCount > 0){
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
 				}
-				*/
+						
 			}
 
 		}
@@ -149,9 +109,10 @@ public class Drag : MonoBehaviour {
 				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
 				dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
 				dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
-				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
-				dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
-
+				if (dragItem.transform.childCount > 0){
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
+					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+				}
 				dragFail = !insert(dragItem);
 				if (dragFail) {
 					audio.PlayOneShot(badRelease);
@@ -163,17 +124,6 @@ public class Drag : MonoBehaviour {
 			}
 		} else {
 				panMode = false;
-				/*
-				//reset camera position
-				GetComponent<CameraMove>().forceAmt = 0f;
-
-
-				//soft reset pan position
-				panCam = new Vector3(Mathf.SmoothDamp(0, -amtPanned, ref velocityY, 0.3f), 0f, 0f);
-				cam.position += panCam;
-				endCam.position += panCam;				
-				amtPanned += panCam.x;
-				*/
 		}
 
 		doPanMode(Input.GetKey("space") || panMode);
@@ -208,10 +158,10 @@ public class Drag : MonoBehaviour {
 			if (amtPanned >= 0 && amtPanned <= maxPanRight){
 				//allow player to scroll along path
 				if (Input.mousePosition.x > Screen.width * 0.9f){
-						panCam += new Vector3(0.05f, 0f, 0f);
+						panCam += new Vector3(0.70f, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning right");
 					} else if (Input.mousePosition.x < Screen.width * 0.1f){
-						panCam -= new Vector3(0.05f, 0f, 0f);
+						panCam -= new Vector3(0.70f, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning left");
 					} else {
 						panCam *= 0.9f;

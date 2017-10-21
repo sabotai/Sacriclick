@@ -28,7 +28,7 @@ public class Sacrifice : MonoBehaviour {
 	public bool limitAvailSac = true;
 	public bool sacReady = true;
 	public int sacCount = 0;
-	bool failed = false;
+	public bool failed = false;
 	float failedTime = 0.0f;
 	GameObject failObj;
 
@@ -80,9 +80,9 @@ public class Sacrifice : MonoBehaviour {
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
 			bool clicking = false;
 			if (easyMode){
-				clicking = Input.GetMouseButton(0);
+				clicking = Input.GetButton("Sacrifice");
 			} else {
-				clicking = Input.GetMouseButtonDown(0);
+				clicking = Input.GetButtonDown("Sacrifice");
 			}
 
 
@@ -129,12 +129,13 @@ public class Sacrifice : MonoBehaviour {
 				audio.PlayOneShot(rumbleSound);
 				//sacCount++;
 				//}
+				GetComponent<BloodMeter>().updateMood();
 				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
 				sacCount++;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 
-				sacCountDisplay.text = sacCount + "";//Sacrifices";
+				sacCountDisplay.text = " " + sacCount;//Sacrifices";
 				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
 				advance = true;
 				//increase Clicks-per-minute

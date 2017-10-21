@@ -9,6 +9,7 @@ public class BloodMeter : MonoBehaviour {
 	public float bloodAmt = 100f;
 	[SerializeField] float secondsRemaining = 0f;
 	public float sacBloodValue = 10f;
+	float origSacBloodValue;
 	public float bloodSecondRatio = 0.1f;
 	public bool failureAllowed = false;
 	public RectTransform bloodUI;
@@ -18,7 +19,7 @@ public class BloodMeter : MonoBehaviour {
 	public float bloodScreenAmt = 20f;
 	int bloodJarNumber = 0;
 	float bloodUIOrigY;
-	bool failed;
+	public bool failed;
 	GameObject bloodCanvasItem;
 	public VideoPlayer bloodPlayer;
 	public GameObject bloodJar;
@@ -27,6 +28,9 @@ public class BloodMeter : MonoBehaviour {
 	public AudioClip pourSnd;
 	public AudioClip shatterSnd;
 	public AudioSource audsrc;
+	public bool useMood = true;
+	GameObject victims;
+	public bool useAutoJar = true;
 
 	// Use this for initialization
 	void Start () {
@@ -34,10 +38,14 @@ public class BloodMeter : MonoBehaviour {
 		bloodUIOrigY = bloodUI.localPosition.y;
 		failed = false;
 		bloodCanvasItem = GameObject.Find("RawImage");
+		victims = GameObject.Find("Victims");
+		origSacBloodValue = sacBloodValue;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		
+
 		if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
 			failureAllowed = false;
 
@@ -46,13 +54,16 @@ public class BloodMeter : MonoBehaviour {
 		} else {
 			//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
 			bloodPlayer.Play();
+			failureAllowed = true;
 			bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
 			secondsRemaining = bloodAmt / bloodSecondRatio;
 		}
 
-
+		if (bloodAmt < 0.01f && bloodJarNumber > 0 && useAutoJar){
+			useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
+		}
 		if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
-		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are disappointed"); //make fail stuff happen
+		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
 		
 		if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
 			if (bloodJarNumber < 8){
@@ -77,6 +88,20 @@ public class BloodMeter : MonoBehaviour {
 		jarCast();
 	}
 
+	public void updateMood(){		
+		if (useMood) {			
+			int leader = victims.transform.childCount - 1 - GetComponent<Sacrifice>().sacCount;
+			if (leader < 0) leader = 0;
+			sacBloodValue = origSacBloodValue * victims.transform.GetChild(leader).gameObject.GetComponent<Mood>().mood;
+			//print("currentSacBloodValue = " + sacBloodValue);
+		}
+	}
+	void useJar(GameObject jar){
+		bloodAmt += (bloodJarAmt * jarEfficiency);
+		bloodJarNumber -= 1;
+		audsrc.PlayOneShot(shatterSnd);
+		Destroy(jar);
+	}
 	void jarCast(){
 		Ray beam = bloodCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -89,13 +114,15 @@ public class BloodMeter : MonoBehaviour {
 			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("3D-UI"))){
 
 				if (beamHit.collider.gameObject.tag == "jar"){
-					bloodAmt += (bloodJarAmt * jarEfficiency);
-					bloodJarNumber -= 1;
-					audsrc.PlayOneShot(shatterSnd);
-					Destroy(beamHit.collider.gameObject);
+					useJar(beamHit.collider.gameObject);
 				}
 
 			}
+		}
+		if (Input.GetButtonDown("Inventory")){
+				if (bloodJarNumber > 0){	
+					useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
+				}
 		}
 	}
 
