@@ -158,10 +158,10 @@ public class Drag : MonoBehaviour {
 			if (amtPanned >= 0 && amtPanned <= maxPanRight){
 				//allow player to scroll along path
 				if (Input.mousePosition.x > Screen.width * 0.9f){
-						panCam += new Vector3(0.70f, 0f, 0f) * Time.deltaTime;
+						panCam += new Vector3(1f, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning right");
 					} else if (Input.mousePosition.x < Screen.width * 0.1f){
-						panCam -= new Vector3(0.70f, 0f, 0f) * Time.deltaTime;
+						panCam -= new Vector3(1f, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning left");
 					} else {
 						panCam *= 0.9f;

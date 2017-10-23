@@ -2,21 +2,21 @@ fileFormatVersion: 2
 guid: bc62d58f6a8fd6c47ad5be44e4a911c8
 SpeedTreeImporter:
   serializedVersion: 4
-  mainColor: {r: 1, g: 1, b: 1, a: 1}
-  hueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}
-  alphaTestRef: 0.33
+  mainColor: {r: 0, g: 0, b: 0, a: 1}
+  hueVariation: {r: 0, g: 0, b: 0, a: 1}
+  alphaTestRef: 0.383
   bestWindQuality: 5
   hasBillboard: 1
   lODSettings:
-  - height: 0.18945909
+  - height: 0.01
     castShadows: 1
-    receiveShadows: 0
+    receiveShadows: 1
     useLightProbes: 0
     reflectionProbeUsage: 1
     enableBump: 0
     enableHue: 0
     windQuality: 5
-  - height: 0.15123528
+  - height: 0.01
     castShadows: 1
     receiveShadows: 0
     useLightProbes: 1
@@ -40,11 +40,11 @@ SpeedTreeImporter:
     enableBump: 0
     enableHue: 1
     windQuality: 1
-  enableSmoothLODTransition: 1
+  enableSmoothLODTransition: 0
   animateCrossFading: 1
   billboardTransitionCrossFadeWidth: 0.25
   fadeOutWidth: 0.25
-  scaleFactor: 0.3048
+  scaleFactor: 0.35
   materialVersion: 3
   userData: 
   assetBundleName: 
