@@ -34,6 +34,7 @@ public class Pathfinder : MonoBehaviour {
 	Object[] neuScreams;
 	Object[] negScreams;
 	bool failed = false;
+	public int delayCheck = 3;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -75,11 +76,10 @@ public class Pathfinder : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if(failed) {
-			Release();
+			ReleaseVic();
 			sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT!");// "You sacrificed someone without their consent!");
 		} else {
 			if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
-				//if (auto || Input.GetMouseButtonDown(0)){
 
 					//if an advance is requested from sacrifice and this current one is done advancing
 					if (sacrificer.GetComponent<Sacrifice>().advance && !advancing){ 
@@ -87,31 +87,17 @@ public class Pathfinder : MonoBehaviour {
 						//Debug.Log("next waypoint");
 						currentWaypoint++;
 					}
-					/*
-				} else {
-					//update the speed in between clicks
-					waySpeed = origWaySpeed * (sacrificer.GetComponent<Sacrifice>().cpm + 1);
-				}
-				*/
 			 
 				AutoAdvancePos();
 			} else {
-				Release();
+				ReleaseVic();
 			}
 		}
 	}
 
 
-	bool IsAnyoneAheadOfMe(){
+	bool IsAnyoneAheadOfMe(GameObject[] victimz){
 			bool isAnyoneAhead = false; // true = stay still
-			GameObject victimParent;
-			int sibIndex = this.transform.GetSiblingIndex();
-			//Debug.Log("sibindex = " + sibIndex);
-			victimParent = gameObject.transform.parent.gameObject; //find my parent
-			GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
-			for (int i = 0; i < victimz.Length; i++){ //assign each one
-				victimz[i] = victimParent.transform.GetChild(i).gameObject;
-			}
 			foreach (GameObject vic in victimz){
 				if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint + 1){ //is there one ahead of me?
 					isAnyoneAhead = true;
@@ -134,16 +120,8 @@ public class Pathfinder : MonoBehaviour {
 			}
 
 	}
-	void FixAnyoneBesideMe(){
+	void FixAnyoneBesideMe(GameObject[] victimz){
 		bool isAnyoneBeside = false; // true = stay still
-		GameObject victimParent;
-		int sibIndex = this.transform.GetSiblingIndex();
-		//Debug.Log("sibindex = " + sibIndex);
-		victimParent = gameObject.transform.parent.gameObject; //find my parent
-		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
-		for (int i = 0; i < victimz.Length; i++){ //assign each one
-			victimz[i] = victimParent.transform.GetChild(i).gameObject;
-		}
 		foreach (GameObject vic in victimz){
 			if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint){ //is there one ahead of me?
 				if (vic != gameObject){
@@ -183,11 +161,22 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	void CleanOrder(){
+
 		if (currentWaypoint < wayParent.childCount - 1) {
-			if (!IsAnyoneAheadOfMe()){ //notice a vacancy in the line?  move up!
+
+			GameObject victimParent;
+			int sibIndex = this.transform.GetSiblingIndex();
+			//Debug.Log("sibindex = " + sibIndex);
+			victimParent = gameObject.transform.parent.gameObject; //find my parent
+			GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+			for (int i = 0; i < victimz.Length; i++){ //assign each one
+				victimz[i] = victimParent.transform.GetChild(i).gameObject;
+			}
+
+			if (!IsAnyoneAheadOfMe(victimz)){ //notice a vacancy in the line?  move up!
 				currentWaypoint++;
 			}
-			FixAnyoneBesideMe();
+			if ((int)(Time.time % delayCheck) == 0)		FixAnyoneBesideMe(victimz);
 		}
 	}
 
@@ -266,7 +255,7 @@ public class Pathfinder : MonoBehaviour {
 					}
 
 					audio.PlayOneShot(myClip);
-					Release();
+					ReleaseVic();
 					if (!failed){ //only complete death if not failed
 						gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 						//defreeze statue body to break into pieces
@@ -305,7 +294,7 @@ public class Pathfinder : MonoBehaviour {
 		newVic.transform.SetParent(gameObject.transform.parent);
 	}
 
-	void Release(){
+	void ReleaseVic(){
 
 		gameObject.GetComponent<Rigidbody>().freezeRotation = false;
 		gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);

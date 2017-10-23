@@ -25,7 +25,7 @@ public class Sun : MonoBehaviour {
 
 		//z rotation of 0 = completely bright, z rotation
 		float intens = (Mathf.Abs(transform.localEulerAngles.z - 180)/180);
-		sun.intensity = Mathf.Clamp(intens * 2f, 0.5f, 1.25f);
+		sun.intensity = Mathf.Clamp(intens * 2f, 0.5f, 1f);
 		sun.shadowStrength = intens;
 		//transform.LookAt(sunObj.transform);
 	}

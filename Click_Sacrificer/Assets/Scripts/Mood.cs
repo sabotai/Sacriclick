@@ -16,7 +16,7 @@ public class Mood : MonoBehaviour {
 	void Awake(){
 
 		//mood = transform.GetChild(1).GetComponent<ConsentMeter>().consentPct - 0.5f;
-			mood = Random.Range(-0.5f, 1f);
+			mood = Random.Range(-0.45f, 1f);
 		
 	}
 	// Use this for initialization
