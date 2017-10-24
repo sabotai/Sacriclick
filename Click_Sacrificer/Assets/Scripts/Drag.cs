@@ -120,7 +120,7 @@ public class Drag : MonoBehaviour {
 					audio.PlayOneShot(goodRelease);
 				}
 				dragItem = null;
-
+//lol
 			}
 		} else {
 				panMode = false;
