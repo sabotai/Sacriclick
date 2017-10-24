@@ -35,6 +35,12 @@ public class Pathfinder : MonoBehaviour {
 	Object[] negScreams;
 	bool failed = false;
 	public int delayCheck = 3;
+	public float maxSpeed = 3f;
+	public float minSpeed = 0.5f;
+	public float speedDecay = 0.9f;
+	public float holdDistThresh = 0.2f;
+	public float speedMultiplier = 3f;
+	public float anxietySpeed = 2f;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -157,12 +163,9 @@ public class Pathfinder : MonoBehaviour {
 		int temp = swap.GetComponent<Pathfinder>().currentWaypoint;
 		swap.GetComponent<Pathfinder>().currentWaypoint = swap_.GetComponent<Pathfinder>().currentWaypoint;
 		swap_.GetComponent<Pathfinder>().currentWaypoint = temp;
-
 	}
 
 	void CleanOrder(){
-
-		if (currentWaypoint < wayParent.childCount - 1) {
 
 			GameObject victimParent;
 			int sibIndex = this.transform.GetSiblingIndex();
@@ -173,11 +176,13 @@ public class Pathfinder : MonoBehaviour {
 				victimz[i] = victimParent.transform.GetChild(i).gameObject;
 			}
 
+	
+		if (currentWaypoint < wayParent.childCount - 1) {
 			if (!IsAnyoneAheadOfMe(victimz)){ //notice a vacancy in the line?  move up!
-				currentWaypoint++;
+					currentWaypoint++;
 			}
 			if ((int)(Time.time % delayCheck) == 0)		FixAnyoneBesideMe(victimz);
-		}
+		} 
 	}
 
 	void AutoAdvancePos(){
@@ -185,8 +190,8 @@ public class Pathfinder : MonoBehaviour {
 
 		
 		if (waySpeed > origWaySpeed) {
-				waySpeed = Mathf.Clamp(waySpeed, 0.5f, 3f);
-				waySpeed *= 0.9f;
+				waySpeed = Mathf.Clamp(waySpeed, minSpeed, maxSpeed);
+				waySpeed *= speedDecay;
 		} else {
 			waySpeed = origWaySpeed;
 		}
@@ -198,8 +203,8 @@ public class Pathfinder : MonoBehaviour {
 			velo = movable.GetComponent<Rigidbody>().velocity;
 	
 			//if it is close enough to the target waypoint ... this is what allows gravity to effect the vic for a second before it gets recontrolled by the script (the bouncing effect)
-			if (moveDistance.sqrMagnitude < 0.2f) { 
-				velo *= 0.95f;
+			if (moveDistance.sqrMagnitude < holdDistThresh) { 
+				velo *= speedDecay;
 				//Debug.Log("mag less than threshold");
 				//fix order in various ways
 				CleanOrder();
@@ -212,9 +217,10 @@ public class Pathfinder : MonoBehaviour {
 				//bounce by waySpeed amt?
 
 				//waySpeed = origWaySpeed + (moveDistance.magnitude * ((sacrificer.GetComponent<Sacrifice>().cpm + 1) * 7f));
-				waySpeed *= (1f + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cpm + 1)));
-				//Debug.Log("wayspeed= " + waySpeed);
-				waySpeed = Mathf.Clamp(waySpeed, 0.5f, 100f);
+				
+				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cpm + speedMultiplier)));
+				//Debug.Log("sqrMag = " + moveDistance.sqrMagnitude + " wayspeed= " + waySpeed);
+				waySpeed = Mathf.Clamp(waySpeed, minSpeed, 100f);
 				velo = moveDistance.normalized * waySpeed; //sets the new direction
 			}
 
@@ -232,51 +238,55 @@ public class Pathfinder : MonoBehaviour {
 				} else {
 					//purge the child
 
-				//instantiate the new one
-				if (replace){
-					//Debug.Log("instantiating new replacement victim");
-					SpawnReplacement();
-				}
-
-				if (releaseDestroy){ //destroy doughnut hole
-					//destroy doughnut hole
-					//Destroy(transform.GetChild(0).gameObject);
-					//game failed if you sacrificed one who did not conset
-					float myDeathMood = gameObject.GetComponent<Mood>().mood;
-					float mt = gameObject.GetComponent<Mood>().moodFailThresh;
-					if (myDeathMood < mt){
-						Debug.Log("sacrificed someone without consent!");
-						myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
-						if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
-					} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
-						myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
-					} else { //pos moods
-						myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+					//instantiate the new one
+					if (replace){
+						//Debug.Log("instantiating new replacement victim");
+						SpawnReplacement();
 					}
 
-					audio.PlayOneShot(myClip);
-					ReleaseVic();
-					if (!failed){ //only complete death if not failed
-						gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-						//defreeze statue body to break into pieces
-						if (transform.GetChild(1) != null){
-							Destroy(transform.GetChild(1).gameObject);
-						}
-						if (transform.GetChild(0) != null){
-							transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
-							transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
-							transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-							transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
+					if (releaseDestroy){ //destroy doughnut hole
+						//destroy doughnut hole
+						//Destroy(transform.GetChild(0).gameObject);
+						//game failed if you sacrificed one who did not conset
+						float myDeathMood = gameObject.GetComponent<Mood>().mood;
+						float mt = gameObject.GetComponent<Mood>().moodFailThresh;
+						if (myDeathMood < mt){
+							Debug.Log("sacrificed someone without consent!");
+							myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
+							if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+						} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
+							myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+						} else { //pos moods
+							myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
 						}
 
-						transform.parent = GameObject.Find("trashBin").transform;
-						Destroy(GetComponent<Pathfinder>());
-						Destroy(GetComponent<Mood>());
+						audio.PlayOneShot(myClip);
+						ReleaseVic();
+						if (!failed){ //only complete death if not failed
+							gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+							//defreeze statue body to break into pieces
+							if (transform.GetChild(1) != null){
+								Destroy(transform.GetChild(1).gameObject);
+							}
+							if (transform.GetChild(0) != null){
+								transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
+								transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
+								transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+								transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
+							}
+
+							transform.parent = GameObject.Find("trashBin").transform;
+							Destroy(GetComponent<Pathfinder>());
+							Destroy(GetComponent<Mood>());
+						}
 					}
 				}
-			}
 		}
 	}
+
+	}
+
+	void MoveEveryoneUp(){
 
 	}
 
@@ -292,6 +302,14 @@ public class Pathfinder : MonoBehaviour {
 		newVic.GetComponent<Pathfinder>().myCount = myNewNumber;
 		newVic.GetComponent<Pathfinder>().currentWaypoint = 1;
 		newVic.transform.SetParent(gameObject.transform.parent);
+
+/*
+		//old attempt at declumping the spawn
+		int bigSisI = newVic.transform.GetSiblingIndex() - 1;
+		GameObject bigSis = newVic.transform.parent.GetChild(bigSisI).gameObject;
+		if (bigSis.GetComponent<Pathfinder>().currentWaypoint == 1)
+			bigSis.GetComponent<Pathfinder>().currentWaypoint++;
+*/
 	}
 
 	void ReleaseVic(){
