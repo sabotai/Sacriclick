@@ -41,6 +41,8 @@ public class Pathfinder : MonoBehaviour {
 	public float holdDistThresh = 0.2f;
 	public float speedMultiplier = 3f;
 	public float anxietySpeed = 2f;
+	public Color spawnColor;
+	public Color spawnEmitColor;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -76,6 +78,12 @@ public class Pathfinder : MonoBehaviour {
 		audio = GetComponent<AudioSource>();
 		myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
 		audio.pitch = Random.Range(0.8f, 1.2f);
+
+		transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", spawnEmitColor);
+		transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = spawnColor;
+		
+		gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", spawnEmitColor);
+		gameObject.GetComponent<MeshRenderer> ().material.color = spawnColor;
 
 	}
 	
@@ -265,6 +273,9 @@ public class Pathfinder : MonoBehaviour {
 						if (!failed){ //only complete death if not failed
 							gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 							//defreeze statue body to break into pieces
+							if (transform.GetChild(2) != null){
+								Destroy(transform.GetChild(2).gameObject);
+							}
 							if (transform.GetChild(1) != null){
 								Destroy(transform.GetChild(1).gameObject);
 							}
@@ -272,12 +283,14 @@ public class Pathfinder : MonoBehaviour {
 								transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
 								transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
 								transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+								transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 								transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
 							}
 
 							transform.parent = GameObject.Find("trashBin").transform;
 							Destroy(GetComponent<Pathfinder>());
 							Destroy(GetComponent<Mood>());
+							Destroy(GetComponent<CheckSwordHover>());
 						}
 					}
 				}

@@ -11,19 +11,24 @@ public class Mood : MonoBehaviour {
 	public float moodSpeedMult = 0.01f;
 	public bool constrainMood = true;
 	public float moodFailThresh = -.35f;
-
+	public float diff = 0.5f;
+	public float diffProgression = 0.01f;
 
 	void Awake(){
 
 		//mood = transform.GetChild(1).GetComponent<ConsentMeter>().consentPct - 0.5f;
-			mood = Random.Range(-0.45f, 1f);
+		//-0.45 - 1 = medium
 		
 	}
 	// Use this for initialization
 	void Start () {
+		float progress = GetComponent<Pathfinder>().myCount * diffProgression;
+		diff += progress;
+		mood = Random.Range(-diff, 1f);
 		if (GetComponent<Pathfinder>().myCount < 15) mood = 1f;//go easy on them for the first few
 			
 		moodDir = neighborMood();
+
 		//Debug.Log(this.transform.GetSiblingIndex() + ". " + mood + " w/dir of: " + moodDir);
 	}
 	
@@ -58,4 +63,5 @@ public class Mood : MonoBehaviour {
 		neighborMoodAvg /= count;
 		return neighborMoodAvg;
 	}
+
 }

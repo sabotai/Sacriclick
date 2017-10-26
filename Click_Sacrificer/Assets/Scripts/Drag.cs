@@ -22,6 +22,7 @@ public class Drag : MonoBehaviour {
 	public AudioClip goodRelease;
 	public AudioClip badRelease;
 	public bool panMode = false;
+	public bool panToggle = true;
 	bool dragFail = false;
 
 	// Use this for initialization
@@ -95,7 +96,7 @@ public class Drag : MonoBehaviour {
 
 			//release
 			if (Input.GetMouseButtonUp(0)){
-				panMode = false;
+				if (!panToggle) panMode = false;
 
 				//panCam = Vector3.zero;
 				/*
@@ -123,9 +124,9 @@ public class Drag : MonoBehaviour {
 //lol
 			}
 		} else {
-				panMode = false;
+				if (!panToggle) panMode = false;
 		}
-
+		if (Input.GetKeyDown("space") && panToggle) panMode = !panMode;
 		doPanMode(Input.GetKey("space") || panMode);
 
 	}
