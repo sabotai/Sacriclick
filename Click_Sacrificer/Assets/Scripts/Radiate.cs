@@ -9,6 +9,8 @@ public class Radiate : MonoBehaviour {
 	public bool flick = false;
 	public float speed = 1f;
 	public float maxLight = 1f;
+	public Color brightColor;
+	public Color darkColor;
 
 	// Use this for initialization
 	void Start () {
@@ -17,18 +19,25 @@ public class Radiate : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (pulse){
-			pulseColor(gameObject, Color.red, Color.black);
-		} else if (rad){
-			radiate(gameObject);
-		} else if (flick){
-			if (!Input.GetMouseButton(0)) flicker(gameObject, maxLight);
+		float sAmt = Mathf.PingPong(Time.time * 1.2f, maxLight);
+
+		if (!Input.GetButton("Sacrifice")) {
+			if (pulse){
+				pulseColor(gameObject, darkColor, brightColor, sAmt);
+			} 
+			if (rad){
+				radiate(gameObject);
+			} 
+
+			if (flick){
+				flicker(gameObject, maxLight, sAmt);
+			}
 		}
 	}
 
-	void pulseColor(GameObject pulseObj, Color c1, Color c2){
+	void pulseColor(GameObject pulseObj, Color c1, Color c2, float amt){
 		Color pulseColor = pulseObj.GetComponent<MeshRenderer> ().material.color;
-		pulseColor = Color.Lerp(c1, c2, Mathf.PingPong(Time.time * speed, 1));
+		pulseColor = Color.Lerp(c1, c2, amt);
 		pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
 
 	}
@@ -40,7 +49,7 @@ public class Radiate : MonoBehaviour {
 
 		float duration = 5f;
 		float elapsed = 0f;
-		float speed = 0.01f;
+		float sspeed = 0.01f;
 		while( elapsed < duration ){
 			float pct = elapsed / duration;
 			float amt = 2f * pct; 
@@ -52,7 +61,7 @@ public class Radiate : MonoBehaviour {
 			pulseColor = Color.Lerp(c1, c2, amt);
 
 			pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
-			elapsed += speed;
+			elapsed += sspeed;
 
 			yield return null;
 		}
@@ -61,7 +70,7 @@ public class Radiate : MonoBehaviour {
 
 		
 	}
-	public static IEnumerator onePulse(GameObject pulseObj, Color c1, Color c2, float duration, float speed){
+	public static IEnumerator onePulse(GameObject pulseObj, Color c1, Color c2, float duration, float sppeed){
 
 
 		Color pulseColor = pulseObj.GetComponent<MeshRenderer> ().material.color;
@@ -79,7 +88,7 @@ public class Radiate : MonoBehaviour {
 			pulseColor = Color.Lerp(c1, c2, amt);
 
 			pulseObj.GetComponent<MeshRenderer> ().material.color = pulseColor;
-			elapsed += speed;
+			elapsed += sppeed;
 
 			yield return null;
 		}
@@ -88,13 +97,13 @@ public class Radiate : MonoBehaviour {
 
 		
 	}
-	public static IEnumerator oneSmoothPulse(GameObject pulseObj, Color c1, Color c2, float speed){
+	public static IEnumerator oneSmoothPulse(GameObject pulseObj, Color c1, Color c2, float speeed){
 
 
 		Color pulseColor = pulseObj.GetComponent<MeshRenderer> ().material.color;
 
 
-   		float smoothTime = speed;
+   		float smoothTime = speeed;
     	float yVelocity = 0.0F;
     	bool goingDown = false;
     	float target = 1f;
@@ -137,14 +146,13 @@ public class Radiate : MonoBehaviour {
 		radObj.GetComponent<MeshRenderer> ().material.color = radColor;
 	}
 
-	void flicker(GameObject flickObj, float max){
+	void flicker(GameObject flickObj, float max, float amt){
 
    		//float smoothTime = speed;
     	//float yVelocity = 0.0F;
     	//float target = max;
-		float sAmt = Mathf.PingPong(Time.time * 1.2f, maxLight);
 		if (flickObj.GetComponent<Light>() != null){
-			flickObj.GetComponent<Light>().intensity = sAmt;
+			flickObj.GetComponent<Light>().intensity = amt;
 		}
 	}
 	

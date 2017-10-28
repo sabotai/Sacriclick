@@ -22,6 +22,12 @@ public class Mood : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		float manDiff = GameObject.Find("DifficultyManager").GetComponent<DifficultyManager>().diff;
+		if (diff != manDiff) diff = manDiff;
+		float manDiffP = GameObject.Find("DifficultyManager").GetComponent<DifficultyManager>().diffProgression;
+		if (diffProgression != manDiffP) diffProgression = manDiffP;
+
+
 		float progress = GetComponent<Pathfinder>().myCount * diffProgression;
 		diff += progress;
 		mood = Random.Range(-diff, 1f);

@@ -95,4 +95,33 @@ public class Pulsate : MonoBehaviour {
 
 		pulser.transform.localScale = definedScale;
 	}
+	//alternative method for predefining return scale
+	public static IEnumerator PulsePos(GameObject pulser, float duration, float magnitude, Vector3 definedPos) {
+		//Debug.Log ("pulsing...");
+
+
+		float elapsed = 0.0f;
+
+		Vector3 origPos = definedPos;
+
+		while (elapsed < duration) {
+
+			elapsed += Time.deltaTime;          
+
+			float percentComplete = elapsed / duration;         
+			float damper = 1.0f - Mathf.Clamp(4.0f * percentComplete - 3.0f, 0.0f, 1.0f);
+
+			// map value to [-1, 1]
+			float x = Random.value * 2.0f - 1.0f;
+			float y = Random.value * 2.0f - 1.0f;
+			x *= magnitude * damper;
+			y *= magnitude * damper;
+
+			pulser.transform.localPosition = new Vector3(x + origPos.x, y + origPos.y, origPos.z); 
+
+			yield return null;
+		}
+
+		pulser.transform.localPosition = definedPos;
+	}
 }

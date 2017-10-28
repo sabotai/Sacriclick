@@ -53,6 +53,7 @@ public class ConsentMeter : MonoBehaviour {
 	void displayMoodDir(int dir){
 		
 		if (consentPct < 1f - moodDirDispThresh){
+			dirLabel.GetComponent<TextMesh>().fontSize = 100;
 			if (dir == -1){
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = Color.red;
@@ -64,9 +65,18 @@ public class ConsentMeter : MonoBehaviour {
 				dirLabel.GetComponent<TextMesh>().color = Color.green;
 				dirLabel.GetComponent<TextMesh>().text = "▲";
 			}
+
+			if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh * 1.1f){
+
+				dirLabel.SetActive(true);
+				dirLabel.GetComponent<TextMesh>().color = Color.red;
+				dirLabel.GetComponent<TextMesh>().fontSize = 200;
+				dirLabel.GetComponent<TextMesh>().text = "!!!";
+			}
 		} else {
 			dirLabel.SetActive(false);
 		}
+
 
 	}
 }

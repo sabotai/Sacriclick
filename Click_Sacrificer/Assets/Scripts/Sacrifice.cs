@@ -31,6 +31,7 @@ public class Sacrifice : MonoBehaviour {
 	public bool failed = false;
 	float failedTime = 0.0f;
 	GameObject failObj;
+	public bool playScreams = false;
 
 
 	// Use this for initialization
@@ -53,6 +54,10 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
+		if (GetComponent<Drag>().panMode){
+			clickable.GetComponent<MeshRenderer>().material.color = Color.black;
+		} 
 		cps = cpm/60f;
 		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		
@@ -76,6 +81,12 @@ public class Sacrifice : MonoBehaviour {
 		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
 
 
+			if (beamHit.collider.gameObject == clickable) {
+				sword.GetComponent<Cursword>().hideCursor = true;
+				sword.GetComponent<Cursword>().currentSize *= 0.9f;
+			} else {
+				sword.GetComponent<Cursword>().hideCursor = false;
+			}
 
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
 			bool clicking = false;
@@ -85,13 +96,19 @@ public class Sacrifice : MonoBehaviour {
 				clicking = Input.GetButtonDown("Sacrifice");
 			}
 
+			if (clicking){
+				Vector3 swordOrigPos = sword.transform.localPosition;
+				StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
 
-			if (beamHit.collider.gameObject == clickable && clicking){
-				if (!limitAvailSac || sacReady){ //if limited, check if ready
-					sacReady = false;
-					DoSacrifice(beamHit);
-					//Debug.Log("sac reset");
-					
+				if (beamHit.collider.gameObject == clickable){
+					if (!limitAvailSac || sacReady){ //if limited, check if ready
+						if (!GetComponent<Drag>().panMode){
+							sacReady = false;
+							DoSacrifice(beamHit);
+							//Debug.Log("sac reset");
+						}
+						
+					}
 				}
 			}
 
@@ -121,7 +138,6 @@ public class Sacrifice : MonoBehaviour {
 				//if (clickOrigScale == clickable.transform.localScale){
 				//Debug.Log("sacrificing... " + (1 + sacCount));
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
-				StartCoroutine(Pulsate.Pulse(sword.transform.gameObject, 0.15f, 0.5f, swordOrigScale));
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);

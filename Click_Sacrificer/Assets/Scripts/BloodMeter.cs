@@ -31,6 +31,7 @@ public class BloodMeter : MonoBehaviour {
 	public bool useMood = true;
 	GameObject victims;
 	public bool useAutoJar = true;
+	bool firstClick = false;
 
 	// Use this for initialization
 	void Start () {
@@ -44,8 +45,9 @@ public class BloodMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-
+		if (!firstClick && Input.GetButtonDown("Sacrifice")){
+			firstClick = true;
+		}
 		if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
 			failureAllowed = false;
 
@@ -55,7 +57,7 @@ public class BloodMeter : MonoBehaviour {
 			//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
 			bloodPlayer.Play();
 			failureAllowed = true;
-			bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
+			if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
 			secondsRemaining = bloodAmt / bloodSecondRatio;
 		}
 
@@ -79,6 +81,8 @@ public class BloodMeter : MonoBehaviour {
 				newJar.transform.position = bldSpwn;
 				//newJar.transform.position = bloodSpawn.position;
 				//newJar.transform.parent = bloodSpawn;
+			} else {
+				//create auto clicker?
 			}
 
 		}

@@ -38,94 +38,98 @@ public class Drag : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
-		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
-		RaycastHit beamHit = new RaycastHit();
-		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
-			GameObject obj = beamHit.transform.gameObject;
+		if (panMode){
+			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
+			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
+			RaycastHit beamHit = new RaycastHit();
+			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
+				GameObject obj = beamHit.transform.gameObject;
 
- 			if (hoverItem != null){ //if hovering already
- 				hoverItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
- 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
- 				if (hoverItem.transform.childCount > 0) {
-	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
-	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+	 			if (hoverItem != null){ //if hovering already
+	 				hoverItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
+	 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+	 				if (hoverItem.transform.childCount > 0) {
+		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+		 			}
 	 			}
- 			}
- 			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){ //if start hovering
- 				hoverItem = obj;
- 				origColor = hoverItem.GetComponent<MeshRenderer> ().material.color;
- 				origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
+	 			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){ //if start hovering
+	 				hoverItem = obj;
+	 				origColor = hoverItem.GetComponent<MeshRenderer> ().material.color;
+	 				origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
 
- 				if( Input.GetMouseButtonDown(0)){
- 					panMode = true;
- 					audio.PlayOneShot(pickup);
-					dragItem = beamHit.transform.gameObject;
-					hoverItem = null;
- 					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
- 					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
-				} else {
-	 				//audio.PlayOneShot(hover);
-	 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-	 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-					hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
-					hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+	 				if( Input.GetMouseButtonDown(0)){
+	 					panMode = true;
+	 					audio.PlayOneShot(pickup);
+						dragItem = beamHit.transform.gameObject;
+						hoverItem = null;
+	 					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
+	 					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
+					} else {
+		 				//audio.PlayOneShot(hover);
+		 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
+		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
+						hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+					}
+
+				}
+
+				//while dragging
+				if (dragItem != null){
+					dragItem.transform.position = beamHit.point;
+					dragItem.layer = 2; //switch to ignore raycast
+					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+					dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
+					if (dragItem.transform.childCount > 0){
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
+					}
+							
 				}
 
 			}
 
-			//while dragging
+			//if something is being dragged
 			if (dragItem != null){
-				dragItem.transform.position = beamHit.point;
-				dragItem.layer = 2; //switch to ignore raycast
-				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
-				dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-				if (dragItem.transform.childCount > 0){
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-				}
-						
-			}
+				//force the front perspective
+				//GetComponent<CameraMove>().forceAmt += 0.01f;
 
+				//release
+				if (Input.GetMouseButtonUp(0)){
+					if (!panToggle) 
+						panMode = false;
+
+					//panCam = Vector3.zero;
+					/*
+					//hard reset pan position
+					cam.position += new Vector3(-amtPanned, 0f, 0f);
+					endCam.position += new Vector3(-amtPanned, 0f, 0f);
+					panCam = Vector3.zero;
+					amtPanned = panCam.x;
+					*/
+					dragItem.layer = 0; //switch back to default layer
+					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
+					dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
+					if (dragItem.transform.childCount > 0){
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+					}
+					dragFail = !insert(dragItem);
+					if (dragFail) {
+						audio.PlayOneShot(badRelease);
+					} else {
+						audio.PlayOneShot(goodRelease);
+					}
+					dragItem = null;
+
+				}
+			} else {
+				if (!panToggle) panMode = false;
+			}
 		}
 
-		//if something is being dragged
-		if (dragItem != null){
-			//force the front perspective
-			//GetComponent<CameraMove>().forceAmt += 0.01f;
-
-			//release
-			if (Input.GetMouseButtonUp(0)){
-				if (!panToggle) panMode = false;
-
-				//panCam = Vector3.zero;
-				/*
-				//hard reset pan position
-				cam.position += new Vector3(-amtPanned, 0f, 0f);
-				endCam.position += new Vector3(-amtPanned, 0f, 0f);
-				panCam = Vector3.zero;
-				amtPanned = panCam.x;
-				*/
-				dragItem.layer = 0; //switch back to default layer
-				dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-				dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
-				dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
-				if (dragItem.transform.childCount > 0){
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
-					dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
-				}
-				dragFail = !insert(dragItem);
-				if (dragFail) {
-					audio.PlayOneShot(badRelease);
-				} else {
-					audio.PlayOneShot(goodRelease);
-				}
-				dragItem = null;
-//lol
-			}
-		} else {
-				if (!panToggle) panMode = false;
-		}
 		if (Input.GetKeyDown("space") && panToggle) panMode = !panMode;
 		doPanMode(Input.GetKey("space") || panMode);
 

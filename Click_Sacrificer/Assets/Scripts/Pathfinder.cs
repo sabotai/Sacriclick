@@ -33,6 +33,7 @@ public class Pathfinder : MonoBehaviour {
 	Object[] posScreams;
 	Object[] neuScreams;
 	Object[] negScreams;
+	bool playScreams;
 	bool failed = false;
 	public int delayCheck = 3;
 	public float maxSpeed = 3f;
@@ -67,6 +68,7 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	void Start(){
+		playScreams = Camera.main.gameObject.GetComponent<Sacrifice>().playScreams;
 		failed = false;
 		if (myCount == 0) myCount = transform.parent.childCount - currentWaypoint;
 		//screams = Resources.Load("/screams") as AudioClip;
@@ -268,7 +270,7 @@ public class Pathfinder : MonoBehaviour {
 							myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
 						}
 
-						audio.PlayOneShot(myClip);
+						if (playScreams) audio.PlayOneShot(myClip);
 						ReleaseVic();
 						if (!failed){ //only complete death if not failed
 							gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
