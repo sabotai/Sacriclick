@@ -70,7 +70,7 @@ public class ConsentMeter : MonoBehaviour {
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = Color.red;
-				dirLabel.GetComponent<TextMesh>().fontSize = 200;
+				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!!!";
 			}
 		} else {

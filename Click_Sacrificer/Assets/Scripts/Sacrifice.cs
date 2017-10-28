@@ -36,6 +36,7 @@ public class Sacrifice : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		easyMode = false;
 		clickOrigScale = clickable.transform.localScale;
 		swordOrigScale = sword.transform.localScale;
 		sun = GameObject.Find("Sun");
@@ -55,11 +56,13 @@ public class Sacrifice : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
+		if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
+		if (Input.GetKeyDown("escape")) Application.Quit();
+		//if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		if (GetComponent<Drag>().panMode){
 			clickable.GetComponent<MeshRenderer>().material.color = Color.black;
 		} 
 		cps = cpm/60f;
-		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		
 		advance = false;
 		//we use rays to project invisible lines at a distance
@@ -83,7 +86,7 @@ public class Sacrifice : MonoBehaviour {
 
 			if (beamHit.collider.gameObject == clickable) {
 				sword.GetComponent<Cursword>().hideCursor = true;
-				sword.GetComponent<Cursword>().currentSize *= 0.9f;
+				sword.GetComponent<Cursword>().currentSize *= 0.7f;
 			} else {
 				sword.GetComponent<Cursword>().hideCursor = false;
 			}
@@ -162,22 +165,33 @@ public class Sacrifice : MonoBehaviour {
 
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;
+		GetComponent<Drag>().panMode = false;
+		GetComponent<Drag>().panCam = Vector3.zero;
+		GetComponent<CameraMove>().forceAmt = 0f;
 
 		if (!failed){
 			failedTime = Time.time;
 			failed = true;
 
+			StartCoroutine(Shake.ShakeThis(Camera.main.transform, restartTime / 10f, 0.5f));
 		}
 
-		Camera.main.transform.DetachChildren();
-		StartCoroutine(Shake.ShakeThis(Camera.main.transform, 10f, 0.5f));
-		audio2.clip = rumbleSound;
-		//audio.loop = true;
-		if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound);
-		if (!audio2.isPlaying) audio2.Play();
-		Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		if (failedTime + restartTime < Time.time){
-			SceneManager.LoadScene(0);
+			
+			if (Input.anyKey)	{
+				easyMode = false;
+				SceneManager.LoadScene(0);
+			}
+		} else {
+			Camera.main.cullingMask = 0001111;
+
+			//Camera.main.transform.DetachChildren();
+			easyMode = true;
+			audio2.clip = rumbleSound;
+			//audio.loop = true;
+			if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound);
+			if (!audio2.isPlaying) audio2.Play();
+			Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		}
 	}
 

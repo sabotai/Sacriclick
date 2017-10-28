@@ -9,7 +9,7 @@ public class Drag : MonoBehaviour {
 	public Color highlightColor;
 	Color origEmissionColor;
 	public Material origMat;
-	Vector3 panCam;
+	public Vector3 panCam;
 	public float insertThresh = 0.5f;
 	float amtPanned = 0f;
 	Transform cam;
@@ -24,6 +24,7 @@ public class Drag : MonoBehaviour {
 	public bool panMode = false;
 	public bool panToggle = true;
 	bool dragFail = false;
+
 
 	// Use this for initialization
 	void Start () {
@@ -130,8 +131,8 @@ public class Drag : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetKeyDown("space") && panToggle) panMode = !panMode;
-		doPanMode(Input.GetKey("space") || panMode);
+		if (Input.GetButtonDown("Toggle") && panToggle) panMode = !panMode;
+		doPanMode(Input.GetButton("Toggle") || panMode);
 
 	}
 	bool insert(GameObject relObj){
