@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Drag : MonoBehaviour {
-	GameObject dragItem;
-	GameObject hoverItem;
+	[System.NonSerialized]public GameObject dragItem;
+	[System.NonSerialized]public GameObject hoverItem;
 	Color origColor;
 	public Color highlightColor;
 	Color origEmissionColor;
@@ -24,6 +24,7 @@ public class Drag : MonoBehaviour {
 	public bool panMode = false;
 	public bool panToggle = true;
 	bool dragFail = false;
+	public AudioClip toggleClip;
 
 
 	// Use this for initialization
@@ -46,44 +47,60 @@ public class Drag : MonoBehaviour {
 			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
 				GameObject obj = beamHit.transform.gameObject;
 
-	 			if (hoverItem != null){ //if hovering already
-	 				hoverItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
-	 				hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-	 				if (hoverItem.transform.childCount > 0) {
-		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
-		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-		 			}
-	 			}
-	 			if (obj.transform.parent != null && obj.transform.parent.name == "Victims"){ //if start hovering
-	 				hoverItem = obj;
-	 				origColor = hoverItem.GetComponent<MeshRenderer> ().material.color;
-	 				origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
 
-	 				if( Input.GetMouseButtonDown(0)){
-	 					panMode = true;
+				if (hoverItem != null){ //restore hover colors
+					Debug.Log("restoring prehover colors");
+					hoverItem.GetComponent<MeshRenderer> ().material.color = origColor;
+					hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+					if (hoverItem.transform.childCount > 0) {
+						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origColor;
+						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+					}
+					hoverItem = null;
+				}
+
+
+				if (obj.transform.parent != null && (obj.transform.parent.name == "Victims" || obj.name == "VictimLabel (1)")){ //if start hovering
+					if (obj.name == "VictimLabel (1)") {
+						hoverItem = obj.transform.parent.gameObject;
+					} else {
+						//sup new hover item
+						hoverItem = obj;
+					}
+					//prevent it from overriding while dragging + hovering over a new one at the same time
+					if (dragItem == null){
+	 					origColor = hoverItem.GetComponent<MeshRenderer> ().material.color;
+	 					origEmissionColor = hoverItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
+					}
+
+	 				if( Input.GetMouseButtonDown(0)){ //init drag
+	 					//panMode = true;
 	 					audio.PlayOneShot(pickup);
-						dragItem = beamHit.transform.gameObject;
+						dragItem = hoverItem;
 						hoverItem = null;
 	 					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
 	 					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
-					} else {
-		 				//audio.PlayOneShot(hover);
+					} else { //if just newly hovering
+		 				audio.PlayOneShot(hover);
+
+						//set color for both pieces of the victim
 		 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
 		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-						hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
-						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", Color.white);
+						hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
+						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
 					}
 
 				}
 
-				//while dragging
+
+				//init drag colors/actions
 				if (dragItem != null){
 					dragItem.transform.position = beamHit.point;
 					dragItem.layer = 2; //switch to ignore raycast
-					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
 					dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
 					if (dragItem.transform.childCount > 0){
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", new Color(1f,1f,1f));
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
 						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
 					}
 							
@@ -112,10 +129,10 @@ public class Drag : MonoBehaviour {
 					dragItem.layer = 0; //switch back to default layer
 					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
 					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
-					dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
+					//dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
 					if (dragItem.transform.childCount > 0){
 						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origMat.color;
+						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origColor;
 					}
 					dragFail = !insert(dragItem);
 					if (dragFail) {
@@ -131,7 +148,12 @@ public class Drag : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetButtonDown("Toggle") && panToggle) panMode = !panMode;
+
+		//swapping between modes
+		if (Input.GetButtonDown("Toggle") && panToggle) {
+			panMode = !panMode;
+			audio.PlayOneShot(toggleClip);
+		}
 		doPanMode(Input.GetButton("Toggle") || panMode);
 
 	}

@@ -32,7 +32,23 @@ public class Cursword : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		if (Camera.main.gameObject.GetComponent<Drag>().panMode) { 
+			hideCursor = true; 
+			GetComponent<SpriteRenderer> ().enabled = true;
+		} else { 
+			hideCursor = false; 
+			GetComponent<SpriteRenderer> ().enabled = false;
+		}
+			
+
 		if (hideCursor) {
+			Cursor.visible = false;
+
+		} else {
+			Cursor.visible = true;
+		}
+
+		if (Camera.main.gameObject.GetComponent<Drag>().dragItem != null || Camera.main.gameObject.GetComponent<Drag>().hoverItem != null){
 			GetComponent<SpriteRenderer> ().material.color = greenSwordColor;
 		} else {
 			GetComponent<SpriteRenderer> ().material.color = defaultSwordColor;

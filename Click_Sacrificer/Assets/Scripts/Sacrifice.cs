@@ -58,7 +58,7 @@ public class Sacrifice : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
 		if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 		if (Input.GetKeyDown("escape")) Application.Quit();
-		//if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
+		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
 		if (GetComponent<Drag>().panMode){
 			clickable.GetComponent<MeshRenderer>().material.color = Color.black;
 		} 
@@ -81,15 +81,17 @@ public class Sacrifice : MonoBehaviour {
 		//this both casts the ray "beam" and returns true if the ray hits any collider
 		//the second parameter is where our raycasthit information is stored
 		//the third parameter is how far to cast the ray
-		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
+		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
 
-
+			//old shrink cursword code when hovering over clickable 
+			/*
 			if (beamHit.collider.gameObject == clickable) {
 				sword.GetComponent<Cursword>().hideCursor = true;
 				sword.GetComponent<Cursword>().currentSize *= 0.7f;
 			} else {
 				sword.GetComponent<Cursword>().hideCursor = false;
 			}
+			*/
 
 			//if the raycast hits a rigidbody and the player is pressing the right mouse button
 			bool clicking = false;
