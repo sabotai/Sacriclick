@@ -185,7 +185,7 @@ public class Sacrifice : MonoBehaviour {
 				SceneManager.LoadScene(0);
 			}
 		} else {
-			Camera.main.cullingMask = 0001111;
+			Camera.main.cullingMask = 0001111111;
 
 			//Camera.main.transform.DetachChildren();
 			easyMode = true;

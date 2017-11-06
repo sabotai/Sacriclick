@@ -24,7 +24,7 @@ public class HideUI : MonoBehaviour {
 					uie.SetActive(false);
 				}
 				uiCam.SetActive(false);
-				Camera.main.cullingMask = 0001111;
+				Camera.main.cullingMask = 0001111111;
 			} else {		
 				foreach (GameObject uie in uiElements){
 
