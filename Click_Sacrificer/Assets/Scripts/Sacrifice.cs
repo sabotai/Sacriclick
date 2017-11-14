@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class Sacrifice : MonoBehaviour {
 
 	public GameObject headPrefab;
-	public GameObject clickable;
+	GameObject clickable;
 	public GameObject sword;
 	Vector3 swordOrigScale;
 	private Vector3 clickOrigScale;
@@ -32,11 +32,13 @@ public class Sacrifice : MonoBehaviour {
 	float failedTime = 0.0f;
 	GameObject failObj;
 	public bool playScreams = false;
+	public Vector3 bloodOffset;
 
 
 	// Use this for initialization
 	void Start () {
 		easyMode = false;
+		clickable = GameObject.Find("click-toy");
 		clickOrigScale = clickable.transform.localScale;
 		swordOrigScale = sword.transform.localScale;
 		sun = GameObject.Find("Sun");
@@ -105,11 +107,15 @@ public class Sacrifice : MonoBehaviour {
 				Vector3 swordOrigPos = sword.transform.localPosition;
 				StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
 
-				if (beamHit.collider.gameObject == clickable){
+				if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
 					if (!limitAvailSac || sacReady){ //if limited, check if ready
 						if (!GetComponent<Drag>().panMode){
 							sacReady = false;
-							DoSacrifice(beamHit);
+							if (beamHit.collider.gameObject == clickable) {
+								DoSacrifice(beamHit);
+							} else {
+								DoSacrifice(clickable);
+							}
 							//Debug.Log("sac reset");
 						}
 						
@@ -132,6 +138,36 @@ public class Sacrifice : MonoBehaviour {
 			cpm = 0f;
 		}
 		
+	}
+	public void DoSacrifice(GameObject objHit){
+				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
+				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
+				//pulsate = true;
+
+				//dont pulsate again before it has returned to its orig scale to prevent warping
+				//if (clickOrigScale == clickable.transform.localScale){
+				//Debug.Log("sacrificing... " + (1 + sacCount));
+				StartCoroutine(Pulsate.Pulse(objHit, 0.15f, 0.5f, clickOrigScale));
+
+				StartCoroutine(Radiate.oneSmoothPulse(objHit, Color.red, Color.black, 0.07f));
+				audio.pitch = Random.Range(0.8f, 1.2f);
+				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
+				audio.PlayOneShot(rumbleSound);
+				//sacCount++;
+				//}
+				GetComponent<BloodMeter>().updateMood();
+				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
+				sacCount++;
+				//sacReady = false;
+				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
+
+				sacCountDisplay.text = " " + sacCount;//Sacrifices";
+				Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
+				advance = true;
+				//increase Clicks-per-minute
+				if (Time.time < startTime + cpmDuration){
+					cpm++;
+				}
 	}
 
 	public void DoSacrifice(RaycastHit _beamHit){

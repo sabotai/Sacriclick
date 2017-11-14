@@ -25,6 +25,8 @@ public class Drag : MonoBehaviour {
 	public bool panToggle = true;
 	bool dragFail = false;
 	public AudioClip toggleClip;
+	public Color brokerModeFogColor;
+	public Color bloodModeFogColor;
 
 
 	// Use this for initialization
@@ -179,6 +181,7 @@ public class Drag : MonoBehaviour {
 	}
 	void doPanMode(bool yes){
 		if (yes){
+			RenderSettings.fogColor = brokerModeFogColor;
 			//force the front perspective
 			GetComponent<CameraMove>().forceAmt += 0.01f;
 
@@ -208,6 +211,7 @@ public class Drag : MonoBehaviour {
 				panCam *= 0.75f;
 			}
 		} else {
+			RenderSettings.fogColor = bloodModeFogColor;
 			if (dragFail)	panCam = Vector3.zero;
 
 			//reset camera position
