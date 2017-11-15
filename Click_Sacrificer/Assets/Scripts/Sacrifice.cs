@@ -24,6 +24,10 @@ public class Sacrifice : MonoBehaviour {
 	public float cpmMag = 0.01f;
 	public float cpm;
 	public float cps;
+	public float maxCps = 15f;
+	public int cpsSampleNum = 3;
+	float[] cpsSamples;
+	float[] cpmSamples;
 	float pCps;
 	float ppCps;
 	public bool easyMode = false;
@@ -54,6 +58,16 @@ public class Sacrifice : MonoBehaviour {
 		cpsDisplay.text = cpm/60 + " /second";
 		failObj = GameObject.Find("GameOver");
 		failObj.GetComponent<Text>().text = "";
+
+		cpsSamples = new float[cpsSampleNum];
+		for(int i = 0; i < cpsSamples.Length; i++){
+			cpsSamples[i] = 0f;
+		}
+		float howMany = 60 / cpmDuration;
+ 		cpmSamples = new float[(int)howMany];
+		for(int i = 0; i < cpmSamples.Length; i++){
+			cpmSamples[i] = 0f;
+		}
 
 	}
 
@@ -130,25 +144,69 @@ public class Sacrifice : MonoBehaviour {
 
 
 			calcCPS();
-		
+			
 		
 	}
 
 	void calcCPS(){
 		if (Time.time >= startTime + cpmDuration){
 			startTime = Time.time;
-			cps = (ppCps + pCps + (cpm / cpmDuration)) / 3f;
-			cpsDisplay.text = (int)cps + "/sec.";
+			
+			cps = (cpm / cpmDuration); //current cps
 
-			cpm = cps * 60f;
+
+			//move everything down by one
+			for (int i = 0; i < cpsSamples.Length; i++){
+				if (i < cpsSamples.Length - 1){
+					cpsSamples[i+1] = cpsSamples[i];
+				}
+			}
+			cpsSamples[0] = cps;
+
+			float avgCps = 0f;
+			for (int i = 0; i < cpsSamples.Length; i++){
+				avgCps += cpsSamples[i];
+			}
+			avgCps /= cpsSamples.Length;
+			calcCPM();
+			cps = avgCps; //update to the new avg
+			
+			cpsDisplay.text = (int)cps + "/sec. " + (int)cpm + "/min. ";
 			//Debug.Log("cpm = " + cpm);
+			/*
+			//old speed up cycle method of sun rotations
 			if (sun.GetComponent<Sun>() != null)
 				sun.GetComponent<Sun>().speedMult = 0.001f + cpm * cpmMag;
+			*/
+			if (sun.GetComponent<SunPct>() != null && sun.GetComponent<SunPct>().manControl == false )
+				sun.GetComponent<SunPct>().rotAmt = (sun.GetComponent<SunPct>().rotAmt * 0.7f) + ((cps / maxCps) * 0.3f);
 			//cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
-			ppCps = pCps;
-			pCps = cps;
+			//ppCps = pCps;
+			//pCps = cps;
 			cpm = 0f;
 		}
+	}
+	void calcCPM(){
+
+			//cpm = cps * 60f;
+
+			//move everything down by one
+			for (int i = 0; i < cpmSamples.Length; i++){
+				if (i < cpmSamples.Length - 1){
+					cpmSamples[i+1] = cpmSamples[i];
+				}
+			}
+			cpmSamples[0] = cps;
+
+			float sumCpm = 0f;
+			for (int i = 0; i < cpmSamples.Length; i++){
+				sumCpm += cpmSamples[i];
+			}
+			sumCpm /= cpmSamples.Length;
+
+			cpm = sumCpm; //update to the new avg
+			//cpsDisplay.text = (int)cps + "/sec. " + (int)cpm + "/min. ";
+
 	}
 
 	public void DoSacrifice(GameObject objHit){

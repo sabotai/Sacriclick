@@ -9,6 +9,11 @@ public class SunPct : MonoBehaviour {
 	Light sun;
 	public Transform brightRot;
 	public Transform darkRot;
+	public float rotAmt = 0f;
+    public float smoothTime = 0.5F;
+    private float yVelocity = 0.0F;
+    float pPct = 0f;
+    public bool manControl = false;
 
 	// Use this for initialization
 	void Start () {
@@ -32,18 +37,20 @@ public class SunPct : MonoBehaviour {
 		sun.shadowStrength = intens;
 		//transform.LookAt(sunObj.transform);
 		*/
-		
+		rotateSun(rotAmt);
 	}
 
-	void rotateSun(float pct){
-		float rot = Time.deltaTime * speedMult;
-		transform.Rotate (0, 0, rot, Space.World);
-		transform.rotation = Quaternion.Slerp(brightRot.rotation, darkRot.rotation, pct);
+	public void rotateSun(float pct){
+        float softPct = Mathf.SmoothDamp(pPct, pct, ref yVelocity, smoothTime);
+       
+
+		transform.rotation = Quaternion.Slerp(brightRot.rotation, darkRot.rotation, softPct);
 
 		//z rotation of 0 = completely bright, z rotation
-		float intens = (Mathf.Abs(transform.localEulerAngles.z - 180)/180);
-		sun.intensity = Mathf.Clamp(intens * 2f, 0.5f, 1f);
+		float intens = 1f - softPct;
+		sun.intensity = Mathf.Clamp(intens, 0.5f, 1f);
 		sun.shadowStrength = intens;
 		//transform.LookAt(sunObj.transform);
+		pPct = pct;
 	}
 }
