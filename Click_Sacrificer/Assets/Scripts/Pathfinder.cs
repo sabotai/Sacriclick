@@ -162,7 +162,7 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	public void DragInsert(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
-		Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
+		//Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
 		int swapCnt = swap.GetComponent<Pathfinder>().myCount;
 		int swapSibCnt = swap.transform.GetSiblingIndex();
 		int swap_SibCnt = swap_.transform.GetSiblingIndex();
@@ -228,7 +228,7 @@ public class Pathfinder : MonoBehaviour {
 
 				//waySpeed = origWaySpeed + (moveDistance.magnitude * ((sacrificer.GetComponent<Sacrifice>().cpm + 1) * 7f));
 				
-				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier)));
+				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier + 0.5f)));
 				//Debug.Log("sqrMag = " + moveDistance.sqrMagnitude + " wayspeed= " + waySpeed);
 				waySpeed = Mathf.Clamp(waySpeed, minSpeed, 100f);
 				velo = moveDistance.normalized * waySpeed; //sets the new direction

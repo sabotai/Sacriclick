@@ -171,7 +171,7 @@ public class Sacrifice : MonoBehaviour {
 		}
 		//avgCps /= cpsSamples.Length;
 		cps = totalCps;// / cpsSamples.Length; //update to the new avg
-		Debug.Log("avgCps = " + cps);
+		//Debug.Log("avgCps = " + cps);
 		cpf = 0f;
 
 		//if (Time.time >= startTime + cpmDuration){

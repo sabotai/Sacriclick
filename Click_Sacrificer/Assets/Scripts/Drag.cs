@@ -64,6 +64,7 @@ public class Drag : MonoBehaviour {
 
 				if (obj.transform.parent != null && (obj.transform.parent.name == "Victims" || obj.name == "VictimLabel (1)")){ //if start hovering
 					if (obj.name == "VictimLabel (1)") {
+						Debug.Log("Hovering over label");
 						hoverItem = obj.transform.parent.gameObject;
 					} else {
 						//sup new hover item

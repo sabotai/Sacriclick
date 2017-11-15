@@ -1,49 +1,24 @@
 fileFormatVersion: 2
-guid: fee484db707754a49bb395329acf7390
-timeCreated: 1510623361
+guid: 1ca3f1677d512714da66b4a8c2db030f
+timeCreated: 1510786748
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
-    100000: default
-    100002: default_MeshPart0
-    100004: default_MeshPart1
-    100006: default_MeshPart2
-    100008: default_MeshPart3
-    100010: default_MeshPart4
-    100012: default_MeshPart5
-    100014: default_MeshPart6
-    100016: //RootNode
-    400000: default
-    400002: default_MeshPart0
-    400004: default_MeshPart1
-    400006: default_MeshPart2
-    400008: default_MeshPart3
-    400010: default_MeshPart4
-    400012: default_MeshPart5
-    400014: default_MeshPart6
-    400016: //RootNode
-    2300000: default_MeshPart0
-    2300002: default_MeshPart1
-    2300004: default_MeshPart2
-    2300006: default_MeshPart3
-    2300008: default_MeshPart4
-    2300010: default_MeshPart5
-    2300012: default_MeshPart6
-    3300000: default_MeshPart0
-    3300002: default_MeshPart1
-    3300004: default_MeshPart2
-    3300006: default_MeshPart3
-    3300008: default_MeshPart4
-    3300010: default_MeshPart5
-    3300012: default_MeshPart6
-    4300000: default_MeshPart0
-    4300002: default_MeshPart1
-    4300004: default_MeshPart2
-    4300006: default_MeshPart3
-    4300008: default_MeshPart4
-    4300010: default_MeshPart5
-    4300012: default_MeshPart6
+    100000: //RootNode
+    100002: model
+    100004: model_001
+    400000: //RootNode
+    400002: model
+    400004: model_001
+    2300000: model
+    2300002: model_001
+    3300000: model
+    3300002: model_001
+    4300000: model
+    4300002: model_001
+    7400000: Default Take
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -113,7 +88,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
