@@ -12,6 +12,7 @@ public class CameraMove : MonoBehaviour {
 	public bool perspectiveCam = true;
 	public bool forceShift = false;
 	public float forceAmt = 0.0f;
+	public Camera[] chainedCams;
 
 	// Use this for initialization
 	void Start () {
@@ -51,8 +52,14 @@ public class CameraMove : MonoBehaviour {
 		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
 		if (perspectiveCam){
 			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			foreach (Camera cam in chainedCams){
+				cam.fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			}
 		} else {
 			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			foreach (Camera cam in chainedCams){
+				cam.orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			}
 		}
 		transform.position = focus;
 

@@ -6,14 +6,14 @@ public class CheckSwordHover : MonoBehaviour {
 
 	[SerializeField] bool swordHovering = false;
 	public float moodHoverDir = 1f;
-	public float labelOrigZ;
+	float labelOrigY;
 	public float moodDirBounceAmplitude = 0.5f;
 	public float bounceSpeed = 3f;
 	float origMoodSpeedMult;
 	public float hoverMoodSpeedMult = 2f;
 	// Use this for initialization
 	void Start () {
-		labelOrigZ = transform.GetChild(2).localPosition.z;
+		labelOrigY = transform.GetChild(1).GetChild(0).localPosition.y;
 		origMoodSpeedMult = gameObject.GetComponent<Mood>().moodSpeedMult;
 
 
@@ -37,13 +37,13 @@ public class CheckSwordHover : MonoBehaviour {
             if(swordHovering) {
             	gameObject.GetComponent<Mood>().moodDir = moodHoverDir;
 				if (gameObject.GetComponent<Mood>().moodSpeedMult < origMoodSpeedMult * hoverMoodSpeedMult) gameObject.GetComponent<Mood>().moodSpeedMult *= 1.1f;
-				transform.GetChild(2).localPosition += new Vector3(0f, 0f, Mathf.PingPong(Time.time * bounceSpeed, moodDirBounceAmplitude) - moodDirBounceAmplitude/2f); //bounce label
+				transform.GetChild(1).GetChild(0).localPosition += new Vector3(0f, Mathf.PingPong(Time.time * bounceSpeed, moodDirBounceAmplitude) - moodDirBounceAmplitude/2f, 0f); //bounce label
 				//StartCoroutine(Pulsate.Pulse(gameObject.transform.GetChild(2).gameObject, 0.15f, 0.5f));
             	
             } else {
 			//reset label position
 			if (gameObject.GetComponent<Mood>().moodSpeedMult > origMoodSpeedMult) gameObject.GetComponent<Mood>().moodSpeedMult = origMoodSpeedMult;
-			transform.GetChild(2).localPosition = new Vector3(transform.GetChild(2).localPosition.x, transform.GetChild(2).localPosition.y, labelOrigZ);
+			transform.GetChild(1).GetChild(0).localPosition = new Vector3(transform.GetChild(1).GetChild(0).localPosition.x, labelOrigY, transform.GetChild(1).GetChild(0).localPosition.z);
             }
 
 		

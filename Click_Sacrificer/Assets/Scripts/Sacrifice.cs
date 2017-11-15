@@ -24,6 +24,8 @@ public class Sacrifice : MonoBehaviour {
 	public float cpmMag = 0.01f;
 	public float cpm;
 	public float cps;
+	float pCps;
+	float ppCps;
 	public bool easyMode = false;
 	public bool limitAvailSac = true;
 	public bool sacReady = true;
@@ -64,7 +66,7 @@ public class Sacrifice : MonoBehaviour {
 		if (GetComponent<Drag>().panMode){
 			clickable.GetComponent<MeshRenderer>().material.color = Color.black;
 		} 
-		cps = cpm/60f;
+		//cps = cpm/60f;
 		
 		advance = false;
 		//we use rays to project invisible lines at a distance
@@ -126,19 +128,29 @@ public class Sacrifice : MonoBehaviour {
 		}
 
 
+
+			calcCPS();
+		
+		
+	}
+
+	void calcCPS(){
 		if (Time.time >= startTime + cpmDuration){
 			startTime = Time.time;
-			cpm = cpm * (60/cpmDuration);
+			cps = (ppCps + pCps + (cpm / cpmDuration)) / 3f;
+			cpsDisplay.text = (int)cps + "/sec.";
+
+			cpm = cps * 60f;
 			//Debug.Log("cpm = " + cpm);
 			if (sun.GetComponent<Sun>() != null)
 				sun.GetComponent<Sun>().speedMult = 0.001f + cpm * cpmMag;
-			cps = cpm/60f;
 			//cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
-			cpsDisplay.text = cps + "/sec.";
+			ppCps = pCps;
+			pCps = cps;
 			cpm = 0f;
 		}
-		
 	}
+
 	public void DoSacrifice(GameObject objHit){
 				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
 				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
@@ -165,9 +177,9 @@ public class Sacrifice : MonoBehaviour {
 				Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
 				advance = true;
 				//increase Clicks-per-minute
-				if (Time.time < startTime + cpmDuration){
+				//if (Time.time < startTime + cpmDuration){
 					cpm++;
-				}
+				//}
 	}
 
 	public void DoSacrifice(RaycastHit _beamHit){
@@ -196,9 +208,9 @@ public class Sacrifice : MonoBehaviour {
 				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
 				advance = true;
 				//increase Clicks-per-minute
-				if (Time.time < startTime + cpmDuration){
+				//if (Time.time < startTime + cpmDuration){
 					cpm++;
-				}
+				//}
 	}
 
 	public void Fail(float restartTime, string failMsg){

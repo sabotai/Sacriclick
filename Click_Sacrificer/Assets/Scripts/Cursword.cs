@@ -33,7 +33,11 @@ public class Cursword : MonoBehaviour {
 	void Update () {
 
 		if (Camera.main.gameObject.GetComponent<Drag>().panMode) { 
-			hideCursor = true; 
+			if (Camera.main.gameObject.GetComponent<Drag>().hoverItem != null) {
+				hideCursor = false; 
+				} else {
+					hideCursor = true;
+				}
 			GetComponent<SpriteRenderer> ().enabled = true;
 		} else { 
 			hideCursor = false; 

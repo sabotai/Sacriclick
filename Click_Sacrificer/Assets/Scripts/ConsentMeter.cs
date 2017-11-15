@@ -21,8 +21,8 @@ public class ConsentMeter : MonoBehaviour {
 
 		moodDir = mommy.GetComponent<Mood>().moodDir;
 		Debug.Log("sibling index = " + transform.GetSiblingIndex());
-		if (transform.parent.GetChild(transform.GetSiblingIndex() + 1).gameObject != null)
-			dirLabel = transform.parent.GetChild(transform.GetSiblingIndex() + 1).gameObject;
+		if (transform.GetChild(0).gameObject != null)
+			dirLabel = transform.GetChild(0).gameObject;
 	}
 	
 	// Update is called once per frame

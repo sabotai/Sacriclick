@@ -13,6 +13,7 @@ public class BloodMeter : MonoBehaviour {
 	public float bloodSecondRatio = 0.1f;
 	public bool failureAllowed = false;
 	public RectTransform bloodUI;
+	public Material bloodMat;
 	public float restartTimeoutAmt = 3f;
 	public float bloodJarAmt = 15f;
 	public float jarEfficiency = 0.3f;
@@ -87,6 +88,12 @@ public class BloodMeter : MonoBehaviour {
 
 		}
 		bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
+		Color bloodColor;
+		bloodColor = bloodMat.GetColor("_TintColor");
+		float bloodPct = bloodAmt / 20f;
+		float maxA = 0.15f;
+		float bloodA = maxA - maxA * (bloodAmt / 20f);
+		bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
 		bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen
 
 		jarCast();
