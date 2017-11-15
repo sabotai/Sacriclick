@@ -39,7 +39,7 @@ public class CameraMove : MonoBehaviour {
 	void Update () {
 
 		//calculate the cpm / 5
-		float newZoom = Camera.main.GetComponent<Sacrifice>().cpm / 5f;
+		float newZoom = Camera.main.GetComponent<Sacrifice>().cps / 5f;
 
 		//lerp between these 2 zoom amounts by 0.75% each frame
 		float zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);

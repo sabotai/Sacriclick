@@ -24,8 +24,8 @@ public class Sacrifice : MonoBehaviour {
 	public float cpmMag = 0.01f;
 	public float cpm;
 	public float cps;
+	public float cpf;
 	public float maxCps = 15f;
-	public int cpsSampleNum = 3;
 	float[] cpsSamples;
 	float[] cpmSamples;
 	float pCps;
@@ -50,8 +50,9 @@ public class Sacrifice : MonoBehaviour {
 		sun = GameObject.Find("Sun");
 		audio = GetComponent<AudioSource>();
 		audio2 = GetComponent<AudioSource>();
-		cpm = 0;
-		cps = 0;
+		cpm = 0f;
+		cps = 0f;
+		cpf = 0f;
 		startTime = Time.time;
 
 		sacCountDisplay.text = sacCount + "";
@@ -59,12 +60,13 @@ public class Sacrifice : MonoBehaviour {
 		failObj = GameObject.Find("GameOver");
 		failObj.GetComponent<Text>().text = "";
 
+		int cpsSampleNum = 60; //based on 60fps
 		cpsSamples = new float[cpsSampleNum];
 		for(int i = 0; i < cpsSamples.Length; i++){
 			cpsSamples[i] = 0f;
 		}
-		float howMany = 60 / cpmDuration;
- 		cpmSamples = new float[(int)howMany];
+		int howMany = 3600;//based on 60 fps * 60 seconds
+ 		cpmSamples = new float[howMany];
 		for(int i = 0; i < cpmSamples.Length; i++){
 			cpmSamples[i] = 0f;
 		}
@@ -149,64 +151,78 @@ public class Sacrifice : MonoBehaviour {
 	}
 
 	void calcCPS(){
-		if (Time.time >= startTime + cpmDuration){
-			startTime = Time.time;
+		//cps = cpf * Time.deltaTime;
+		int fps = (int)(1f / Time.deltaTime);
+		int useFrameAmt = (int)Mathf.Clamp(fps, 0f, 60f);
+
+		//move everything down by one
+		for (int i = useFrameAmt - 1; i > 0; i--){
 			
+			cpsSamples[i] = cpsSamples[i - 1];
+
+			//Debug.Log(cpsSamples[i]);
+		}
+		cpsSamples[0] = cpf;
+
+
+		float totalCps = 0f;
+		for (int i = 0; i < useFrameAmt; i++){
+			totalCps += cpsSamples[i];
+		}
+		//avgCps /= cpsSamples.Length;
+		cps = totalCps;// / cpsSamples.Length; //update to the new avg
+		Debug.Log("avgCps = " + cps);
+		cpf = 0f;
+
+		//if (Time.time >= startTime + cpmDuration){
+		//	startTime = Time.time;
+			/*
 			cps = (cpm / cpmDuration); //current cps
 
 
+			cpsSamples[0] = cps;
 			//move everything down by one
 			for (int i = 0; i < cpsSamples.Length; i++){
 				if (i < cpsSamples.Length - 1){
 					cpsSamples[i+1] = cpsSamples[i];
 				}
 			}
-			cpsSamples[0] = cps;
-
-			float avgCps = 0f;
-			for (int i = 0; i < cpsSamples.Length; i++){
-				avgCps += cpsSamples[i];
-			}
-			avgCps /= cpsSamples.Length;
-			calcCPM();
-			cps = avgCps; //update to the new avg
-			
-			cpsDisplay.text = (int)cps + "/sec. " + (int)cpm + "/min. ";
-			//Debug.Log("cpm = " + cpm);
-			/*
-			//old speed up cycle method of sun rotations
-			if (sun.GetComponent<Sun>() != null)
-				sun.GetComponent<Sun>().speedMult = 0.001f + cpm * cpmMag;
 			*/
+			calcCPM();
+
+			//Debug.Log("cpm = " + cpm);
 			if (sun.GetComponent<SunPct>() != null && sun.GetComponent<SunPct>().manControl == false )
 				sun.GetComponent<SunPct>().rotAmt = (sun.GetComponent<SunPct>().rotAmt * 0.7f) + ((cps / maxCps) * 0.3f);
 			//cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
 			//ppCps = pCps;
 			//pCps = cps;
-			cpm = 0f;
-		}
+		//}
+		cpsDisplay.text = (int)cps + "/s.  " + (int)cpm + "/m.";
+		//cpm = 0;
 	}
 	void calcCPM(){
 
-			//cpm = cps * 60f;
+		int fpm = (int)(1f / Time.deltaTime) * 60;
+		int useFrameAmtMin = (int)Mathf.Clamp(fpm, 0f, 3600f);
+		//move everything down by one
+		for (int i = useFrameAmtMin - 1; i > 0; i--){
 
-			//move everything down by one
-			for (int i = 0; i < cpmSamples.Length; i++){
-				if (i < cpmSamples.Length - 1){
-					cpmSamples[i+1] = cpmSamples[i];
-				}
-			}
-			cpmSamples[0] = cps;
+			cpmSamples[i] = cpmSamples[i - 1];
 
-			float sumCpm = 0f;
-			for (int i = 0; i < cpmSamples.Length; i++){
-				sumCpm += cpmSamples[i];
-			}
-			sumCpm /= cpmSamples.Length;
+			//Debug.Log(cpsSamples[i]);
+		}
+		cpmSamples[0] = cps * Time.deltaTime;
 
-			cpm = sumCpm; //update to the new avg
-			//cpsDisplay.text = (int)cps + "/sec. " + (int)cpm + "/min. ";
+		float sumCpm = 0f;
+		for (int i = 0; i < useFrameAmtMin; i++){
+			sumCpm += cpmSamples[i];
+		}
+		//sumCpm /= cpmSamples.Length;
+		//Debug.Log("sumCPM = " + sumCpm);
 
+		cpm = sumCpm; //update to the new avg
+			//cpsDisplay.text += (int)cpm + "/min. ";
+			
 	}
 
 	public void DoSacrifice(GameObject objHit){
@@ -236,7 +252,7 @@ public class Sacrifice : MonoBehaviour {
 				advance = true;
 				//increase Clicks-per-minute
 				//if (Time.time < startTime + cpmDuration){
-					cpm++;
+					cpf++;
 				//}
 	}
 
@@ -267,7 +283,7 @@ public class Sacrifice : MonoBehaviour {
 				advance = true;
 				//increase Clicks-per-minute
 				//if (Time.time < startTime + cpmDuration){
-					cpm++;
+					cpf++;
 				//}
 	}
 

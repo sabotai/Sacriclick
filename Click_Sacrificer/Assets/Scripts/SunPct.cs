@@ -37,6 +37,8 @@ public class SunPct : MonoBehaviour {
 		sun.shadowStrength = intens;
 		//transform.LookAt(sunObj.transform);
 		*/
+
+		//transform.Rotate (0, 0, Time.deltaTime * 10f, Space.World); //some really slow movement for the cloud cookie to appear as if moving
 		rotateSun(rotAmt);
 	}
 

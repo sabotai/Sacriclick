@@ -228,7 +228,7 @@ public class Pathfinder : MonoBehaviour {
 
 				//waySpeed = origWaySpeed + (moveDistance.magnitude * ((sacrificer.GetComponent<Sacrifice>().cpm + 1) * 7f));
 				
-				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cpm + speedMultiplier)));
+				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier)));
 				//Debug.Log("sqrMag = " + moveDistance.sqrMagnitude + " wayspeed= " + waySpeed);
 				waySpeed = Mathf.Clamp(waySpeed, minSpeed, 100f);
 				velo = moveDistance.normalized * waySpeed; //sets the new direction
