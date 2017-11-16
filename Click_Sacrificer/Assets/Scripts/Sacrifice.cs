@@ -39,7 +39,7 @@ public class Sacrifice : MonoBehaviour {
 	GameObject failObj;
 	public bool playScreams = false;
 	public Vector3 bloodOffset;
-
+	GameObject selectedObj;
 
 	// Use this for initialization
 	void Start () {

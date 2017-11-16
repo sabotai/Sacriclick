@@ -128,6 +128,8 @@ public class Pathfinder : MonoBehaviour {
 						SwapOrder(vic, gameObject);
 					}
 				}
+
+				if (isAnyoneAhead) return true; //try to return if found so as to not cycle through everything (efficiency)
 			}
 			if (isAnyoneAhead) {
 				return true;
@@ -140,7 +142,7 @@ public class Pathfinder : MonoBehaviour {
 		bool isAnyoneBeside = false; // true = stay still
 		foreach (GameObject vic in victimz){
 			if (vic.GetComponent<Pathfinder>().currentWaypoint == currentWaypoint){ //is there one ahead of me?
-				if (vic != gameObject){
+				if (vic != gameObject){ //if not this gameobject
 					//Debug.Log("Found a dupe!");
 					if (vic.GetComponent<Pathfinder>().myCount > myCount){
 							if (currentWaypoint < wayParent.childCount - 4) currentWaypoint++; //protected because weird clumping at sacpedestal
@@ -191,7 +193,8 @@ public class Pathfinder : MonoBehaviour {
 			if (!IsAnyoneAheadOfMe(victimz)){ //notice a vacancy in the line?  move up!
 					currentWaypoint++;
 			}
-			if ((int)(Time.time % delayCheck) == 0)		FixAnyoneBesideMe(victimz);
+			//if ((int)(Time.time % delayCheck) == 0)		
+			FixAnyoneBesideMe(victimz);
 		} 
 	}
 
@@ -228,7 +231,7 @@ public class Pathfinder : MonoBehaviour {
 
 				//waySpeed = origWaySpeed + (moveDistance.magnitude * ((sacrificer.GetComponent<Sacrifice>().cpm + 1) * 7f));
 				
-				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier + 0.5f)));
+				waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier + 0.8f)));
 				//Debug.Log("sqrMag = " + moveDistance.sqrMagnitude + " wayspeed= " + waySpeed);
 				waySpeed = Mathf.Clamp(waySpeed, minSpeed, 100f);
 				velo = moveDistance.normalized * waySpeed; //sets the new direction
