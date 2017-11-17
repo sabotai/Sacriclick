@@ -23,6 +23,7 @@ public class HideUI : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.H)) {
 			hide = !hide;
 			if (hide) {
+				labels = GameObject.FindGameObjectsWithTag("label");
 				foreach (GameObject uie in uiElements){
 					uie.SetActive(false);
 				}

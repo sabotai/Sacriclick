@@ -42,7 +42,11 @@ public class DifficultyManager : MonoBehaviour {
 			victimz[i] = victimParent.transform.GetChild(i).gameObject;
 		}
 		foreach (GameObject vic in victimz){
-			vic.GetComponent<Pathfinder>().waySpeed = waySpeed;
+			if (vic.GetComponent<Pathfinder>() != null){
+				vic.GetComponent<Pathfinder>().waySpeed = waySpeed;
+			} else if (Camera.main.gameObject.GetComponent<MasterWaypointer>() != null){
+				Camera.main.gameObject.GetComponent<MasterWaypointer>().waySpeed = waySpeed;
+			}
 			vic.GetComponent<CheckSwordHover>().hoverMoodSpeedMult = hoverMoodSpeedMult;
 			vic.GetComponent<CheckSwordHover>().moodHoverDir = moodHoverDir;
 			vic.GetComponent<Mood>().moodFailThresh = moodFailThresh;
