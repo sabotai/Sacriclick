@@ -39,8 +39,12 @@ public class Sacrifice : MonoBehaviour {
 	GameObject failObj;
 	public bool playScreams = false;
 	public Vector3 bloodOffset;
+	GameObject selectedObj;
+	GameObject diffManager;
 
-
+	void Awake(){
+		sacCount = 0;
+	}
 	// Use this for initialization
 	void Start () {
 		easyMode = false;
@@ -48,11 +52,13 @@ public class Sacrifice : MonoBehaviour {
 		clickOrigScale = clickable.transform.localScale;
 		swordOrigScale = sword.transform.localScale;
 		sun = GameObject.Find("Sun");
+		diffManager = GameObject.Find("DifficultyManager");
 		audio = GetComponent<AudioSource>();
 		audio2 = GetComponent<AudioSource>();
 		cpm = 0f;
 		cps = 0f;
 		cpf = 0f;
+		sacCount = 0;
 		startTime = Time.time;
 
 		sacCountDisplay.text = sacCount + "";
@@ -129,10 +135,24 @@ public class Sacrifice : MonoBehaviour {
 					if (!limitAvailSac || sacReady){ //if limited, check if ready
 						if (!GetComponent<Drag>().panMode){
 							sacReady = false;
-							if (beamHit.collider.gameObject == clickable) {
-								DoSacrifice(beamHit);
+
+							if (diffManager.GetComponent<MasterWaypointer>() != null){
+								Debug.Log("found master waypointer");
+								if (diffManager.GetComponent<MasterWaypointer>().vicReady){
+									if (beamHit.collider.gameObject == clickable) {
+										DoSacrifice(beamHit);
+									} else {
+										DoSacrifice(clickable);
+									}
+								}
+
+
 							} else {
-								DoSacrifice(clickable);
+								if (beamHit.collider.gameObject == clickable) {
+									DoSacrifice(beamHit);
+								} else {
+									DoSacrifice(clickable);
+								}
 							}
 							//Debug.Log("sac reset");
 						}
@@ -171,7 +191,7 @@ public class Sacrifice : MonoBehaviour {
 		}
 		//avgCps /= cpsSamples.Length;
 		cps = totalCps;// / cpsSamples.Length; //update to the new avg
-		Debug.Log("avgCps = " + cps);
+		//Debug.Log("avgCps = " + cps);
 		cpf = 0f;
 
 		//if (Time.time >= startTime + cpmDuration){
@@ -250,9 +270,10 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
 				Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
 				advance = true;
+				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				//increase Clicks-per-minute
 				//if (Time.time < startTime + cpmDuration){
-					cpf++;
+				cpf++;
 				//}
 	}
 
@@ -281,9 +302,10 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
 				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
 				advance = true;
+				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				//increase Clicks-per-minute
 				//if (Time.time < startTime + cpmDuration){
-					cpf++;
+				cpf++;
 				//}
 	}
 

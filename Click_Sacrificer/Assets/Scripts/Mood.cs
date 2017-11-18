@@ -28,14 +28,21 @@ public class Mood : MonoBehaviour {
 		if (diffProgression != manDiffP) diffProgression = manDiffP;
 
 
-		float progress = GetComponent<Pathfinder>().myCount * diffProgression;
+		float progress = transform.GetChild(1).GetComponent<UpdateLabel>().myCount * diffProgression;
 		diff += progress;
 		mood = Random.Range(-diff, 1f);
-		if (GetComponent<Pathfinder>().myCount < 15) mood = 1f;//go easy on them for the first few
+
+		if (GetComponent<Pathfinder>() != null){
+			if (GetComponent<Pathfinder>().myCount < 15) mood = 1f;//go easy on them for the first few
+		} else {
+			if (transform.GetChild(1).GetComponent<UpdateLabel>().myCount < 15) mood = 1f;//go easy on them for the first few
+
+		}
 			
 		moodDir = neighborMood();
 
 		//Debug.Log(this.transform.GetSiblingIndex() + ". " + mood + " w/dir of: " + moodDir);
+		
 	}
 	
 	// Update is called once per frame
@@ -54,19 +61,21 @@ public class Mood : MonoBehaviour {
 	float neighborMood(){
 		Transform victimParent;
 		int sibIndex = this.transform.GetSiblingIndex();
-		victimParent = transform.parent; //find my parent
 		float neighborMoodAvg = 0f;
-		int count = 0;
-		if (sibIndex != victimParent.childCount - 1){
-			neighborMoodAvg += victimParent.GetChild(sibIndex + 1).gameObject.GetComponent<Mood>().mood;
-			count++;
-		
-			if (sibIndex != 0){
-				neighborMoodAvg += victimParent.GetChild(sibIndex - 1).gameObject.GetComponent<Mood>().mood;
+		if (transform.parent != null && sibIndex != null){
+			victimParent = transform.parent; //find my parent
+			int count = 0;
+			if (sibIndex != victimParent.childCount - 1){
+				neighborMoodAvg += victimParent.GetChild(sibIndex + 1).gameObject.GetComponent<Mood>().mood;
 				count++;
+			
+				if (sibIndex != 0){
+					neighborMoodAvg += victimParent.GetChild(sibIndex - 1).gameObject.GetComponent<Mood>().mood;
+					count++;
+				}
 			}
+			neighborMoodAvg /= count;
 		}
-		neighborMoodAvg /= count;
 		return neighborMoodAvg;
 	}
 

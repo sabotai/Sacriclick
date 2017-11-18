@@ -27,16 +27,21 @@ public class Drag : MonoBehaviour {
 	public AudioClip toggleClip;
 	public Color brokerModeFogColor;
 	public Color bloodModeFogColor;
+	GameObject diffManager;
 
 
 	// Use this for initialization
 	void Start () {
+		diffManager = GameObject.Find("DifficultyManager");
 		panCam = new Vector3(0f,0f,0f);
 
 		cam = Camera.main.gameObject.GetComponent<CameraMove>().startFocus;
 		endCam = Camera.main.gameObject.GetComponent<CameraMove>().endFocus;
-
-		maxPanRight = GameObject.Find("Victims").transform.GetChild(0).position.x;
+		if (diffManager.GetComponent<MasterWaypointer>() != null){
+			maxPanRight = GameObject.Find("Victims").transform.GetChild(GameObject.Find("Victims").transform.childCount - 1).position.x;
+		} else {
+			maxPanRight = GameObject.Find("Victims").transform.GetChild(0).position.x;
+		}
 	}
 	
 	// Update is called once per frame
@@ -64,6 +69,7 @@ public class Drag : MonoBehaviour {
 
 				if (obj.transform.parent != null && (obj.transform.parent.name == "Victims" || obj.name == "VictimLabel (1)")){ //if start hovering
 					if (obj.name == "VictimLabel (1)") {
+						Debug.Log("Hovering over label");
 						hoverItem = obj.transform.parent.gameObject;
 					} else {
 						//sup new hover item
@@ -172,7 +178,11 @@ public class Drag : MonoBehaviour {
 			if (Vector3.Distance(vic.transform.position, relObj.transform.position) < insertThresh){
 				if (vic != relObj){ //prevent from swapping with itself
 					Debug.Log("swapping " + sibIndex + " for " + vic.transform.GetSiblingIndex());
-					vic.GetComponent<Pathfinder>().DragInsert(relObj, vic);
+					if (vic.GetComponent<Pathfinder>() != null){
+						vic.GetComponent<Pathfinder>().DragInsert(relObj, vic);
+					} else {
+						diffManager.GetComponent<MasterWaypointer>().DragInsert(relObj, vic);
+					}
 					return true;
 				}
 			}
