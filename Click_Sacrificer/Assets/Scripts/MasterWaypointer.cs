@@ -28,7 +28,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public float anxietySpeed = 0.8f;
 	public Color spawnColor;
 	public Color spawnEmitColor;
-
+	public AudioClip slideClip;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -56,6 +56,7 @@ public class MasterWaypointer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+		
 		bool releaseVics = false;
 		if(failed) {
 			releaseVics = true;
@@ -68,7 +69,14 @@ public class MasterWaypointer : MonoBehaviour {
 			}
 		}
 		if (releaseVics){
-			UpdateOrder();
+			//hide the labels
+			GameObject[] labels = GameObject.FindGameObjectsWithTag("label");
+
+			foreach (GameObject label in labels){
+				label.SetActive(false);
+			}
+
+			//UpdateOrder();
 			foreach (GameObject mover in movables){
 				ReleaseVic(mover);			
 			}
@@ -77,7 +85,7 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	void Advance(){
-
+		UpdateOrder();
 		foreach (GameObject mover in movables){
 			int myIndex = mover.transform.GetSiblingIndex();
 				if (myIndex == 0) {
@@ -108,6 +116,16 @@ public class MasterWaypointer : MonoBehaviour {
 					waySpeed = waySpeed * (anxietySpeed + (moveDistance.sqrMagnitude * (sacrificer.GetComponent<Sacrifice>().cps * speedMultiplier + 0.8f)));
 					//Debug.Log("sqrMag = " + moveDistance.sqrMagnitude + " wayspeed= " + waySpeed);
 					waySpeed = Mathf.Clamp(waySpeed, minSpeed, 100f);
+					AudioSource audio = mover.GetComponent<AudioSource>();
+					float pitch = Mathf.Clamp(waySpeed / 12f, 0.5f, 1.5f);
+					if (waySpeed > 10f) {
+						//Debug.Log("pitch= " + pitch);
+						audio.pitch = pitch;//Random.Range(0.5f, 1.5f);
+						audio.PlayOneShot(slideClip);
+						
+					} else {
+					audio.pitch = 1f;
+					}
 					velo = moveDistance.normalized * waySpeed; //sets the new direction
 				}
 				mover.GetComponent<Rigidbody>().velocity = velo;
@@ -117,7 +135,7 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void SacrificeVic(){
-		Debug.Log("SACRIFICING: " + vic.name);
+		//Debug.Log("SACRIFICING: " + vic.name);
 		StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
 
 		//reached the end of the line (front of the line?)
@@ -132,7 +150,7 @@ public class MasterWaypointer : MonoBehaviour {
 		float myDeathMood = vic.GetComponent<Mood>().mood;
 		float mt = vic.GetComponent<Mood>().moodFailThresh;
 		if (myDeathMood < mt){
-			Debug.Log("sacrificed someone without consent!");
+			//Debug.Log("sacrificed someone without consent!");
 			//myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
 			if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
 		} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
@@ -150,31 +168,16 @@ public class MasterWaypointer : MonoBehaviour {
 
 	}
 
-	void SwapOrder(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
-		//Debug.Log("clean house: swapping " + swap.name + " for " + swap_.name);
-		int temp = swap.transform.GetSiblingIndex();
-		swap.transform.SetSiblingIndex(swap_.transform.GetSiblingIndex());
-		swap_.transform.SetSiblingIndex(temp);
-	}
-
-	public void DragInsert(GameObject swap, GameObject swap_){ //use to fix order when it gets off due to clumping
+	public void DragInsert(GameObject swap, GameObject swap_){
 		//Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
-		//int swapCnt = swap.GetComponent<Pathfinder>().myCount;
 		int swapSibCnt = swap.transform.GetSiblingIndex();
 		int swap_SibCnt = swap_.transform.GetSiblingIndex();
 		swap.transform.SetSiblingIndex(swap_SibCnt);
 		swap_.transform.SetSiblingIndex(swapSibCnt);
-		//swap.GetComponent<Pathfinder>().myCount = swap_.GetComponent<Pathfinder>().myCount;
-		//swap_.GetComponent<Pathfinder>().myCount = swap.GetComponent<Pathfinder>().myCount;
-		//int temp = swap.GetComponent<Pathfinder>().currentWaypoint;
-		//swap.GetComponent<Pathfinder>().currentWaypoint = swap_.GetComponent<Pathfinder>().currentWaypoint;
-		//swap_.GetComponent<Pathfinder>().currentWaypoint = temp;
-		UpdateOrder();
 	}
 
 	void UpdateOrder(){
-		
-		for (int i = 0; i < victimParent.childCount - 1; i++){
+		for (int i = victimParent.childCount - 1; i >= 0; i--){
 			movables[i] = victimParent.GetChild(i).gameObject;
 		}
 	}

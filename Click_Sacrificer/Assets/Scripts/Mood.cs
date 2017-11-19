@@ -32,12 +32,9 @@ public class Mood : MonoBehaviour {
 		diff += progress;
 		mood = Random.Range(-diff, 1f);
 
-		if (GetComponent<Pathfinder>() != null){
-			if (GetComponent<Pathfinder>().myCount < 15) mood = 1f;//go easy on them for the first few
-		} else {
-			if (transform.GetChild(1).GetComponent<UpdateLabel>().myCount < 15) mood = 1f;//go easy on them for the first few
-
-		}
+		int myCount = Camera.main.GetComponent<Sacrifice>().sacCount + transform.GetSiblingIndex() + 1;
+		//Debug.Log("mycount= " + myCount);
+		if (myCount < 15) mood = 1f;//go easy on them for the first few
 			
 		moodDir = neighborMood();
 
@@ -47,6 +44,8 @@ public class Mood : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+
 		if (moodShiftThresh < Mathf.Abs(moodDir)){
 			mood += moodDir * moodSpeedMult * Time.deltaTime;
 		}

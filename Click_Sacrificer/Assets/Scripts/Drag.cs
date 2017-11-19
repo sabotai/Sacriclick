@@ -51,7 +51,7 @@ public class Drag : MonoBehaviour {
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 			RaycastHit beamHit = new RaycastHit();
-			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default"))){
+			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default", "Background", "click-toy", "temple"))){
 				GameObject obj = beamHit.transform.gameObject;
 
 
@@ -103,7 +103,7 @@ public class Drag : MonoBehaviour {
 
 				//init drag colors/actions
 				if (dragItem != null){
-					dragItem.transform.position = beamHit.point;
+					dragItem.transform.position = beamHit.point + Vector3.up;// - beam.direction * 2f;
 					dragItem.layer = 2; //switch to ignore raycast
 					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
 					dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;

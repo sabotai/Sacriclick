@@ -137,7 +137,7 @@ public class Sacrifice : MonoBehaviour {
 							sacReady = false;
 
 							if (diffManager.GetComponent<MasterWaypointer>() != null){
-								Debug.Log("found master waypointer");
+								//Debug.Log("found master waypointer");
 								if (diffManager.GetComponent<MasterWaypointer>().vicReady){
 									if (beamHit.collider.gameObject == clickable) {
 										DoSacrifice(beamHit);
@@ -337,7 +337,7 @@ public class Sacrifice : MonoBehaviour {
 			//audio.loop = true;
 			if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound);
 			if (!audio2.isPlaying) audio2.Play();
-			Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
+			//Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		}
 	}
 
