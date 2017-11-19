@@ -268,7 +268,11 @@ public class Sacrifice : MonoBehaviour {
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
-				Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
+				if (diffManager.GetComponent<MasterWaypointer>() != null) {
+					Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity);
+				} else {
+						Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
+				}
 				advance = true;
 				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				//increase Clicks-per-minute
@@ -300,7 +304,12 @@ public class Sacrifice : MonoBehaviour {
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
-				Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
+				if (diffManager.GetComponent<MasterWaypointer>() != null) {
+					Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity);
+				} else {
+					Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
+
+				}
 				advance = true;
 				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				//increase Clicks-per-minute
