@@ -43,3 +43,4 @@ Blood Broker
 
             concerns:
                 does this feel like an endorsement of christianity?  perverse to prod, but still no one is dying...
+                What is the consent meter equivalent?

@@ -18,14 +18,19 @@ public class BloodMeter : MonoBehaviour {
 	public float bloodJarAmt = 15f;
 	public float jarEfficiency = 0.3f;
 	public float bloodScreenAmt = 20f;
+	public int jarLimit = 8;
 	int bloodJarNumber = 0;
+	int autosacNumber = 0;
 	float bloodUIOrigY;
 	public bool failed;
 	GameObject bloodCanvasItem;
 	public VideoPlayer bloodPlayer;
-	public GameObject bloodJar;
+	public GameObject bloodJarPrefab;
+	public GameObject autosacPrefab;
 	public Camera bloodCamera;
 	public Transform bloodSpawn;
+	public Transform autosacSpawn;
+	GameObject diffManager;
 	public AudioClip pourSnd;
 	public AudioClip shatterSnd;
 	public AudioSource audsrc;
@@ -36,6 +41,7 @@ public class BloodMeter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		diffManager = GameObject.Find("DifficultyManager");
 		secondsRemaining = bloodAmt * bloodSecondRatio;
 		bloodUIOrigY = bloodUI.localPosition.y;
 		failed = false;
@@ -69,11 +75,11 @@ public class BloodMeter : MonoBehaviour {
 		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
 		
 		if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
-			if (bloodJarNumber < 8){
+			if (bloodJarNumber < jarLimit){
 				bloodJarNumber += 1;
 				bloodAmt -= bloodJarAmt;
 				//GameObject newJar = Instantiate(bloodJar, bloodSpawn.position, Quaternion.identity);
-				GameObject newJar = Instantiate(bloodJar, bloodSpawn);
+				GameObject newJar = Instantiate(bloodJarPrefab, bloodSpawn);
 				audsrc.PlayOneShot(pourSnd);
 				Vector3 bldSpwn = bloodSpawn.position;
 				//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
@@ -82,9 +88,19 @@ public class BloodMeter : MonoBehaviour {
 				newJar.transform.position = bldSpwn;
 				//newJar.transform.position = bloodSpawn.position;
 				//newJar.transform.parent = bloodSpawn;
-			} else {
+				} else {
 				//create auto clicker?
-			}
+					autosacNumber += 1;
+					diffManager.GetComponent<Autosac>().numAutosacs = autosacNumber;
+					bloodAmt -= bloodJarAmt;
+					GameObject newAutosac = Instantiate(autosacPrefab, autosacSpawn);
+					//audsrc.PlayOneShot(pourSnd);
+					Vector3 autoSpwn = autosacSpawn.position;
+					//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
+					autoSpwn += (newAutosac.transform.up * -1.2f * (autosacNumber - 1));
+					newAutosac.transform.position = autoSpwn;
+
+				}
 
 		}
 		bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes

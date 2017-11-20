@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class Sacrifice : MonoBehaviour {
 
 	public GameObject headPrefab;
-	GameObject clickable;
+	public GameObject clickable;
 	public GameObject sword;
 	Vector3 swordOrigScale;
 	private Vector3 clickOrigScale;
