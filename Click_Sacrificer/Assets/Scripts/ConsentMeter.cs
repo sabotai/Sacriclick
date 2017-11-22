@@ -10,6 +10,7 @@ public class ConsentMeter : MonoBehaviour {
 	public float moodDirDispThresh = 0.3f;
 	float moodDir;
 	GameObject dirLabel;
+	public Color totalConsentColor;
 
 	// Use this for initialization
 	void Start () {
@@ -20,7 +21,7 @@ public class ConsentMeter : MonoBehaviour {
 
 
 		moodDir = mommy.GetComponent<Mood>().moodDir;
-		Debug.Log("sibling index = " + transform.GetSiblingIndex());
+		//Debug.Log("sibling index = " + transform.GetSiblingIndex());
 		if (transform.GetChild(0).gameObject != null)
 			dirLabel = transform.GetChild(0).gameObject;
 	}
@@ -28,7 +29,7 @@ public class ConsentMeter : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (consentPct > 0.5f){
-			consentColor = Color.Lerp(Color.yellow, Color.green, consentPct - 0.5f);
+			consentColor = Color.Lerp(Color.yellow, totalConsentColor, consentPct - 0.5f);
 		} else {
 			consentColor = Color.Lerp(Color.red, Color.yellow, consentPct + 0.5f);			
 		}

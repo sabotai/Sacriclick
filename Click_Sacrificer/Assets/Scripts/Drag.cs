@@ -28,6 +28,12 @@ public class Drag : MonoBehaviour {
 	public Color brokerModeFogColor;
 	public Color bloodModeFogColor;
 	GameObject diffManager;
+	public GameObject pipCam;
+	public GameObject pipCanvas;
+	public GameObject lArrow;
+	public GameObject rArrow;
+	public Material pipMaterial;
+	public float arrowBounceSpeed = 3f;
 
 
 	// Use this for initialization
@@ -37,10 +43,12 @@ public class Drag : MonoBehaviour {
 
 		cam = Camera.main.gameObject.GetComponent<CameraMove>().startFocus;
 		endCam = Camera.main.gameObject.GetComponent<CameraMove>().endFocus;
+
+		int lastVisiblePan = 5;
 		if (diffManager.GetComponent<MasterWaypointer>() != null){
-			maxPanRight = GameObject.Find("Victims").transform.GetChild(GameObject.Find("Victims").transform.childCount - 1).position.x;
+			maxPanRight = GameObject.Find("Victims").transform.GetChild(GameObject.Find("Victims").transform.childCount - 1 - lastVisiblePan).position.x;
 		} else {
-			maxPanRight = GameObject.Find("Victims").transform.GetChild(0).position.x;
+			maxPanRight = GameObject.Find("Victims").transform.GetChild(lastVisiblePan).position.x;
 		}
 	}
 	
@@ -56,7 +64,7 @@ public class Drag : MonoBehaviour {
 
 
 				if (hoverItem != null){ //restore hover colors
-					Debug.Log("restoring prehover colors");
+					//Debug.Log("restoring prehover colors");
 					hoverItem.GetComponent<MeshRenderer> ().material.color = origColor;
 					hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
 					if (hoverItem.transform.childCount > 0) {
@@ -69,7 +77,7 @@ public class Drag : MonoBehaviour {
 
 				if (obj.transform.parent != null && (obj.transform.parent.name == "Victims" || obj.name == "VictimLabel (1)")){ //if start hovering
 					if (obj.name == "VictimLabel (1)") {
-						Debug.Log("Hovering over label");
+						//Debug.Log("Hovering over label");
 						hoverItem = obj.transform.parent.gameObject;
 					} else {
 						//sup new hover item
@@ -191,9 +199,52 @@ public class Drag : MonoBehaviour {
 	}
 	void doPanMode(bool yes){
 		if (yes){
+
+			lArrow.SetActive(false);
+			rArrow.SetActive(false);
+			//move the arrows
+			//display guide arrows by default
+			float originalPos = 0.5f; //default position
+			float arrowOffset = Mathf.PingPong((Time.time/6f) * arrowBounceSpeed, .1f) - .1f/2f;
+			//lArrow.GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.left, arrowOffset, ); 
+			lArrow.GetComponent<RectTransform>().pivot = new Vector2(originalPos + arrowOffset, 0f);
+			//originalPos = -105f; //default position for r side
+
+			//rArrow.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, arrowOffset); 
+			rArrow.GetComponent<RectTransform>().pivot = new Vector2(originalPos - arrowOffset, 0f);
+
 			RenderSettings.fogColor = brokerModeFogColor;
 			//force the front perspective
 			GetComponent<CameraMove>().forceAmt += 0.01f;
+
+			if (amtPanned >= maxPanRight / 6f){
+				//enable and fade in the pip stuff
+				pipCam.GetComponent<Camera>().enabled = true;
+				pipCanvas.SetActive(true);
+				Color pipColor = pipMaterial.color;
+				if (pipColor.a < 1f) {
+					pipColor.a += 0.15f;
+					pipMaterial.color = pipColor;
+				}
+
+
+				if (amtPanned > maxPanRight - (maxPanRight / 6f)){
+					rArrow.SetActive(false);
+					lArrow.SetActive(true);
+				}
+			} else {
+			//fade out and then disable the pip stuff
+				Color pipColor = pipMaterial.color;
+				if (pipColor.a > 0f) {
+					pipColor.a -= 0.25f;
+					pipMaterial.color = pipColor;
+				} else {
+					pipCam.GetComponent<Camera>().enabled = false;
+					pipCanvas.SetActive(false);
+				}
+				rArrow.SetActive(true);
+				lArrow.SetActive(false);
+			}
 
 			//if outside the boundaries
 			if (amtPanned >= 0 && amtPanned <= maxPanRight){
@@ -221,6 +272,20 @@ public class Drag : MonoBehaviour {
 				panCam *= 0.75f;
 			}
 		} else {
+			//hide guide arrows
+			rArrow.SetActive(false);
+			lArrow.SetActive(false);
+
+			//fade out and then disable the pip stuff
+			Color pipColor = pipMaterial.color;
+			if (pipColor.a > 0f) {
+				pipColor.a -= 0.25f;
+				pipMaterial.color = pipColor;
+			} else {
+				pipCam.GetComponent<Camera>().enabled = false;
+				pipCanvas.SetActive(false);
+			}
+
 			RenderSettings.fogColor = bloodModeFogColor;
 			if (dragFail)	panCam = Vector3.zero;
 

@@ -70,6 +70,7 @@ public class MasterWaypointer : MonoBehaviour {
 		}
 		if (releaseVics){
 			//hide the labels
+			failed = true;
 			GameObject[] labels = GameObject.FindGameObjectsWithTag("label");
 
 			foreach (GameObject label in labels){
@@ -77,8 +78,8 @@ public class MasterWaypointer : MonoBehaviour {
 			}
 
 			//UpdateOrder();
-			foreach (GameObject mover in movables){
-				ReleaseVic(mover);			
+			for (int i  = 0; i < movables.Length; i++){
+				ReleaseVic(movables[i]);			
 			}
 		}
 
@@ -135,37 +136,37 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void SacrificeVic(){
-		//Debug.Log("SACRIFICING: " + vic.name);
-		StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
+		if (vic.transform.GetSiblingIndex() == 0){ //protection against it sac'ing the same one twice
+			//Debug.Log("SACRIFICING: " + vic.name);
+			//StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
 
-		//reached the end of the line (front of the line?)
+			//reached the end of the line (front of the line?)
 
-		//purge the child
+			//purge the child
 
-		
+			
 
-		//destroy doughnut hole
-		//Destroy(transform.GetChild(0).gameObject);
-		//game failed if you sacrificed one who did not conset
-		float myDeathMood = vic.GetComponent<Mood>().mood;
-		float mt = vic.GetComponent<Mood>().moodFailThresh;
-		if (myDeathMood < mt){
-			//Debug.Log("sacrificed someone without consent!");
-			//myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
-			if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
-		} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
-			//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
-		} else { //pos moods
-			//myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+			//destroy doughnut hole
+			//Destroy(transform.GetChild(0).gameObject);
+			//game failed if you sacrificed one who did not conset
+			float myDeathMood = vic.GetComponent<Mood>().mood;
+			float mt = vic.GetComponent<Mood>().moodFailThresh;
+			if (myDeathMood < mt){
+				//Debug.Log("sacrificed someone without consent! " + myDeathMood + "  " + vic.name);
+				//myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
+				if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+			} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
+				//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+			} else { //pos moods
+				//myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+			}
+
+			//if (playScreams) audio.PlayOneShot(myClip);
+			ReleaseVic(vic);
+			MoveUp();
+			//instantiate the new one
+			SpawnReplacement();
 		}
-
-		//if (playScreams) audio.PlayOneShot(myClip);
-		ReleaseVic(vic);
-		MoveUp();
-		//instantiate the new one
-		SpawnReplacement();
-	
-
 	}
 
 	public void DragInsert(GameObject swap, GameObject swap_){

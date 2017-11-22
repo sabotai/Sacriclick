@@ -13,6 +13,7 @@ public class Mood : MonoBehaviour {
 	public float moodFailThresh = -.35f;
 	public float diff = 0.5f;
 	public float diffProgression = 0.01f;
+	public int initialFreebies = 15;
 
 	void Awake(){
 
@@ -34,9 +35,12 @@ public class Mood : MonoBehaviour {
 
 		int myCount = Camera.main.GetComponent<Sacrifice>().sacCount + transform.GetSiblingIndex() + 1;
 		//Debug.Log("mycount= " + myCount);
-		if (myCount < 15) mood = 1f;//go easy on them for the first few
 			
 		moodDir = neighborMood();
+		if (myCount < initialFreebies) {
+			mood = 0.99f;//go easy on them for the first few
+			moodDir = 1f;
+		}
 
 		//Debug.Log(this.transform.GetSiblingIndex() + ". " + mood + " w/dir of: " + moodDir);
 		

@@ -21,9 +21,18 @@ public class DifficultyManager : MonoBehaviour {
 	public bool constrainMood = true;
 	public float hoverMoodSpeedMult = 2f;
 	public float moodHoverDir = 1f;
+	public GameObject victimPrefab;
+	public int initFreebies = 15;
+	public float autosacDuration = 5f;
+
+	void Awake(){
+
+		victimPrefab.GetComponent<Mood>().initialFreebies = initFreebies;
+	}
 
 	// Use this for initialization
 	void Start () {
+		GetComponent<Autosac>().duration = autosacDuration;
 		GameObject sword = GameObject.Find("sword");
 		sword.GetComponent<Cursword>().scaleSword = scaleSword;
 		sword.GetComponent<Cursword>().maxSize = swordMax;
@@ -34,7 +43,6 @@ public class DifficultyManager : MonoBehaviour {
 		Camera.main.gameObject.GetComponent<BloodMeter>().sacBloodValue = sacBloodValue;
 		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = bloodSecondRatio;
 		Camera.main.gameObject.GetComponent<BloodMeter>().useAutoJar = useAutoJar;
-
 
 		GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child

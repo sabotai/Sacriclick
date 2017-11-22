@@ -41,6 +41,8 @@ public class Sacrifice : MonoBehaviour {
 	public Vector3 bloodOffset;
 	GameObject selectedObj;
 	GameObject diffManager;
+	public float autoThresh = 10;
+	bool hovering = false;
 
 	void Awake(){
 		sacCount = 0;
@@ -128,8 +130,9 @@ public class Sacrifice : MonoBehaviour {
 			}
 
 			if (clicking){
-				Vector3 swordOrigPos = sword.transform.localPosition;
-				StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
+				//no longer displaying sword in blood mode
+				//Vector3 swordOrigPos = sword.transform.localPosition;
+				//StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
 
 				if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
 					if (!limitAvailSac || sacReady){ //if limited, check if ready
@@ -162,25 +165,16 @@ public class Sacrifice : MonoBehaviour {
 			}
 
 		}
-
-
-
 			calcCPS();
-			
-		
 	}
 
 	void calcCPS(){
-		//cps = cpf * Time.deltaTime;
 		int fps = (int)(1f / Time.deltaTime);
 		int useFrameAmt = (int)Mathf.Clamp(fps, 0f, 60f);
 
 		//move everything down by one
 		for (int i = useFrameAmt - 1; i > 0; i--){
-			
 			cpsSamples[i] = cpsSamples[i - 1];
-
-			//Debug.Log(cpsSamples[i]);
 		}
 		cpsSamples[0] = cpf;
 
@@ -189,35 +183,28 @@ public class Sacrifice : MonoBehaviour {
 		for (int i = 0; i < useFrameAmt; i++){
 			totalCps += cpsSamples[i];
 		}
-		//avgCps /= cpsSamples.Length;
-		cps = totalCps;// / cpsSamples.Length; //update to the new avg
-		//Debug.Log("avgCps = " + cps);
+		cps = totalCps;
 		cpf = 0f;
 
-		//if (Time.time >= startTime + cpmDuration){
-		//	startTime = Time.time;
-			/*
-			cps = (cpm / cpmDuration); //current cps
-
-
-			cpsSamples[0] = cps;
-			//move everything down by one
-			for (int i = 0; i < cpsSamples.Length; i++){
-				if (i < cpsSamples.Length - 1){
-					cpsSamples[i+1] = cpsSamples[i];
-				}
-			}
-			*/
 			calcCPM();
 
-			//Debug.Log("cpm = " + cpm);
 			if (sun.GetComponent<SunPct>() != null && sun.GetComponent<SunPct>().manControl == false )
 				sun.GetComponent<SunPct>().rotAmt = (sun.GetComponent<SunPct>().rotAmt * 0.7f) + ((cps / maxCps) * 0.3f);
-			//cpsDisplay.text = "Sacrifices-Per-Second:	" + cps;
-			//ppCps = pCps;
-			//pCps = cps;
-		//}
+
 		cpsDisplay.text = (int)cps + "/s.  " + (int)cpm + "/m.";
+
+
+		//if fast enough to generate autosac
+		if (cps > autoThresh){
+			if (GetComponent<BloodMeter>().autosacNumber < 8){
+				GetComponent<BloodMeter>().createAuto();
+				
+				//reset the samples so they cant spam it
+				for (int i = 0; i < cpsSamples.Length; i++){
+					cpsSamples[i] = 0f;
+				}
+			}
+		}
 		//cpm = 0;
 	}
 	void calcCPM(){
@@ -268,13 +255,13 @@ public class Sacrifice : MonoBehaviour {
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
+				advance = true;
 				if (diffManager.GetComponent<MasterWaypointer>() != null) {
 					Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity);
+					diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				} else {
-						Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
+					Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
 				}
-				advance = true;
-				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				//increase Clicks-per-minute
 				//if (Time.time < startTime + cpmDuration){
 				cpf++;
