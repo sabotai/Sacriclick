@@ -89,7 +89,7 @@ public class BloodMeter : MonoBehaviour {
 		Color bloodColor;
 		bloodColor = bloodMat.GetColor("_TintColor");
 		float bloodPct = bloodAmt / 20f;
-		float maxA = 0.15f;
+		float maxA = 0.22f;
 		float bloodA = maxA - maxA * (bloodAmt / 20f);
 		bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
 		bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen

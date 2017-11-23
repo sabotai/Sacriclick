@@ -59,7 +59,7 @@ public class Drag : MonoBehaviour {
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 			RaycastHit beamHit = new RaycastHit();
-			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default", "Background", "click-toy", "temple"))){
+			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("Default", "Background", "click-toy", "temple", "TransparentFX"))){
 				GameObject obj = beamHit.transform.gameObject;
 
 

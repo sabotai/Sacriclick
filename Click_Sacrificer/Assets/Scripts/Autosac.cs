@@ -28,6 +28,8 @@ public class Autosac : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (sacrificer.GetComponent<Sacrifice>().failed) numAutosacs = 0;
+
 		float interval = duration / numAutosacs;
 		if (Time.time > startX + interval && useAutosac && numAutosacs > 0){
 			if (diffManager.GetComponent<MasterWaypointer>() != null){
