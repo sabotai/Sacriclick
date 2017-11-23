@@ -43,6 +43,8 @@ public class Sacrifice : MonoBehaviour {
 	GameObject diffManager;
 	public float autoThresh = 10;
 	bool hovering = false;
+	public GameObject lightParent;
+	public AudioClip templeHoverClip;
 
 	void Awake(){
 		sacCount = 0;
@@ -110,7 +112,14 @@ public class Sacrifice : MonoBehaviour {
 		//the second parameter is where our raycasthit information is stored
 		//the third parameter is how far to cast the ray
 		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
-
+			if (!hovering){
+				for (int i = 0; i < lightParent.transform.childCount; i++){
+					lightParent.transform.GetChild(i).gameObject.GetComponent<Light>().intensity = 0.15f;
+					//lightParent.transform.GetChild(i).gameObject.GetComponent<Flicker>().Awake();
+				}
+				lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
+			}
+			hovering = true;
 			//old shrink cursword code when hovering over clickable 
 			/*
 			if (beamHit.collider.gameObject == clickable) {
@@ -164,8 +173,15 @@ public class Sacrifice : MonoBehaviour {
 				}
 			}
 
+		} else {
+			hovering = false;
+			for (int i = 0; i < lightParent.transform.childCount; i++){
+				lightParent.transform.GetChild(i).gameObject.GetComponent<Light>().intensity = 0.05f;
+				//lightParent.transform.GetChild(i).gameObject.GetComponent<Flicker>().Awake();
+			}
 		}
 			calcCPS();
+		
 	}
 
 	void calcCPS(){

@@ -154,7 +154,7 @@ namespace RLE
     [CustomEditor(typeof(Flicker))]
     public class FlickerEditor : Editor
     {
-        Flicker f;
+        public Flicker f;
 
         SerializedObject serializedObj;
         SerializedProperty prop;
