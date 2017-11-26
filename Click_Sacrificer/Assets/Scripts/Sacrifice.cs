@@ -108,80 +108,84 @@ public class Sacrifice : MonoBehaviour {
 		//declare and initialize our raycasthit to store hit information
 		RaycastHit beamHit = new RaycastHit();
 
-		//this both casts the ray "beam" and returns true if the ray hits any collider
-		//the second parameter is where our raycasthit information is stored
-		//the third parameter is how far to cast the ray
-		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
-			if (!hovering){
-				for (int i = 0; i < lightParent.transform.childCount; i++){
-					lightParent.transform.GetChild(i).gameObject.GetComponent<Light>().intensity = 0.15f;
-					//lightParent.transform.GetChild(i).gameObject.GetComponent<Flicker>().Awake();
+		if (!GetComponent<Drag>().panMode){
+			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
+				if (!hovering){ //use hovering to efficiently only run once
+					lights(0.15f);
+					lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
 				}
-				lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
-			}
-			hovering = true;
-			//old shrink cursword code when hovering over clickable 
-			/*
-			if (beamHit.collider.gameObject == clickable) {
-				sword.GetComponent<Cursword>().hideCursor = true;
-				sword.GetComponent<Cursword>().currentSize *= 0.7f;
-			} else {
-				sword.GetComponent<Cursword>().hideCursor = false;
-			}
-			*/
+				hovering = true;
+				//old shrink cursword code when hovering over clickable 
+				/*
+				if (beamHit.collider.gameObject == clickable) {
+					sword.GetComponent<Cursword>().hideCursor = true;
+					sword.GetComponent<Cursword>().currentSize *= 0.7f;
+				} else {
+					sword.GetComponent<Cursword>().hideCursor = false;
+				}
+				*/
 
-			//if the raycast hits a rigidbody and the player is pressing the right mouse button
-			bool clicking = false;
-			if (easyMode){
-				clicking = Input.GetButton("Sacrifice");
-			} else {
-				clicking = Input.GetButtonDown("Sacrifice");
-			}
+				//if the raycast hits a rigidbody and the player is pressing the right mouse button
+				bool clicking = false;
+				if (easyMode){
+					clicking = Input.GetButton("Sacrifice");
+				} else {
+					clicking = Input.GetButtonDown("Sacrifice");
+				}
 
-			if (clicking){
-				//no longer displaying sword in blood mode
-				//Vector3 swordOrigPos = sword.transform.localPosition;
-				//StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
+				if (clicking){
+					//no longer displaying sword in blood mode
+					//Vector3 swordOrigPos = sword.transform.localPosition;
+					//StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
 
-				if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
-					if (!limitAvailSac || sacReady){ //if limited, check if ready
-						if (!GetComponent<Drag>().panMode){
-							sacReady = false;
+					if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
+						if (!limitAvailSac || sacReady){ //if limited, check if ready
+							if (!GetComponent<Drag>().panMode){
+								sacReady = false;
 
-							if (diffManager.GetComponent<MasterWaypointer>() != null){
-								//Debug.Log("found master waypointer");
-								if (diffManager.GetComponent<MasterWaypointer>().vicReady){
+								if (diffManager.GetComponent<MasterWaypointer>() != null){
+									//Debug.Log("found master waypointer");
+									if (diffManager.GetComponent<MasterWaypointer>().vicReady){
+										if (beamHit.collider.gameObject == clickable) {
+											DoSacrifice(beamHit);
+										} else {
+											DoSacrifice(clickable);
+										}
+									}
+
+
+								} else {
 									if (beamHit.collider.gameObject == clickable) {
 										DoSacrifice(beamHit);
 									} else {
 										DoSacrifice(clickable);
 									}
 								}
-
-
-							} else {
-								if (beamHit.collider.gameObject == clickable) {
-									DoSacrifice(beamHit);
-								} else {
-									DoSacrifice(clickable);
-								}
+								//Debug.Log("sac reset");
 							}
-							//Debug.Log("sac reset");
+							
 						}
-						
 					}
 				}
-			}
 
-		} else {
+			} else {
+				hovering = false;
+				lights(0.05f);
+			}
+		} else { //in pan mode
 			hovering = false;
+			lights(0.15f);
+		}
+		calcCPS();
+		
+	}
+
+	void lights(float intens){
 			for (int i = 0; i < lightParent.transform.childCount; i++){
-				lightParent.transform.GetChild(i).gameObject.GetComponent<Light>().intensity = 0.05f;
+				lightParent.transform.GetChild(i).gameObject.GetComponent<Light>().intensity = intens;
 				//lightParent.transform.GetChild(i).gameObject.GetComponent<Flicker>().Awake();
 			}
-		}
-			calcCPS();
-		
+
 	}
 
 	void calcCPS(){
