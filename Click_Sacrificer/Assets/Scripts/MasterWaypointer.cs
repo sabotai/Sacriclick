@@ -136,7 +136,7 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void SacrificeVic(){
-		if (vic.transform.GetSiblingIndex() == 0){ //protection against it sac'ing the same one twice
+		if (vic.transform.GetSiblingIndex() == 0 && vic.name != "dumb-idol-placeholder"){ //protection against it sac'ing the same one twice
 			//Debug.Log("SACRIFICING: " + vic.name);
 			//StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
 
@@ -177,7 +177,19 @@ public class MasterWaypointer : MonoBehaviour {
 		swap_.transform.SetSiblingIndex(swapSibCnt);
 	}
 
-	void UpdateOrder(){
+	public void ThrowInsert(GameObject swap, GameObject swap_){
+		//Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
+		int swapSibCnt = swap.transform.GetSiblingIndex();
+		int swap_SibCnt = swap_.transform.GetSiblingIndex();
+
+		for (int i = swapSibCnt; i < swap_SibCnt; i++){
+			swap_.transform.parent.GetChild(i + 1).SetSiblingIndex(i);
+		}
+		swap.transform.SetParent(swap_.transform.parent);
+		swap.transform.SetSiblingIndex(swap_SibCnt);
+	}
+
+	public void UpdateOrder(){
 		for (int i = victimParent.childCount - 1; i >= 0; i--){
 			movables[i] = victimParent.GetChild(i).gameObject;
 		}

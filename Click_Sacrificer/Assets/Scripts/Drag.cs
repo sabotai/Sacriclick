@@ -5,6 +5,8 @@ using UnityEngine;
 public class Drag : MonoBehaviour {
 	[System.NonSerialized]public GameObject dragItem;
 	[System.NonSerialized]public GameObject hoverItem;
+	[System.NonSerialized]public GameObject flickItem;
+	GameObject vicParent;
 	Color origColor;
 	public Color highlightColor;
 	Color origEmissionColor;
@@ -34,10 +36,15 @@ public class Drag : MonoBehaviour {
 	public GameObject rArrow;
 	public Material pipMaterial;
 	public float arrowBounceSpeed = 3f;
-
+	public GameObject placeholderItem;
+	Vector3 pMouse, mouseVelo;
+	public float flickThresh = 30f;
+	public float flickForce = 4000f;
+	public AudioClip flickClip;
 
 	// Use this for initialization
 	void Start () {
+		vicParent = GameObject.Find("Victims");
 		diffManager = GameObject.Find("DifficultyManager");
 		panCam = new Vector3(0f,0f,0f);
 
@@ -65,12 +72,7 @@ public class Drag : MonoBehaviour {
 
 				if (hoverItem != null){ //restore hover colors
 					//Debug.Log("restoring prehover colors");
-					hoverItem.GetComponent<MeshRenderer> ().material.color = origColor;
-					hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-					if (hoverItem.transform.childCount > 0) {
-						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origColor;
-						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-					}
+					resetColor(hoverItem);
 					hoverItem = null;
 				}
 
@@ -94,16 +96,11 @@ public class Drag : MonoBehaviour {
 	 					audio.PlayOneShot(pickup);
 						dragItem = hoverItem;
 						hoverItem = null;
-	 					//origColor = dragItem.GetComponent<MeshRenderer> ().material.color;
-	 					//origEmissionColor = dragItem.GetComponent<MeshRenderer> ().material.GetColor("_EmissionColor");
 					} else { //if just newly hovering
 		 				audio.PlayOneShot(hover);
 
 						//set color for both pieces of the victim
-		 				hoverItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-		 				hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-						hoverItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
-						hoverItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
+						setColor(hoverItem, highlightColor);
 					}
 
 				}
@@ -111,47 +108,35 @@ public class Drag : MonoBehaviour {
 
 				//init drag colors/actions
 				if (dragItem != null){
-					dragItem.transform.position = beamHit.point + Vector3.up;// - beam.direction * 2f;
+					dragItem.transform.position = beamHit.point + Vector3.up; //slight offset to prevent going through the ground
+
 					dragItem.layer = 2; //switch to ignore raycast
-					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
-					dragItem.GetComponent<MeshRenderer> ().material.color = highlightColor;
-					if (dragItem.transform.childCount > 0){
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", highlightColor);
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = highlightColor;
-					}
+					setColor(dragItem, highlightColor);
 							
 				}
 
-			}
+			} //end of raycast
 
 			//if something is being dragged
 			if (dragItem != null){
-				//force the front perspective
-				//GetComponent<CameraMove>().forceAmt += 0.01f;
 
 				//release
 				if (Input.GetMouseButtonUp(0)){
-					if (!panToggle) 
-						panMode = false;
 
-					//panCam = Vector3.zero;
-					/*
-					//hard reset pan position
-					cam.position += new Vector3(-amtPanned, 0f, 0f);
-					endCam.position += new Vector3(-amtPanned, 0f, 0f);
-					panCam = Vector3.zero;
-					amtPanned = panCam.x;
-					*/
+
+
+					if (!panToggle) panMode = false;
+					
 					dragItem.layer = 0; //switch back to default layer
-					dragItem.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
-					dragItem.GetComponent<MeshRenderer> ().material.color = origColor;
-					//dragItem.GetComponent<MeshRenderer> ().material.color = origMat.color;
-					if (dragItem.transform.childCount > 0){
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//, new Color(0f,0f,0f));
-						dragItem.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origColor;
-					}
-					dragFail = !insert(dragItem);
-					if (dragFail) {
+					resetColor(dragItem);
+
+					dragFail = !insert(dragItem, false);
+
+					if (mouseVelo.magnitude > flickThresh && flickItem == null && dragItem.transform.GetSiblingIndex() != 0){
+						Debug.Log("velo = " + mouseVelo.magnitude);
+						flickItem = dragItem;
+						flickItem.GetComponent<Rigidbody>().velocity = Vector3.zero;
+					} else if (dragFail) {
 						audio.PlayOneShot(badRelease);
 					} else {
 						audio.PlayOneShot(goodRelease);
@@ -159,12 +144,18 @@ public class Drag : MonoBehaviour {
 					dragItem = null;
 
 				}
-			} else {
+			} else { //if dragitem is null
 				if (!panToggle) panMode = false;
 			}
+		} else { //if !panmode
+			
+			//reset them if the player swapped back to blood while hovering or dragging
+			if (dragItem != null) resetColor(dragItem);
+			if (hoverItem != null) resetColor(hoverItem);
 		}
 
 
+		if (flickItem != null) flick(flickItem);
 		//swapping between modes
 		if (Input.GetButtonDown("Toggle") && panToggle) {
 			panMode = !panMode;
@@ -172,12 +163,40 @@ public class Drag : MonoBehaviour {
 		}
 		doPanMode(Input.GetButton("Toggle") || panMode);
 
+		mouseVelo = Input.mousePosition - pMouse;
+		pMouse = Input.mousePosition;
+
 	}
-	bool insert(GameObject relObj){
+
+	void resetColor(GameObject me){
+
+		me.GetComponent<MeshRenderer> ().material.color = origColor;
+		me.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+		if (me.transform.childCount > 0) {
+			me.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = origColor;
+			me.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", origEmissionColor);//new Color(0f,0f,0f));
+		}
+
+	}
+
+	void setColor(GameObject me, Color thisColor){
+		me.GetComponent<MeshRenderer> ().material.color = thisColor;
+		me.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", thisColor);
+
+		//this is the second piece of the victim
+		me.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = thisColor;
+		me.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.SetColor("_EmissionColor", thisColor);
+
+	}
+	bool insert(GameObject relObj, bool isThrow){
 		GameObject victimParent;
 		int sibIndex = relObj.transform.GetSiblingIndex();
 		//Debug.Log("sibindex = " + sibIndex);
-		victimParent = relObj.transform.parent.gameObject; //find my parent
+		if (relObj.transform.parent != null){ 
+			victimParent = relObj.transform.parent.gameObject; //find my parent
+		} else {
+			victimParent = vicParent;
+		}
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
 		for (int i = 0; i < victimz.Length; i++){ //assign each one
 			victimz[i] = victimParent.transform.GetChild(i).gameObject;
@@ -186,17 +205,63 @@ public class Drag : MonoBehaviour {
 			if (Vector3.Distance(vic.transform.position, relObj.transform.position) < insertThresh){
 				if (vic != relObj){ //prevent from swapping with itself
 					Debug.Log("swapping " + sibIndex + " for " + vic.transform.GetSiblingIndex());
-					if (vic.GetComponent<Pathfinder>() != null){
-						vic.GetComponent<Pathfinder>().DragInsert(relObj, vic);
-					} else {
-						diffManager.GetComponent<MasterWaypointer>().DragInsert(relObj, vic);
-					}
+
+						if (!isThrow){
+							diffManager.GetComponent<MasterWaypointer>().DragInsert(relObj, vic);
+						} else {
+							diffManager.GetComponent<MasterWaypointer>().ThrowInsert(relObj, vic);
+						}
+
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+
+	void flick(GameObject flickee){
+		Debug.Log("flicking item ... " + flickee.name);
+		int sibIndex = flickee.transform.GetSiblingIndex();
+		if (flickee.transform.position.x > -1f && flickee.transform.position.x < maxPanRight && flickee.transform.position.z < 10f && flickee.transform.position.z > 0f ){
+			if (placeholderItem.transform.parent != null) {
+				sibIndex = placeholderItem.transform.GetSiblingIndex(); //override it if it has already swapped
+			} else {
+				audio.PlayOneShot(flickClip);
+				placeholderItem.transform.SetParent(vicParent.transform);
+				placeholderItem.transform.SetSiblingIndex(sibIndex);
+				diffManager.GetComponent<MasterWaypointer>().movables[sibIndex] = placeholderItem;
+				flickee.transform.SetParent(null);
+				flickee.GetComponent<Rigidbody>().velocity = Vector3.zero; //needs to be zeroed from old return velocity
+				flickee.GetComponent<Rigidbody>().AddForce(Vector3.Normalize(mouseVelo) * flickForce);
+				//flickee.GetComponent<Rigidbody>().AddForce(mouseVelo * 200f);
+				Debug.Log("sending it on its way...");
+
+			}
+
+			if (insert(flickee, true)) { //if havent found a new home yet
+				Debug.Log("putting back flickee at " + sibIndex);
+				placeholderItem.transform.SetParent(null);
+				diffManager.GetComponent<MasterWaypointer>().UpdateOrder();
+				flickItem = null;
+			}
+		} else {
+			audio.PlayOneShot(badRelease);
+			Debug.Log("flicked item out of bounds, resetting... " );
+			if (flickee.transform.parent == null){ //if it is currently parentless
+
+				sibIndex = placeholderItem.transform.GetSiblingIndex(); //override it if it has already swapped
+
+				//reset to original position if out of bounds
+				placeholderItem.transform.parent = null;
+				flickee.transform.SetParent(vicParent.transform);
+				flickee.transform.SetSiblingIndex(sibIndex);
+				diffManager.GetComponent<MasterWaypointer>().UpdateOrder();
+			}
+			flickItem = null;
+		}
+
+	}
+
 	void doPanMode(bool yes){
 		if (yes){
 
