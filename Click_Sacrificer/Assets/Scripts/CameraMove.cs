@@ -13,6 +13,7 @@ public class CameraMove : MonoBehaviour {
 	public bool forceShift = false;
 	public float forceAmt = 0.0f;
 	public Camera[] chainedCams;
+	public bool zoomable = false;
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +34,7 @@ public class CameraMove : MonoBehaviour {
 			Debug.Log("hit " + beamHit.transform.gameObject);
 		}
 		*/
+		oldZoom = 0.35f; //starting %
 	}
 	
 	// Update is called once per frame
@@ -67,5 +69,12 @@ public class CameraMove : MonoBehaviour {
 		//transform.LookAt(focus);
 
 		oldZoom = zoom;
+
+		if (zoomable){
+
+			float scrolled = Input.GetAxis("Mouse ScrollWheel") * -10f;
+			//startZoomAmt += scrolled;
+			endZoomAmt += scrolled;
+		}
 	}
 }
