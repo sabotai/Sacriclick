@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class MapKeys : MonoBehaviour {
 
 
+	float howManyKeys = 0f;
 	// Use this for initialization
 	void Start () {
 		
@@ -12,15 +14,17 @@ public class MapKeys : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Vector2[] allKeys = mapKeys();
-		int howManyKeys = allKeys.Length;
-		Vector2 centerPoint = mapCenter(allKeys);
-		if (centerPoint != new Vector2(0,0)) {
-			Debug.Log("center = " + centerPoint);
-			Debug.Log("stddev = " + mapStdDev(allKeys, centerPoint));
-		}
-		
+		List<Vector2> keys = mapKeys();
 
+		Vector2[] allKeys = new Vector2[keys.Count];
+		keys.CopyTo(allKeys);
+
+		howManyKeys = allKeys.Length;
+		Vector2 centerPoint = mapCenter(allKeys);
+		if (centerPoint != new Vector2(0f,0f)) {
+			//Debug.Log("center = " + centerPoint);
+			Debug.Log("stddev = " + stdDev(keys));//, centerPoint));
+		}
 	}
 
 	Vector2 mapCenter(Vector2[] points){ //finds the mean
@@ -31,21 +35,38 @@ public class MapKeys : MonoBehaviour {
 		}
 		return keysCenter;
 	}
-
+/*
+	//OLD BROKEN METHOD
 	Vector2 mapStdDev(Vector2[] points, Vector2 center){ //still something wrong with y for some reason
 		Vector2 sumDevSq = new Vector2(0f,0f);
 		for (int i = 0; i < points.Length; i++){
 			Vector2 dev = points[i] - center;
-			sumDevSq += (Vector2.Scale(dev,dev)); //adding the sq deviation of each
+			sumDevSq += Vector2.Scale(dev, dev);//(new Vector2 (dev.x * dev.x, dev.y * dev.y)); //adding the sq deviation of each
 		}
-		Vector2 almostStdDev = sumDevSq / (points.Length - 1f); //divide by N - 1
-		Vector2 stdDev = new Vector2(Mathf.Sqrt(almostStdDev.x), Mathf.Sqrt(almostStdDev.y));
+		Vector2 variance = sumDevSq / (points.Length); //divide by N [N-1 for sample; N for total std dev]
+		//Debug.Log("total variance = " + variance);
+		Vector2 stdDev = new Vector2(Mathf.Sqrt(variance.x), Mathf.Sqrt(variance.y));
 
 		return stdDev;
 	}
+*/
+   //using list of vector2s
+	public static Vector2 stdDev(List<Vector2> values) //for some reason, these only work using lists.  arrays fucks it up
+    {
+    	float[] xValues = values.Select(a => a.x).ToArray();
+    	float[] yValues = values.Select(b => b.y).ToArray();
+		
+        float avgX = xValues.Average();
+        float sdX = Mathf.Sqrt(xValues.Average(v=>Mathf.Pow(v-avgX,2)));
 
-	Vector2[] mapKeys() {
-		List<Vector2> keys = new List<Vector2>();
+        float avgY = yValues.Average();
+        float sdY = Mathf.Sqrt(yValues.Average(v=>Mathf.Pow(v-avgY,2)));
+
+		return new Vector2(sdX, sdY);
+   }
+
+	List<Vector2> mapKeys() {
+		List<Vector2> locKeys = new List<Vector2>();
 
 		foreach(KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))){
 		    if(Input.GetKey(vKey)){
@@ -291,12 +312,13 @@ public class MapKeys : MonoBehaviour {
 		             	coord = new Vector2(6f,5f);
 		             	break; 
              	} //end switch
-				keys.Add(coord);
+				locKeys.Add(coord);
             }   //end if any key
 		} //end foreach
-		Vector2[] allKeys = new Vector2[keys.Count];
-		keys.CopyTo(allKeys);
-		return allKeys;
+		//Vector2[] allKeys = new Vector2[keys.Count];
+		//keys.CopyTo(allKeys);
+
+		return locKeys;
 	}
 
 }
