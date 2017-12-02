@@ -7,6 +7,7 @@ public class MapKeys : MonoBehaviour {
 
 
 	float howManyKeys = 0f;
+	Vector2 pStdDev = new Vector2(0f,0f);
 	// Use this for initialization
 	void Start () {
 		
@@ -15,6 +16,7 @@ public class MapKeys : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		List<Vector2> keys = mapKeys();
+		float gripOpenDelta = 0f;
 
 		Vector2[] allKeys = new Vector2[keys.Count];
 		keys.CopyTo(allKeys);
@@ -23,7 +25,15 @@ public class MapKeys : MonoBehaviour {
 		Vector2 centerPoint = mapCenter(allKeys);
 		if (centerPoint != new Vector2(0f,0f)) {
 			//Debug.Log("center = " + centerPoint);
-			Debug.Log("stddev = " + stdDev(keys));//, centerPoint));
+			Vector2 myStdDev = stdDev(keys);
+			//Debug.Log("stddev = " + myStdDev);//, centerPoint));
+			if (myStdDev != new Vector2(0f,0f)){
+				gripOpenDelta = (myStdDev.x + myStdDev.y) - (pStdDev.x + pStdDev.y);
+				if (gripOpenDelta != 0f) {
+					Debug.Log("gripOpenDelta = " + gripOpenDelta);
+				} 
+				pStdDev = myStdDev;
+			}
 		}
 	}
 
@@ -220,7 +230,7 @@ public class MapKeys : MonoBehaviour {
 		             	coord = new Vector2(3f,3f);
 		             	break; 
 		            case KeyCode.F:
-		             	coord = new Vector2(4f,2f);
+		             	coord = new Vector2(4f,3f);
 		             	break; 
 		            case KeyCode.G:
 		             	coord = new Vector2(5f,3f);
