@@ -33,7 +33,7 @@ public class MasterWaypointer : MonoBehaviour {
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
 		if (macuahuitl == null) macuahuitl = GameObject.Find("sword").transform;
-		if (sacrificer == null) sacrificer = GameObject.Find("Main Camera");
+		sacrificer = Camera.main.gameObject;
 
 		if (wayParent == null) wayParent = GameObject.Find("WayParent").transform;
 		
@@ -56,33 +56,33 @@ public class MasterWaypointer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		
-		bool releaseVics = false;
-		if(failed) {
-			releaseVics = true;
-			sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT!");// "You sacrificed someone without their consent!");
-		} else {
-			if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
-				Advance();
-			} else {
+		if (!sacrificer.GetComponent<CraneGame>().beginCraneGame){
+			bool releaseVics = false;
+			if(failed) {
 				releaseVics = true;
+				sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT!");// "You sacrificed someone without their consent!");
+			} else {
+				if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
+					Advance();
+				} else {
+					releaseVics = true;
+				}
+			}
+			if (releaseVics){
+				//hide the labels
+				failed = true;
+				GameObject[] labels = GameObject.FindGameObjectsWithTag("label");
+
+				foreach (GameObject label in labels){
+					label.SetActive(false);
+				}
+
+				//UpdateOrder();
+				for (int i  = 0; i < movables.Length; i++){
+					ReleaseVic(movables[i]);			
+				}
 			}
 		}
-		if (releaseVics){
-			//hide the labels
-			failed = true;
-			GameObject[] labels = GameObject.FindGameObjectsWithTag("label");
-
-			foreach (GameObject label in labels){
-				label.SetActive(false);
-			}
-
-			//UpdateOrder();
-			for (int i  = 0; i < movables.Length; i++){
-				ReleaseVic(movables[i]);			
-			}
-		}
-
 	}
 
 	void Advance(){

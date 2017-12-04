@@ -85,99 +85,101 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
-		if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
-		if (Input.GetKeyDown("escape")) Application.Quit();
-		if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
-		if (GetComponent<Drag>().panMode){
-			clickable.GetComponent<MeshRenderer>().material.color = Color.black;
-		} 
-		//cps = cpm/60f;
-		
-		advance = false;
-		//we use rays to project invisible lines at a distance
-		//in this case, we are using the ScreenPointToRay function of our main camera
-		//to convert the mouse position on the screen into a direction projected through the screen 
-		//(in class, i drew a dinosaur on the other side)
-		Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if (!GetComponent<CraneGame>().beginCraneGame){
+			if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
+			if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
+			if (Input.GetKeyDown("escape")) Application.Quit();
+			if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
+			if (GetComponent<Drag>().panMode){
+				clickable.GetComponent<MeshRenderer>().material.color = Color.black;
+			} 
+			//cps = cpm/60f;
+			
+			advance = false;
+			//we use rays to project invisible lines at a distance
+			//in this case, we are using the ScreenPointToRay function of our main camera
+			//to convert the mouse position on the screen into a direction projected through the screen 
+			//(in class, i drew a dinosaur on the other side)
+			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-		//draw our debug ray so we can see inside unity
-		//the ray starts from beam.origin and is drawn to 1000 units in the rays direction (beam.direction)
-		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
+			//draw our debug ray so we can see inside unity
+			//the ray starts from beam.origin and is drawn to 1000 units in the rays direction (beam.direction)
+			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 
-		//declare and initialize our raycasthit to store hit information
-		RaycastHit beamHit = new RaycastHit();
+			//declare and initialize our raycasthit to store hit information
+			RaycastHit beamHit = new RaycastHit();
 
-		if (!GetComponent<Drag>().panMode){
-			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
-				if (!hovering){ //use hovering to efficiently only run once
-					lights(0.15f);
-					lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
-				}
-				hovering = true;
-				//old shrink cursword code when hovering over clickable 
-				/*
-				if (beamHit.collider.gameObject == clickable) {
-					sword.GetComponent<Cursword>().hideCursor = true;
-					sword.GetComponent<Cursword>().currentSize *= 0.7f;
-				} else {
-					sword.GetComponent<Cursword>().hideCursor = false;
-				}
-				*/
+			if (!GetComponent<Drag>().panMode && !GetComponent<CraneGame>().beginCraneGame){
+				if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
+					if (!hovering){ //use hovering to efficiently only run once
+						lights(0.15f);
+						lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
+					}
+					hovering = true;
+					//old shrink cursword code when hovering over clickable 
+					/*
+					if (beamHit.collider.gameObject == clickable) {
+						sword.GetComponent<Cursword>().hideCursor = true;
+						sword.GetComponent<Cursword>().currentSize *= 0.7f;
+					} else {
+						sword.GetComponent<Cursword>().hideCursor = false;
+					}
+					*/
 
-				//if the raycast hits a rigidbody and the player is pressing the right mouse button
-				bool clicking = false;
-				if (easyMode){
-					clicking = Input.GetButton("Sacrifice");
-				} else {
-					clicking = Input.GetButtonDown("Sacrifice");
-				}
+					//if the raycast hits a rigidbody and the player is pressing the right mouse button
+					bool clicking = false;
+					if (easyMode){
+						clicking = Input.GetButton("Sacrifice");
+					} else {
+						clicking = Input.GetButtonDown("Sacrifice");
+					}
 
-				if (clicking){
-					//no longer displaying sword in blood mode
-					//Vector3 swordOrigPos = sword.transform.localPosition;
-					//StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
+					if (clicking){
+						//no longer displaying sword in blood mode
+						//Vector3 swordOrigPos = sword.transform.localPosition;
+						//StartCoroutine(Pulsate.PulsePos(sword.transform.gameObject, 0.15f, swordOrigScale.x / 20f, swordOrigPos));
 
-					if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
-						if (!limitAvailSac || sacReady){ //if limited, check if ready
-							if (!GetComponent<Drag>().panMode){
-								sacReady = false;
+						if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
+							if (!limitAvailSac || sacReady){ //if limited, check if ready
+								if (!GetComponent<Drag>().panMode && !GetComponent<CraneGame>().beginCraneGame){
+									sacReady = false;
 
-								if (diffManager.GetComponent<MasterWaypointer>() != null){
-									//Debug.Log("found master waypointer");
-									if (diffManager.GetComponent<MasterWaypointer>().vicReady){
+									if (diffManager.GetComponent<MasterWaypointer>() != null){
+										//Debug.Log("found master waypointer");
+										if (diffManager.GetComponent<MasterWaypointer>().vicReady){
+											if (beamHit.collider.gameObject == clickable) {
+												DoSacrifice(beamHit);
+											} else {
+												DoSacrifice(clickable);
+											}
+										}
+
+
+									} else {
 										if (beamHit.collider.gameObject == clickable) {
 											DoSacrifice(beamHit);
 										} else {
 											DoSacrifice(clickable);
 										}
 									}
-
-
-								} else {
-									if (beamHit.collider.gameObject == clickable) {
-										DoSacrifice(beamHit);
-									} else {
-										DoSacrifice(clickable);
-									}
+									//Debug.Log("sac reset");
 								}
-								//Debug.Log("sac reset");
+								
 							}
-							
 						}
 					}
-				}
 
-			} else {
+				} else {
+					hovering = false;
+					lights(0.05f);
+				}
+			} else { //in pan mode
 				hovering = false;
-				lights(0.05f);
+				lights(0.15f);
 			}
-		} else { //in pan mode
-			hovering = false;
-			lights(0.15f);
-		}
-		calcCPS();
+			calcCPS();
 		
+		}
 	}
 
 	void lights(float intens){
@@ -328,6 +330,7 @@ public class Sacrifice : MonoBehaviour {
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;
 		GetComponent<Drag>().panMode = false;
+		GetComponent<CraneGame>().beginCraneGame = false;
 		GetComponent<Drag>().panCam = Vector3.zero;
 		GetComponent<CameraMove>().forceAmt = 0f;
 

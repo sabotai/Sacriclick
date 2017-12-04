@@ -11,7 +11,7 @@ public class Autosac : MonoBehaviour {
 	public int clicksRemaining = 0;
 	float startX;
 	GameObject diffManager;
-	GameObject sacrificer;
+	GameObject ssacrificer;
 	AudioSource audsrc;
 	GameObject spawn;
 	public AudioClip autoExhaustSnd;
@@ -21,21 +21,21 @@ public class Autosac : MonoBehaviour {
 	void Start () {
 		startX = Time.time;
 		diffManager = GameObject.Find("DifficultyManager");
-		sacrificer = GameObject.Find("Main Camera");
+		ssacrificer = Camera.main.gameObject;
 		spawn = GameObject.Find("autosacSpawn");
 		audsrc = spawn.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (sacrificer.GetComponent<Sacrifice>().failed) numAutosacs = 0;
+		if (ssacrificer.GetComponent<Sacrifice>().failed) numAutosacs = 0;
 
 		float interval = duration / numAutosacs;
 		if (Time.time > startX + interval && useAutosac && numAutosacs > 0){
 			if (diffManager.GetComponent<MasterWaypointer>() != null){
 				//Debug.Log("found master waypointer");
 				if (diffManager.GetComponent<MasterWaypointer>().vicReady){					
-					sacrificer.GetComponent<Sacrifice>().DoSacrifice(sacrificer.GetComponent<Sacrifice>().clickable);
+					ssacrificer.GetComponent<Sacrifice>().DoSacrifice(ssacrificer.GetComponent<Sacrifice>().clickable);
 					clicksRemaining--;
 				}				
 			}
@@ -58,6 +58,6 @@ public class Autosac : MonoBehaviour {
 		audsrc.PlayOneShot(autoExhaustSnd);
 		Destroy(spawn.transform.GetChild(spawn.transform.childCount - 1).gameObject);
 		numAutosacs--;
-		sacrificer.GetComponent<BloodMeter>().autosacNumber = numAutosacs;
+		ssacrificer.GetComponent<BloodMeter>().autosacNumber = numAutosacs;
 	}
 }

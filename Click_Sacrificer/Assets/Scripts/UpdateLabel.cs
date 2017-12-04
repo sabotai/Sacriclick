@@ -13,7 +13,7 @@ public class UpdateLabel : MonoBehaviour {
 
 
 	void OnEnable () {		
-		if (sacrificer == null) sacrificer = GameObject.Find("Main Camera");
+		if (sacrificer == null) sacrificer = Camera.main.gameObject;
 		if (wayP == null) wayP = GameObject.Find("WayParent").transform;
 		label = GetComponent<TextMesh>().text;
 		myCount = sacrificer.GetComponent<Sacrifice>().sacCount + transform.parent.GetSiblingIndex() + 1;

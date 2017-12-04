@@ -24,14 +24,14 @@ public class Claw : MonoBehaviour {
 	public Transform lowestHeightObj;
 
 	// Use this for initialization
-	void Start () {
+	public void Start () {
 		defaultHeight = clawMechanism.transform.position.y;
 		craneMechanism = gameObject;
-		initialRotation = Camera.main.transform.rotation;
+		initialRotation = GameObject.Find("Camera Sub").transform.rotation;
 		lowestHeight = lowestHeightObj.position.y;
 		//origFingerRot = clawMechanism.transform.GetChild(0).GetChild(0).localRotation;
 	}
-	
+
 	// Update is called once per frame
 	void FixedUpdate () {
 		lowerClaw();
@@ -65,6 +65,7 @@ public class Claw : MonoBehaviour {
 		if (MapKeys.xMovement > craneRotPct  || autoRotate){
 			float rotAmt = craneRotPct;
 			if (graspAttempted && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
+				Debug.Log("ROTATING CRANE");
 				Camera.main.transform.rotation = Quaternion.Slerp(initialRotation, basketRot.rotation, rotAmt);
 				if (autoRotate) craneRotPct += .003f;
 			}

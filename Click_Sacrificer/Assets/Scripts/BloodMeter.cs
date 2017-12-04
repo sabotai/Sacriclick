@@ -53,48 +53,50 @@ public class BloodMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!firstClick && Input.GetButtonDown("Sacrifice")){
-			firstClick = true;
-		}
-		if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
-			failureAllowed = false;
+			if (!GetComponent<CraneGame>().beginCraneGame){
+			if (!firstClick && Input.GetButtonDown("Sacrifice")){
+				firstClick = true;
+			}
+			if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
+				failureAllowed = false;
 
-			bloodPlayer.Stop();
-			//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Stop();
-		} else {
-			//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
-			bloodPlayer.Play();
-			failureAllowed = true;
-			if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
-			secondsRemaining = bloodAmt / bloodSecondRatio;
-		}
-
-		if (bloodAmt < 0.01f && bloodJarNumber > 0 && useAutoJar){
-			useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
-		}
-		if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
-		if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
-		
-		if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
-			if (bloodJarNumber < jarLimit){
-				createJar();
+				bloodPlayer.Stop();
+				//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Stop();
 			} else {
-				//create auto clicker?
-				createAuto();
-
+				//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
+				bloodPlayer.Play();
+				failureAllowed = true;
+				if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
+				secondsRemaining = bloodAmt / bloodSecondRatio;
 			}
 
-		}
-		bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
-		Color bloodColor;
-		bloodColor = bloodMat.GetColor("_TintColor");
-		float bloodPct = bloodAmt / 20f;
-		float maxA = 0.22f;
-		float bloodA = maxA - maxA * (bloodAmt / 20f);
-		bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
-		bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen
+			if (bloodAmt < 0.01f && bloodJarNumber > 0 && useAutoJar){
+				useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
+			}
+			if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
+			if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
+			
+			if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
+				if (bloodJarNumber < jarLimit){
+					createJar();
+				} else {
+					//create auto clicker?
+					createAuto();
 
-		jarCast();
+				}
+
+			}
+			bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
+			Color bloodColor;
+			bloodColor = bloodMat.GetColor("_TintColor");
+			float bloodPct = bloodAmt / 20f;
+			float maxA = 0.22f;
+			float bloodA = maxA - maxA * (bloodAmt / 20f);
+			bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
+			bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen
+
+			jarCast();
+		}
 	}
 
 	public void updateMood(){		

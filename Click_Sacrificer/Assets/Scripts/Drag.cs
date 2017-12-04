@@ -62,7 +62,7 @@ public class Drag : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (panMode){
+		if (panMode && !GetComponent<CraneGame>().beginCraneGame){
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 			RaycastHit beamHit = new RaycastHit();
@@ -156,15 +156,19 @@ public class Drag : MonoBehaviour {
 
 
 		if (flickItem != null) flick(flickItem);
-		//swapping between modes
-		if (Input.GetButtonDown("Toggle") && panToggle) {
-			panMode = !panMode;
-			audio.PlayOneShot(toggleClip);
-		}
-		doPanMode(Input.GetButton("Toggle") || panMode);
 
-		mouseVelo = Input.mousePosition - pMouse;
-		pMouse = Input.mousePosition;
+		if (!GetComponent<CraneGame>().beginCraneGame){
+			//swapping between modes
+			if (Input.GetButtonDown("Toggle") && panToggle) {
+				panMode = !panMode;
+				audio.PlayOneShot(toggleClip);
+			}
+
+			 doPanMode(Input.GetButton("Toggle") || panMode);
+
+			mouseVelo = Input.mousePosition - pMouse;
+			pMouse = Input.mousePosition;
+		}
 
 	}
 
