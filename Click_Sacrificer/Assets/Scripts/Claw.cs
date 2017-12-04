@@ -12,26 +12,37 @@ public class Claw : MonoBehaviour {
 	bool goingDown = true;
 	public float clawVSpeed = .01f;
 	float clawVert;
-	float craneRotPct = 0f;
+	public float craneRotPct = 0f;
 	public Transform basketRot;
 	public float gripDir = -1f;
 	public float totalRotated = 0f;
-	Quaternion origFingerRot;
-	public Quaternion fingerDestRot;
-	bool graspAttempted = false;
+	//Quaternion origFingerRot;
+	//public Quaternion fingerDestRot;
+	public bool graspAttempted = false;
 	public float gripPct = 0f;
+	public bool autoRotate = false;
+	public Transform lowestHeightObj;
 
 	// Use this for initialization
 	void Start () {
 		defaultHeight = clawMechanism.transform.position.y;
 		craneMechanism = gameObject;
 		initialRotation = Camera.main.transform.rotation;
-		lowestHeight = GameObject.Find("Lowest").transform.position.y;
-		origFingerRot = clawMechanism.transform.GetChild(0).GetChild(0).localRotation;
+		lowestHeight = lowestHeightObj.position.y;
+		//origFingerRot = clawMechanism.transform.GetChild(0).GetChild(0).localRotation;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
+		lowerClaw();
+		rotateCrane();
+		gripClaw();
+	}
+
+	void lowerClaw(){
+
+		//LOWER CLAW
+
 		if ((Input.GetKeyDown(downKey) || Input.GetMouseButtonDown(0)) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) goingDown = true;
 
 		if (Input.GetKey(downKey) || goingDown == false || Input.GetMouseButton(0)){
@@ -44,69 +55,63 @@ public class Claw : MonoBehaviour {
 		} 
 		if (Input.GetKeyUp(downKey) || Input.GetMouseButtonUp(0)) goingDown = false;
 
+	}
+
+	void rotateCrane(){
+
+		//ROTATE CRANE
+
 		//only rotate crane in 1 direction, after grasp was attempted, and after claw returned vert
-		if (MapKeys.xMovement > craneRotPct && graspAttempted && clawVert == 0f) {
-			Camera.main.transform.rotation = Quaternion.Slerp(initialRotation, basketRot.rotation, MapKeys.xMovement);
-		}
-		craneRotPct = MapKeys.xMovement;
-		/*
-		if (totalRotated < 30f * (1f - MapKeys.gripOpenDelta) && MapKeys.gripOpenDelta != 0){
-			Vector3 rotDegs = Vector3.left * Time.deltaTime * 100f;
-			totalRotated += rotDegs.x;
-			for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
-				clawMechanism.transform.GetChild(0).GetChild(i).Rotate(rotDegs);
+		if (MapKeys.xMovement > craneRotPct  || autoRotate){
+			float rotAmt = craneRotPct;
+			if (graspAttempted && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
+				Camera.main.transform.rotation = Quaternion.Slerp(initialRotation, basketRot.rotation, rotAmt);
+				if (autoRotate) craneRotPct += .003f;
 			}
-		} 
-		*/
+
+		}
+		if (!autoRotate) craneRotPct = MapKeys.xMovement;
+
+	}
+
+	void gripClaw(){
+		//GRIP CLAW
 
 		gripPct = Mathf.Abs(MapKeys.gripOpenDelta) * gripDir;
-		if (!Input.anyKey && totalRotated != 0f) {
+		if (totalRotated < -31f){
+			//totalRotated = -31f;
+			Debug.Log("grip maximum tight");
+			if (!graspAttempted){
+				gripPct = 0 - gripPct;
+				graspAttempted = true;
+			} else {
+				gripPct = 0f;
+			}
+
+		}
+		if (!Input.anyKey && graspAttempted) {
 			gripPct = Mathf.Abs(gripPct);
 			Debug.Log("player released claw");
-		}
-		if (totalRotated < -31f){
+
 			//they released keys
 			gripDir = 1f;
+			gripPct = 0.2f;
 			Debug.Log("reopenning grip");
-			graspAttempted = true;
 
 		}
 		if (totalRotated > 1f) {
 			gripPct = 0f;
+			Debug.Log("grip maximum loose");
+			graspAttempted = true;
 		}
 
 		if (gripPct != 0f) Debug.Log("gripPct = " + gripPct);
-			/*
-			if (Mathf.Abs(totalRotated) > 31f || totalRotated < 0f){
-				gripDir *= -1;
-				Debug.Log("reversing grip dir");
-			}
-			*/
-				for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
-					Transform thisFinger = clawMechanism.transform.GetChild(0).GetChild(i);
-					//fingerDestRot = Quaternion.Euler(thisFinger.localEulerAngles.x, 30f, origFingerRot.eulerAngles.z);
-
-					thisFinger.Rotate(gripPct, 0f, 0f);
-					//thisFinger.localRotation = Quaternion.Slerp(origFingerRot, fingerDestRot, gripPct);
-
-				}
-
-				totalRotated += gripPct;
-
-
-
-		/*
-		//auto grasp
-		if (grasp) {
-			if (Mathf.Abs(totalRotated) < 32f){
-				Vector3 rotDegs = Vector3.left * Time.deltaTime * 100f;
-				totalRotated += rotDegs.x;
-				for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
-					clawMechanism.transform.GetChild(0).GetChild(i).Rotate(rotDegs);
-				}
-			} 
-
+		for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
+			Transform thisFinger = clawMechanism.transform.GetChild(0).GetChild(i);
+			thisFinger.Rotate(gripPct, 0f, 0f);
 		}
-		*/
+
+		totalRotated += gripPct;
+
 	}
 }

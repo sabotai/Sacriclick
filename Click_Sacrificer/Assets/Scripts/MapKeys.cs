@@ -37,7 +37,7 @@ public class MapKeys : MonoBehaviour {
 			//Debug.Log("center = " + centerPoint);
 			Vector2 myStdDev = stdDev(keys);
 			//Debug.Log("stddev = " + myStdDev);//, centerPoint));
-			if (myStdDev != new Vector2(0f,0f) && howManyKeys >= 5){
+			if (myStdDev != new Vector2(0f,0f) && howManyKeys == 5){
 				//ne
 				gripOpenDelta = (myStdDev.x + myStdDev.y) - (initStdDev.x + initStdDev.y);
 				if (gripOpenDelta != 0f) {
