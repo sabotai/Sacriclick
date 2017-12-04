@@ -6,8 +6,12 @@ using System.Linq;
 public class MapKeys : MonoBehaviour {
 
 
-	float howManyKeys = 0f;
+	int howManyKeys = 0;
 	Vector2 pStdDev = new Vector2(0f,0f);
+	Vector2 initStdDev = new Vector2(0f,0f);
+	public static float xMovement = 0.0f;
+	float initialX = 0f;
+	public static float gripOpenDelta = 0f;
 	// Use this for initialization
 	void Start () {
 		
@@ -16,23 +20,32 @@ public class MapKeys : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		List<Vector2> keys = mapKeys();
-		float gripOpenDelta = 0f;
 
 		Vector2[] allKeys = new Vector2[keys.Count];
 		keys.CopyTo(allKeys);
 
 		howManyKeys = allKeys.Length;
+
 		Vector2 centerPoint = mapCenter(allKeys);
+
+		if (howManyKeys == 5 && initialX == 0f) {
+			initialX = centerPoint.x;
+			initStdDev = stdDev(keys);
+		}
+		xMovement = (centerPoint.x - initialX) / 10f;
 		if (centerPoint != new Vector2(0f,0f)) {
 			//Debug.Log("center = " + centerPoint);
 			Vector2 myStdDev = stdDev(keys);
 			//Debug.Log("stddev = " + myStdDev);//, centerPoint));
-			if (myStdDev != new Vector2(0f,0f)){
-				gripOpenDelta = (myStdDev.x + myStdDev.y) - (pStdDev.x + pStdDev.y);
+			if (myStdDev != new Vector2(0f,0f) && howManyKeys >= 5){
+				//ne
+				gripOpenDelta = (myStdDev.x + myStdDev.y) - (initStdDev.x + initStdDev.y);
 				if (gripOpenDelta != 0f) {
-					Debug.Log("gripOpenDelta = " + gripOpenDelta);
+					//Debug.Log("gripOpenDelta = " + gripOpenDelta);
 				} 
 				pStdDev = myStdDev;
+			} else {
+				gripOpenDelta = 0;
 			}
 		}
 	}
