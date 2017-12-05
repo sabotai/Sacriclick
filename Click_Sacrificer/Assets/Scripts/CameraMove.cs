@@ -8,12 +8,14 @@ public class CameraMove : MonoBehaviour {
 	public Transform endFocus;
 	public float startZoomAmt = 2f;
 	public float endZoomAmt = 10.41f;
-	private float oldZoom;
+	public float oldZoom;
 	public bool perspectiveCam = true;
 	public bool forceShift = false;
 	public float forceAmt = 0.0f;
 	public Camera[] chainedCams;
 	public bool zoomable = false;
+	public float zoom = 0f;
+	
 
 	// Use this for initialization
 	void Start () {
@@ -37,6 +39,11 @@ public class CameraMove : MonoBehaviour {
 		oldZoom = 0.35f; //starting %
 	}
 	
+	void resetZoom(){
+
+
+	}
+
 	// Update is called once per frame
 	void Update () {
 
@@ -44,7 +51,7 @@ public class CameraMove : MonoBehaviour {
 		float newZoom = Camera.main.GetComponent<Sacrifice>().cps / 5f;
 
 		//lerp between these 2 zoom amounts by 0.75% each frame
-		float zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
+		zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
 		forceAmt = Mathf.Clamp(forceAmt, 0f, 1f);
 		zoom += forceAmt;
 		zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
