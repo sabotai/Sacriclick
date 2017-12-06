@@ -28,16 +28,21 @@ public class Claw : MonoBehaviour {
 	public bool completed = false;
 
 	public bool grabbing = false;
+	public AudioClip loweringClip, graspingClip, rotatingClip;
+	AudioSource aud;
+	int stage = 0;
 
 	void Awake(){
 		origFingerRot = new Quaternion[clawMechanism.transform.GetChild(0).childCount];
 		for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
 			origFingerRot[i] = clawMechanism.transform.GetChild(0).GetChild(i).localRotation;
 		}
+		aud = GetComponent<AudioSource>();
 	}
 
 	// Use this for initialization
 	public void Start () {
+		stage = 0;
 		Debug.Log("initializing claw");
 		defaultHeight = highestHeightObj.position.y;
 		clawMechanism.transform.position = new Vector3(clawMechanism.transform.position.x, defaultHeight, clawMechanism.transform.position.z);
@@ -62,6 +67,15 @@ public class Claw : MonoBehaviour {
 
 	// Update is called once per frame
 	void FixedUpdate () {
+
+
+		if ((graspAttempted) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
+			stage = 1;
+			if (completed) { //autorelease for completed
+				stage = 2;
+			}
+		}
+
 		lowerClaw();
 		rotateCrane();
 		gripClaw();
@@ -72,24 +86,28 @@ public class Claw : MonoBehaviour {
 	}
 
 	void lowerClaw(){
-
 		//LOWER CLAW
 
-		if ((Input.GetKeyDown(downKey) || 
-			Input.GetMouseButtonDown(0)) && 
+		if (!goingDown && !graspAttempted && (Input.GetKeyDown(downKey) || 
+			Input.GetMouseButtonDown(0)  ||
+			MapKeys.howManyKeys >= MapKeys.keyThreshold) && 
 			Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
 
 				goingDown = true;
 		}
 
-		if (Input.GetKey(downKey) || goingDown == false || Input.GetMouseButton(0)){
+		if (Input.GetKey(downKey) || goingDown == false || Input.GetMouseButton(0) || MapKeys.howManyKeys >= MapKeys.keyThreshold){
 			int dir = 1;
 			if (!goingDown) {
 				//lets reverse it if no longer going down
 				dir = -1;
 				graspAttempted = true;
 			}
-			clawVert += (dir * clawVSpeed);
+
+			float newVert = clawVert + (dir * clawVSpeed);
+
+			if (!aud.isPlaying && Mathf.Abs(newVert - clawVert) > 0.009f && stage == 0) aud.PlayOneShot(loweringClip);
+			clawVert = newVert;
 			Vector3 origin = new Vector3(clawMechanism.transform.position.x, defaultHeight, clawMechanism.transform.position.z);
 			Vector3 destination = new Vector3(clawMechanism.transform.position.x, lowestHeight, clawMechanism.transform.position.z);
 			clawMechanism.transform.position = Vector3.Lerp(origin, destination, clawVert);
@@ -111,7 +129,8 @@ public class Claw : MonoBehaviour {
 		//only rotate crane in 1 direction, after grasp was attempted, and after claw returned vert
 		if (MapKeys.xMovement > craneRotPct  || autoRotate){
 			float rotAmt = craneRotPct;
-			if ((graspAttempted) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
+			if (stage >= 1) {
+				if (!aud.isPlaying) aud.PlayOneShot(rotatingClip);
 				//Debug.Log("ROTATING CRANE");
 				Camera.main.transform.rotation = Quaternion.Slerp(initialRotation, basketRot.rotation, rotAmt);
 				if (autoRotate) craneRotPct += .003f;
@@ -126,6 +145,8 @@ public class Claw : MonoBehaviour {
 
 	void gripClaw(){
 		//GRIP CLAW
+
+
 
 		gripPct = Mathf.Abs(MapKeys.gripOpenDelta) * gripDir;
 		if (totalRotated < maxGrip){ //if gripping max tight
@@ -143,9 +164,10 @@ public class Claw : MonoBehaviour {
 		}
 
 		//player completely released grip 
-		if ((!Input.anyKey && graspAttempted) || completed) { //autorelease for completed
+		if (stage == 2 || (!Input.anyKey && graspAttempted)) { //autorelease for completed
 			gripPct = Mathf.Abs(gripPct);
 			//Debug.Log("player released claw");
+			//if (!aud.isPlaying) aud.PlayOneShot(graspingClip);
 
 			//they released keys
 			gripDir = 1f;

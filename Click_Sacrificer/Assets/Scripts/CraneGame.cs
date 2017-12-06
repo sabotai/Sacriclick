@@ -23,11 +23,13 @@ public class CraneGame : MonoBehaviour {
 	public float craneGameSD = 1f;
 	float origCraneGameEE = .25f;
 	float origCraneGameSD = .6f;
-
+	public AudioClip enterSound, exitSound, winSound;
+	AudioSource aud;
 
 	// Use this for initialization
 	void Start () {
 		newStartFocus = GameObject.Find("perspective-storage").transform;
+		aud = claw.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -36,6 +38,7 @@ public class CraneGame : MonoBehaviour {
 
 
 			if (!craneParent.active){
+				aud.PlayOneShot(enterSound);
 				startTime = -1f;
 				//move/rotate camera
 
@@ -121,6 +124,7 @@ public class CraneGame : MonoBehaviour {
 			//assuming you are coming from the crane game...
 			//reset all the camera stuff and items
 			if (craneParent.active){
+				aud.PlayOneShot(exitSound);
 				ready = false;
 				vics.SetActive(true);
 
@@ -146,6 +150,7 @@ public class CraneGame : MonoBehaviour {
 
 	//currently kills all the available vics
 	public IEnumerator winCraneGame(){
+		aud.PlayOneShot(winSound);
 		GameObject diffManager = GameObject.Find("DifficultyManager");
 		GameObject[] vics = diffManager.GetComponent<MasterWaypointer>().movables;
 

@@ -12,7 +12,7 @@ public class Sacrifice : MonoBehaviour {
 	Vector3 swordOrigScale;
 	private Vector3 clickOrigScale;
 	//public AudioClip[] screams;
-	public AudioClip rumbleSound;
+	public AudioClip[] rumbleSound;
 	public bool advance = false;
 	public Text sacCountDisplay;
 	public Text cpsDisplay;
@@ -267,7 +267,8 @@ public class Sacrifice : MonoBehaviour {
 				StartCoroutine(Radiate.oneSmoothPulse(objHit, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
 				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
-				audio.PlayOneShot(rumbleSound);
+				int rando = (int)Random.Range(0, rumbleSound.Length);
+				audio.PlayOneShot(rumbleSound[rando]);
 				//sacCount++;
 				//}
 				GetComponent<BloodMeter>().updateMood();
@@ -302,8 +303,9 @@ public class Sacrifice : MonoBehaviour {
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
 				audio.pitch = Random.Range(0.8f, 1.2f);
-				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
-				audio.PlayOneShot(rumbleSound);
+		//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
+		int rando = (int)Random.Range(0, rumbleSound.Length);
+		audio.PlayOneShot(rumbleSound[rando]);
 				//sacCount++;
 				//}
 				GetComponent<BloodMeter>().updateMood();
@@ -352,9 +354,10 @@ public class Sacrifice : MonoBehaviour {
 
 			//Camera.main.transform.DetachChildren();
 			easyMode = true;
-			audio2.clip = rumbleSound;
+			int rando = (int)Random.Range(0, rumbleSound.Length);
+			audio2.clip = rumbleSound[rando];
 			//audio.loop = true;
-			if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound);
+			if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound[rando]);
 			if (!audio2.isPlaying) audio2.Play();
 			//Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		}

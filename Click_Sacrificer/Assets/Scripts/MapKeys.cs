@@ -6,13 +6,15 @@ using System.Linq;
 public class MapKeys : MonoBehaviour {
 
 
-	int howManyKeys = 0;
+	public static int howManyKeys = 0;
 	Vector2 pStdDev = new Vector2(0f,0f);
 	Vector2 initStdDev = new Vector2(0f,0f);
 	public static float xMovement = 0.0f;
 	float initialX = 0f;
 	public static float gripOpenDelta = 0f;
 	public Vector2[] allKeys;
+	public static int keyThreshold = 5;
+
 	// Use this for initialization
 	void Start () {
 		allKeys = new Vector2[0];
@@ -38,7 +40,7 @@ public class MapKeys : MonoBehaviour {
 
 			Vector2 centerPoint = mapCenter(allKeys);
 
-			if (howManyKeys >= 4 && initialX == 0f) {
+			if (howManyKeys >= keyThreshold && initialX == 0f) {
 				initialX = centerPoint.x;
 				initStdDev = stdDev(keys);
 			}
@@ -47,7 +49,7 @@ public class MapKeys : MonoBehaviour {
 				//Debug.Log("center = " + centerPoint);
 				Vector2 myStdDev = stdDev(keys);
 				//Debug.Log("stddev = " + myStdDev);//, centerPoint));
-				if (myStdDev != new Vector2(0f,0f) && howManyKeys >= 4){
+				if (myStdDev != new Vector2(0f,0f) && howManyKeys >= keyThreshold){
 					//ne
 					gripOpenDelta = (myStdDev.x + myStdDev.y) - (initStdDev.x + initStdDev.y);
 					if (gripOpenDelta != 0f) {
