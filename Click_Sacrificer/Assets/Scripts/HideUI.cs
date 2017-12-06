@@ -9,6 +9,7 @@ public class HideUI : MonoBehaviour {
 	GameObject[] labels;
 	GameObject uiCam;
 	int origMask;
+	GameObject sacrificer;
 
 	// Use this for initialization
 	void Start () {
@@ -16,11 +17,12 @@ public class HideUI : MonoBehaviour {
 		
 		uiCam = GameObject.Find("3dUICamera");
 		origMask = Camera.main.cullingMask;
+		sacrificer = Camera.main.gameObject;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.H)) {
+		if (Input.GetKeyDown(KeyCode.H) && !sacrificer.GetComponent<CraneGame>().beginCraneGame) {
 			hide = !hide;
 			if (hide) {
 				labels = GameObject.FindGameObjectsWithTag("label");

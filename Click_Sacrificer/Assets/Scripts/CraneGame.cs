@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.ImageEffects;
 
 public class CraneGame : MonoBehaviour {
 
@@ -18,6 +19,12 @@ public class CraneGame : MonoBehaviour {
 	public float timeOutDuration = 3f;
 	float startTime = -1f;
 
+	public float craneGameEE = 1f;
+	public float craneGameSD = 1f;
+	float origCraneGameEE = .25f;
+	float origCraneGameSD = .6f;
+
+
 	// Use this for initialization
 	void Start () {
 		newStartFocus = GameObject.Find("perspective-storage").transform;
@@ -29,6 +36,7 @@ public class CraneGame : MonoBehaviour {
 
 
 			if (!craneParent.active){
+				startTime = -1f;
 				//move/rotate camera
 
 				//store original settings
@@ -50,12 +58,15 @@ public class CraneGame : MonoBehaviour {
 				craneParent.SetActive(true);
 
 				Camera.main.transform.SetParent(craneCam.parent, false);
+				//store the originals before we change
+				origCraneGameEE = Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp;
+				origCraneGameSD = Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist;
 				//claw.transform.SetParent(Camera.main.transform, false);
 				GetComponent<CameraMove>().zoom = 0f;
 				GetComponent<CameraMove>().oldZoom = 0f;
 
 				//make initial assignments based on new hierarchy
-				claw.GetComponent<Claw>().Start();
+				//claw.GetComponent<Claw>().Start();
 			}
 
 
@@ -64,6 +75,9 @@ public class CraneGame : MonoBehaviour {
 				GetComponent<CameraMove>().forceAmt += transitionSpeed;
 
 				if (GetComponent<CameraMove>().zoom >= 1f && GetComponent<CameraMove>().oldZoom >= 1f){
+
+					Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp = craneGameEE;
+					Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist = craneGameSD;
 					GetComponent<CameraMove>().forceAmt = 1f;
 					Camera.main.transform.SetParent(craneCam.parent, false);
 					claw.transform.SetParent(Camera.main.transform, false);
@@ -75,6 +89,7 @@ public class CraneGame : MonoBehaviour {
 				} 
 
 			} else{ //ready = true
+
 				if (claw.GetComponent<Claw>().completed && startTime < 0f){
 					startTime = Time.time;
 				}
@@ -82,13 +97,24 @@ public class CraneGame : MonoBehaviour {
 				bool timeOut = false;
 				if (startTime > 0f && Time.time > startTime + timeOutDuration) {
 					timeOut = true;
-					startTime = -1f;
 				}
 				//reset to regular game
-				if (Input.GetKeyDown(KeyCode.F11) || timeOut) {
-
+				if (Input.GetKeyDown(KeyCode.F11)) {
+					Debug.Log("crane game exit bc F11");
 					beginCraneGame = false;
+					startTime = -1f;
 				}
+				if (timeOut) {
+					Debug.Log("crane game exit bc timeout");
+					beginCraneGame = false;
+					startTime = -1f;
+				}
+				if (claw.GetComponent<Claw>().craneRotPct > 0f && claw.GetComponent<Claw>().craneRotPct < 0.2f && !claw.GetComponent<Claw>().grabbing){
+					
+					Debug.Log("crane game exit bc grab fail");
+					beginCraneGame = false;
+					startTime = -1f;
+				} 
 			}
 
 		} else { //if !beginCraneGame
@@ -97,6 +123,9 @@ public class CraneGame : MonoBehaviour {
 			if (craneParent.active){
 				ready = false;
 				vics.SetActive(true);
+
+				Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp = origCraneGameEE;
+				Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist = origCraneGameSD;
 				GetComponent<CameraMove>().enabled = true;
 				GetComponent<CameraMove>().startFocus = origStartFocus;
 				GetComponent<CameraMove>().endFocus = origEndFocus;
@@ -135,4 +164,5 @@ public class CraneGame : MonoBehaviour {
 
 		yield return null;
 	}
+
 }

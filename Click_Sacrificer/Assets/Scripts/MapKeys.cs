@@ -12,41 +12,55 @@ public class MapKeys : MonoBehaviour {
 	public static float xMovement = 0.0f;
 	float initialX = 0f;
 	public static float gripOpenDelta = 0f;
+	public Vector2[] allKeys;
 	// Use this for initialization
 	void Start () {
-		
+		allKeys = new Vector2[0];
+		pStdDev = new Vector2(0f,0f);
+		initStdDev = new Vector2(0f,0f);
+		xMovement = 0.0f;
+		initialX = 0f;
+		howManyKeys = 0;
+
+		gripOpenDelta = 0f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		List<Vector2> keys = mapKeys();
+		if (Input.anyKey){
+			List<Vector2> keys = mapKeys();
 
-		Vector2[] allKeys = new Vector2[keys.Count];
-		keys.CopyTo(allKeys);
+			allKeys = new Vector2[keys.Count];
+			keys.CopyTo(allKeys);
 
-		howManyKeys = allKeys.Length;
+			howManyKeys = allKeys.Length;
+			if (howManyKeys == 0) Start();
 
-		Vector2 centerPoint = mapCenter(allKeys);
+			Vector2 centerPoint = mapCenter(allKeys);
 
-		if (howManyKeys == 5 && initialX == 0f) {
-			initialX = centerPoint.x;
-			initStdDev = stdDev(keys);
-		}
-		xMovement = (centerPoint.x - initialX) / 10f;
-		if (centerPoint != new Vector2(0f,0f)) {
-			//Debug.Log("center = " + centerPoint);
-			Vector2 myStdDev = stdDev(keys);
-			//Debug.Log("stddev = " + myStdDev);//, centerPoint));
-			if (myStdDev != new Vector2(0f,0f) && howManyKeys == 5){
-				//ne
-				gripOpenDelta = (myStdDev.x + myStdDev.y) - (initStdDev.x + initStdDev.y);
-				if (gripOpenDelta != 0f) {
-					//Debug.Log("gripOpenDelta = " + gripOpenDelta);
-				} 
-				pStdDev = myStdDev;
-			} else {
-				gripOpenDelta = 0;
+			if (howManyKeys >= 4 && initialX == 0f) {
+				initialX = centerPoint.x;
+				initStdDev = stdDev(keys);
 			}
+			xMovement = (centerPoint.x - initialX) / 10f;
+			if (centerPoint != new Vector2(0f,0f)) {
+				//Debug.Log("center = " + centerPoint);
+				Vector2 myStdDev = stdDev(keys);
+				//Debug.Log("stddev = " + myStdDev);//, centerPoint));
+				if (myStdDev != new Vector2(0f,0f) && howManyKeys >= 4){
+					//ne
+					gripOpenDelta = (myStdDev.x + myStdDev.y) - (initStdDev.x + initStdDev.y);
+					if (gripOpenDelta != 0f) {
+						//Debug.Log("gripOpenDelta = " + gripOpenDelta);
+					} 
+					pStdDev = myStdDev;
+				} else {
+					//pStdDev = new Vector2(0f,0f); //reset
+					gripOpenDelta = 0;
+				}
+			}
+		} else { //no keys being pressed
+			 Start();
 		}
 	}
 
@@ -93,6 +107,8 @@ public class MapKeys : MonoBehaviour {
 
 		foreach(KeyCode vKey in System.Enum.GetValues(typeof(KeyCode))){
 		    if(Input.GetKey(vKey)){
+
+		    	//Debug.Log("vkey pressed: " + vKey);
 		    	Vector2 coord = new Vector2(0f,0f);
 		        switch (vKey){
              		case KeyCode.F1:
@@ -335,7 +351,7 @@ public class MapKeys : MonoBehaviour {
 		             	coord = new Vector2(6f,5f);
 		             	break; 
              	} //end switch
-				locKeys.Add(coord);
+             	if (coord != new Vector2(0f,0f)) locKeys.Add(coord);
             }   //end if any key
 		} //end foreach
 		//Vector2[] allKeys = new Vector2[keys.Count];

@@ -5,13 +5,13 @@ using UnityEngine;
 public class Claw : MonoBehaviour {
 	public KeyCode downKey;
 	public float lowestHeight;
-	float defaultHeight; 
+	public float defaultHeight; 
 	Quaternion initialRotation;
 	public GameObject clawMechanism;
 	GameObject craneMechanism;
 	bool goingDown = true;
 	public float clawVSpeed = .01f;
-	float clawVert;
+	public float clawVert;
 	public float craneRotPct = 0f;
 	public Transform basketRot;
 	public float gripDir = -1f;
@@ -21,12 +21,13 @@ public class Claw : MonoBehaviour {
 	public bool graspAttempted = false;
 	public float gripPct = 0f;
 	public bool autoRotate = false;
-	public Transform lowestHeightObj;
+	public Transform lowestHeightObj, highestHeightObj;
 	public float maxGrip = -31f;
 	float startTime;
 	public float clawHoldDuration = 1f;
 	public bool completed = false;
 
+	public bool grabbing = false;
 
 	void Awake(){
 		origFingerRot = new Quaternion[clawMechanism.transform.GetChild(0).childCount];
@@ -34,10 +35,12 @@ public class Claw : MonoBehaviour {
 			origFingerRot[i] = clawMechanism.transform.GetChild(0).GetChild(i).localRotation;
 		}
 	}
+
 	// Use this for initialization
 	public void Start () {
 		Debug.Log("initializing claw");
-		defaultHeight = clawMechanism.transform.position.y;
+		defaultHeight = highestHeightObj.position.y;
+		clawMechanism.transform.position = new Vector3(clawMechanism.transform.position.x, defaultHeight, clawMechanism.transform.position.z);
 		craneMechanism = gameObject;
 		initialRotation = GameObject.Find("Camera Sub").transform.rotation;
 		lowestHeight = lowestHeightObj.position.y;
@@ -45,11 +48,11 @@ public class Claw : MonoBehaviour {
 		totalRotated = 0f;
 		gripDir = -1f;
 		graspAttempted = false;
+		grabbing = false;
 		goingDown = true;
 		completed = false;
 		clawVert = 0f;
 		startTime = -1f;
-
 		for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
 			clawMechanism.transform.GetChild(0).GetChild(i).localRotation = origFingerRot[i];
 		}
@@ -77,7 +80,7 @@ public class Claw : MonoBehaviour {
 			Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
 
 				goingDown = true;
-			}
+		}
 
 		if (Input.GetKey(downKey) || goingDown == false || Input.GetMouseButton(0)){
 			int dir = 1;
@@ -109,7 +112,7 @@ public class Claw : MonoBehaviour {
 		if (MapKeys.xMovement > craneRotPct  || autoRotate){
 			float rotAmt = craneRotPct;
 			if ((graspAttempted) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
-				Debug.Log("ROTATING CRANE");
+				//Debug.Log("ROTATING CRANE");
 				Camera.main.transform.rotation = Quaternion.Slerp(initialRotation, basketRot.rotation, rotAmt);
 				if (autoRotate) craneRotPct += .003f;
 				//if (Mathf.Approximately(rotAmt, 1f)) startTime = Time.time;
@@ -127,7 +130,7 @@ public class Claw : MonoBehaviour {
 		gripPct = Mathf.Abs(MapKeys.gripOpenDelta) * gripDir;
 		if (totalRotated < maxGrip){ //if gripping max tight
 			//totalRotated = -31f;
-			Debug.Log("grip maximum tight");
+			//Debug.Log("grip maximum tight");
 			if (!graspAttempted){
 				//reverse slightly
 				gripPct = 0 - gripPct;
@@ -142,22 +145,22 @@ public class Claw : MonoBehaviour {
 		//player completely released grip 
 		if ((!Input.anyKey && graspAttempted) || completed) { //autorelease for completed
 			gripPct = Mathf.Abs(gripPct);
-			Debug.Log("player released claw");
+			//Debug.Log("player released claw");
 
 			//they released keys
 			gripDir = 1f;
 			gripPct = 0.2f;
-			Debug.Log("reopenning grip");
+			//Debug.Log("reopenning grip");
 
 		}
 
 		if (totalRotated > 1f) {
 			gripPct = 0f;
-			Debug.Log("grip maximum loose");
+			//Debug.Log("grip maximum loose");
 			graspAttempted = true;
 		}
 
-		if (gripPct != 0f) Debug.Log("gripPct = " + gripPct);
+		//if (gripPct != 0f) Debug.Log("gripPct = " + gripPct);
 		//use gripPct to rotate each finger
 		for(int i = 0; i < clawMechanism.transform.GetChild(0).childCount; i++){
 			Transform thisFinger = clawMechanism.transform.GetChild(0).GetChild(i);
@@ -166,5 +169,13 @@ public class Claw : MonoBehaviour {
 
 		totalRotated += gripPct;
 
+	}
+
+
+	void OnTriggerStay(Collider col){
+		if (col.gameObject.tag == "organ") grabbing = true;
+	}
+	void OnTriggerExit(Collider col){
+		if (col.gameObject.tag == "organ") grabbing = false;
 	}
 }

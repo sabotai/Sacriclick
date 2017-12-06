@@ -28,20 +28,7 @@ public class SunPct : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		/* old way
-
-		float rot = Time.deltaTime * speedMult;
-		transform.Rotate (0, 0, rot, Space.World);
-
-		//z rotation of 0 = completely bright, z rotation
-		float intens = (Mathf.Abs(transform.localEulerAngles.z - 180)/180);
-		sun.intensity = Mathf.Clamp(intens * 2f, 0.5f, 1f);
-		sun.shadowStrength = intens;
-		//transform.LookAt(sunObj.transform);
-		*/
-
-		//transform.Rotate (0, 0, Time.deltaTime * 10f, Space.World); //some really slow movement for the cloud cookie to appear as if moving
-		rotateSun(rotAmt);
+		if (!Camera.main.gameObject.GetComponent<CraneGame>().beginCraneGame) rotateSun(rotAmt);
 	}
 
 	public void rotateSun(float pct){

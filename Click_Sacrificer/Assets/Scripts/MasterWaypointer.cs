@@ -7,7 +7,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public Transform victimParent;
 	public GameObject[] movables;
 	public Vector3 velo;
-	GameObject sacrificer;
+	public GameObject sacrificer;
 	GameObject vic;
 	public bool vicReady = true;
 	public GameObject prefab;
@@ -33,7 +33,7 @@ public class MasterWaypointer : MonoBehaviour {
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
 		if (macuahuitl == null) macuahuitl = GameObject.Find("sword").transform;
-		sacrificer = Camera.main.gameObject;
+		if (sacrificer == null) sacrificer = Camera.main.gameObject;
 
 		if (wayParent == null) wayParent = GameObject.Find("WayParent").transform;
 		
