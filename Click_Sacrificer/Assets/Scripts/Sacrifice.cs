@@ -45,6 +45,7 @@ public class Sacrifice : MonoBehaviour {
 	bool hovering = false;
 	public GameObject lightParent;
 	public AudioClip templeHoverClip;
+	public float pitchMin, pitchMax;
 
 	void Awake(){
 		sacCount = 0;
@@ -57,8 +58,8 @@ public class Sacrifice : MonoBehaviour {
 		swordOrigScale = sword.transform.localScale;
 		sun = GameObject.Find("Sun");
 		diffManager = GameObject.Find("DifficultyManager");
-		audio = GetComponent<AudioSource>();
-		audio2 = GetComponent<AudioSource>();
+		//audio2 = GetComponent<AudioSource>();
+		//audio = clickable.GetComponent<AudioSource>();
 		cpm = 0f;
 		cps = 0f;
 		cpf = 0f;
@@ -265,7 +266,7 @@ public class Sacrifice : MonoBehaviour {
 				StartCoroutine(Pulsate.Pulse(objHit, 0.15f, 0.5f, clickOrigScale));
 
 				StartCoroutine(Radiate.oneSmoothPulse(objHit, Color.red, Color.black, 0.07f));
-				audio.pitch = Random.Range(0.8f, 1.2f);
+				audio.pitch = Random.Range(pitchMin, pitchMax);
 				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				int rando = (int)Random.Range(0, rumbleSound.Length);
 				audio.PlayOneShot(rumbleSound[rando]);
@@ -302,7 +303,7 @@ public class Sacrifice : MonoBehaviour {
 				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
 
 				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
-				audio.pitch = Random.Range(0.8f, 1.2f);
+				audio.pitch = Random.Range(pitchMin, pitchMax);
 		//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 		int rando = (int)Random.Range(0, rumbleSound.Length);
 		audio.PlayOneShot(rumbleSound[rando]);
@@ -355,10 +356,10 @@ public class Sacrifice : MonoBehaviour {
 			//Camera.main.transform.DetachChildren();
 			easyMode = true;
 			int rando = (int)Random.Range(0, rumbleSound.Length);
-			audio2.clip = rumbleSound[rando];
+			audio.clip = rumbleSound[rando];
 			//audio.loop = true;
-			if (audio2.isPlaying) audio2.PlayOneShot(rumbleSound[rando]);
-			if (!audio2.isPlaying) audio2.Play();
+			if (audio.isPlaying) audio.PlayOneShot(rumbleSound[rando]);
+			if (!audio.isPlaying) audio.Play();
 			//Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		}
 	}

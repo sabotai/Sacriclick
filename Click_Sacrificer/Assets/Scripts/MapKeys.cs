@@ -7,7 +7,7 @@ public class MapKeys : MonoBehaviour {
 
 
 	public static int howManyKeys = 0;
-	Vector2 pStdDev = new Vector2(0f,0f);
+	public Vector2 pStdDev = new Vector2(0f,0f);
 	Vector2 initStdDev = new Vector2(0f,0f);
 	public static float xMovement = 0.0f;
 	float initialX = 0f;

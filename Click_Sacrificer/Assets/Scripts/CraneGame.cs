@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
+using UnityEngine.Rendering.PostProcessing;
 
 public class CraneGame : MonoBehaviour {
 
 	public bool beginCraneGame = false;
-	float craneGameZoom = 42.5f;
+	float craneGameZoom = 42.5f;//60f;//
 	public Transform craneCam;
 	Transform newStartFocus;
 	Transform origEndFocus,	origStartFocus;
@@ -25,11 +26,22 @@ public class CraneGame : MonoBehaviour {
 	float origCraneGameSD = .6f;
 	public AudioClip enterSound, exitSound, winSound;
 	AudioSource aud;
+	PostProcessVolume m_Volume;
+    Vignette m_Vignette;
+
 
 	// Use this for initialization
 	void Start () {
 		newStartFocus = GameObject.Find("perspective-storage").transform;
 		aud = claw.GetComponent<AudioSource>();
+		m_Vignette = ScriptableObject.CreateInstance<Vignette>();
+        m_Vignette.enabled.Override(false);
+        m_Vignette.intensity.Override(0.275f);
+        m_Vignette.smoothness.Override(0.482f);
+        m_Vignette.roundness.Override(0.871f);
+        m_Vignette.center.Override(new Vector2(0.48f, 0.1f));
+
+        m_Volume = PostProcessManager.instance.QuickVolume(Camera.main.gameObject.layer, 100f, m_Vignette);
 	}
 	
 	// Update is called once per frame
@@ -89,10 +101,11 @@ public class CraneGame : MonoBehaviour {
 					GetComponent<CameraMove>().enabled = false;
 					basket.SetActive(true);
 					vics.SetActive(false);
+        			m_Vignette.enabled.Override(true);
 				} 
 
 			} else{ //ready = true
-
+        		m_Vignette.enabled.Override(true);
 				if (claw.GetComponent<Claw>().completed && startTime < 0f){
 					startTime = Time.time;
 				}
@@ -128,6 +141,8 @@ public class CraneGame : MonoBehaviour {
 				ready = false;
 				vics.SetActive(true);
 
+ 				
+       			m_Vignette.enabled.Override(false);
 				Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp = origCraneGameEE;
 				Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist = origCraneGameSD;
 				GetComponent<CameraMove>().enabled = true;
@@ -154,10 +169,10 @@ public class CraneGame : MonoBehaviour {
 		GameObject diffManager = GameObject.Find("DifficultyManager");
 		GameObject[] vics = diffManager.GetComponent<MasterWaypointer>().movables;
 
-		Debug.Log("Win dat crane game... kill " + vics.Length);
+		//Debug.Log("Win dat crane game... kill " + vics.Length);
 		int howManySacced = 0;
 		Camera.main.gameObject.GetComponent<Sacrifice>().easyMode = true; //use easy mode so they arent penalized for mood
-		while (howManySacced < vics.Length){
+		while (howManySacced < vics.Length * 5){
 			Debug.Log("trying to sac " + howManySacced);
 			if (diffManager.GetComponent<MasterWaypointer>().vicReady){					
 				Camera.main.gameObject.GetComponent<Sacrifice>().DoSacrifice(Camera.main.gameObject.GetComponent<Sacrifice>().clickable);
