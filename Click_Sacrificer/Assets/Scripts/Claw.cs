@@ -106,7 +106,7 @@ public class Claw : MonoBehaviour {
 
 			float newVert = clawVert + (dir * clawVSpeed);
 
-			if (!aud.isPlaying && Mathf.Abs(newVert - clawVert) > 0.009f && stage == 0) aud.PlayOneShot(loweringClip);
+			if (!aud.isPlaying && Mathf.Abs(newVert - clawVert) >= 0.009999f && stage == 0) aud.PlayOneShot(loweringClip);
 			clawVert = newVert;
 			Vector3 origin = new Vector3(clawMechanism.transform.position.x, defaultHeight, clawMechanism.transform.position.z);
 			Vector3 destination = new Vector3(clawMechanism.transform.position.x, lowestHeight, clawMechanism.transform.position.z);

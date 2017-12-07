@@ -16,7 +16,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public float waySpeed = 5f;
 	public float randomness = 0.0f;
 	float origWaySpeed;
-	int howMany;
+	public static int howMany;
 	bool failed = false;
 	public int delayCheck = 4;
 	public float maxSpeed = 4f;
@@ -57,6 +57,9 @@ public class MasterWaypointer : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if (!sacrificer.GetComponent<CraneGame>().beginCraneGame){
+			InitRandomSpecial();
+
+
 			bool releaseVics = false;
 			if(failed) {
 				releaseVics = true;
@@ -82,6 +85,12 @@ public class MasterWaypointer : MonoBehaviour {
 					ReleaseVic(movables[i]);			
 				}
 			}
+		}
+	}
+
+	void InitRandomSpecial(){
+		if (Time.frameCount % 600 == 0){
+			movables[Random.Range(0, movables.Length)].transform.GetChild(1).gameObject.GetComponent<SpecialStatus>().specialStat = true;
 		}
 	}
 
@@ -136,7 +145,12 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void SacrificeVic(){
+
+
 		if (vic.transform.GetSiblingIndex() == 0 && vic.name != "dumb-idol-placeholder"){ //protection against it sac'ing the same one twice
+			if (vic.transform.GetChild(1).GetComponent<SpecialStatus>().specialStat){
+				sacrificer.GetComponent<CraneGame>().beginCraneGame = true;
+			}
 			//Debug.Log("SACRIFICING: " + vic.name);
 			//StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));
 
@@ -204,7 +218,11 @@ public class MasterWaypointer : MonoBehaviour {
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);
 		GameObject label = newVic.transform.GetChild(1).gameObject;
-		if (label.GetComponent<TextMesh>() != null) label.GetComponent<TextMesh>().text = "#" + myNewNumber;
+		if (label.GetComponent<TextMesh>() != null) {
+			label.GetComponent<TextMesh>().text = "#" + myNewNumber;
+			label.GetComponent<UpdateLabel>().label = "#" + myNewNumber;
+		}
+
 		
 		newVic.transform.SetParent(victimParent);
 		newVic.transform.SetAsLastSibling();

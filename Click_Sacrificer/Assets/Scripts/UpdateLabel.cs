@@ -6,9 +6,11 @@ public class UpdateLabel : MonoBehaviour {
 
 	public GameObject sacrificer;
 	public Transform wayP;
-	string label;
+	public string label;
 	public int myCount = 0;
 	public bool useNumber = false;
+	public bool wasSpecial = false;
+
 	// Use this for initialization
 
 
@@ -25,9 +27,21 @@ public class UpdateLabel : MonoBehaviour {
 
 	void Start(){
 		if (!useNumber) GetComponent<TextMesh>().text = label;
+		myCount = sacrificer.GetComponent<Sacrifice>().sacCount + transform.parent.GetSiblingIndex() + 1;
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if (GetComponent<SpecialStatus>().specialStat) {
+			//if (GetComponent<TextMesh>().text == label) label
+			GetComponent<TextMesh>().text = "" + (int)GetComponent<SpecialStatus>().timeRemaining;
+		} else {
+			if (wasSpecial) GetComponent<TextMesh>().text = "#" + myCount;
+			
+			if (!useNumber) label = "◌";
+
+		}
+		wasSpecial = GetComponent<SpecialStatus>().specialStat;
 	}
 }

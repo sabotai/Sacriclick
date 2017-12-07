@@ -25,7 +25,7 @@ public class CraneGame : MonoBehaviour {
 	float origCraneGameEE = .25f;
 	float origCraneGameSD = .6f;
 	public AudioClip enterSound, exitSound, winSound;
-	AudioSource aud;
+	public AudioSource aud;
 	PostProcessVolume m_Volume;
     Vignette m_Vignette;
 
@@ -33,7 +33,7 @@ public class CraneGame : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		newStartFocus = GameObject.Find("perspective-storage").transform;
-		aud = claw.GetComponent<AudioSource>();
+		if (aud == null) aud = claw.GetComponent<AudioSource>();
 		m_Vignette = ScriptableObject.CreateInstance<Vignette>();
         m_Vignette.enabled.Override(false);
         m_Vignette.intensity.Override(0.275f);
