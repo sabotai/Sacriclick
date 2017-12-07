@@ -90,7 +90,7 @@ public class MasterWaypointer : MonoBehaviour {
 
 	void InitRandomSpecial(){
 		if (Time.frameCount % 600 == 0){
-			movables[Random.Range(0, movables.Length)].transform.GetChild(1).gameObject.GetComponent<SpecialStatus>().specialStat = true;
+			movables[Random.Range(6, movables.Length)].transform.GetChild(1).gameObject.GetComponent<SpecialStatus>().specialStat = true;
 		}
 	}
 

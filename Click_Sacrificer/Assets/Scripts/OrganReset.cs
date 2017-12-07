@@ -25,10 +25,10 @@ public class OrganReset : MonoBehaviour {
 		if (col.gameObject.tag == "claw" || col.gameObject.tag == "organ" && myPS != null && !myPS.IsAlive()){
 			myPS.Play();
 		}
-
 		if (col.gameObject.tag == "Temple"){
-			if (clawObj.GetComponent<Claw>().grabbing == false){
-				if (clawObj.GetComponent<Claw>().clawVert == 0f && clawObj.GetComponent<Claw>().graspAttempted){
+
+			if (!clawObj.GetComponent<Claw>().grabbing){
+				if (clawObj.GetComponent<Claw>().clawVert <= 0f && clawObj.GetComponent<Claw>().stage != 0){
 					Debug.Log("crane game reset ... organ hit temple");
 					Camera.main.gameObject.GetComponent<CraneGame>().beginCraneGame = false;
 				}
