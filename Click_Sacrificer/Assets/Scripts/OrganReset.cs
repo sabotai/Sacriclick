@@ -11,7 +11,7 @@ public class OrganReset : MonoBehaviour {
 	void Awake () {
 		origin = transform.position;
 		clawObj = GameObject.Find("claw-2");
-		if (GetComponent<ParticleSystem>() != null) myPS = GetComponent<ParticleSystem>();
+		myPS = GetComponent<ParticleSystem>();
 	}
 	void OnEnable(){
 		transform.position = origin;
@@ -20,9 +20,10 @@ public class OrganReset : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		}
+
 	void OnCollisionEnter(Collision col){
 
-		if (col.gameObject.tag == "claw" || col.gameObject.tag == "organ" && myPS != null && !myPS.IsAlive()){
+		if (col.gameObject.tag == "claw" || col.gameObject.tag == "organ" && (myPS != null) && !myPS.IsAlive()){
 			myPS.Play();
 		}
 		if (col.gameObject.tag == "Temple"){
