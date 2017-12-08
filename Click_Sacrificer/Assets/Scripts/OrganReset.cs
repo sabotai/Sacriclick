@@ -30,7 +30,7 @@ public class OrganReset : MonoBehaviour {
 			if (!clawObj.GetComponent<Claw>().grabbing){
 				if (clawObj.GetComponent<Claw>().clawVert <= 0f && clawObj.GetComponent<Claw>().stage != 0){
 					Debug.Log("crane game reset ... organ hit temple");
-					Camera.main.gameObject.GetComponent<CraneGame>().beginCraneGame = false;
+					CraneGame.beginCraneGame = false;
 				}
 			}
 		}

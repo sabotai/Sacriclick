@@ -22,7 +22,7 @@ public class HideUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.H) && !sacrificer.GetComponent<CraneGame>().beginCraneGame) {
+		if (Input.GetKeyDown(KeyCode.H) && !CraneGame.beginCraneGame) {
 			hide = !hide;
 			if (hide) {
 				labels = GameObject.FindGameObjectsWithTag("label");

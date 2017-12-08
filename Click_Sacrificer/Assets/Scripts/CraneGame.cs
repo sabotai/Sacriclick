@@ -6,7 +6,7 @@ using UnityEngine.Rendering.PostProcessing;
 
 public class CraneGame : MonoBehaviour {
 
-	public bool beginCraneGame = false;
+	public static bool beginCraneGame = false;
 	float craneGameZoom = 42.5f;//60f;//
 	public Transform craneCam;
 	Transform newStartFocus;
@@ -57,7 +57,7 @@ public class CraneGame : MonoBehaviour {
 				//store original settings
 				origEndFocus = GetComponent<CameraMove>().endFocus;
 				origStartFocus = GetComponent<CameraMove>().startFocus;
-				origEndZoomAmt = GetComponent<CameraMove>().endZoomAmt;
+				origEndZoomAmt = CameraMove.endZoomAmt;
 				origStartZoomAmt = GetComponent<CameraMove>().startZoomAmt;
 
 				newStartFocus.position = Camera.main.transform.position;
@@ -66,7 +66,10 @@ public class CraneGame : MonoBehaviour {
 				GetComponent<CameraMove>().startFocus = newStartFocus;
 
 				GetComponent<CameraMove>().endFocus = craneCam;
-				GetComponent<CameraMove>().endZoomAmt = craneGameZoom;
+
+				//need to do both because of initial wide zoom mechanism
+				CameraMove.endZoomAmt = craneGameZoom;
+				CameraMove.currentEndZoom = craneGameZoom;
 				GetComponent<CameraMove>().startZoomAmt = Camera.main.fieldOfView;
 
 				//enable crane stuff
@@ -98,6 +101,7 @@ public class CraneGame : MonoBehaviour {
 					claw.transform.SetParent(Camera.main.transform, false);
 					claw.GetComponent<Claw>().Start();
 					ready = true;
+
 					GetComponent<CameraMove>().enabled = false;
 					basket.SetActive(true);
 					vics.SetActive(false);
@@ -148,7 +152,7 @@ public class CraneGame : MonoBehaviour {
 				GetComponent<CameraMove>().enabled = true;
 				GetComponent<CameraMove>().startFocus = origStartFocus;
 				GetComponent<CameraMove>().endFocus = origEndFocus;
-				GetComponent<CameraMove>().endZoomAmt = origEndZoomAmt;
+				CameraMove.endZoomAmt = origEndZoomAmt;
 				GetComponent<CameraMove>().startZoomAmt = origStartZoomAmt;
 				GetComponent<CameraMove>().forceAmt = 0f;
 				claw.transform.SetParent(craneParent.transform.GetChild(0), false);

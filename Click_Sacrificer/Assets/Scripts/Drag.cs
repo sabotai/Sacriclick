@@ -41,6 +41,8 @@ public class Drag : MonoBehaviour {
 	public float flickThresh = 30f;
 	public float flickForce = 4000f;
 	public AudioClip flickClip;
+	public float dragZoomAmt = 49f;
+	float origEndZoomAmt;
 
 	// Use this for initialization
 	void Start () {
@@ -48,6 +50,7 @@ public class Drag : MonoBehaviour {
 		diffManager = GameObject.Find("DifficultyManager");
 		panCam = new Vector3(0f,0f,0f);
 
+		origEndZoomAmt = CameraMove.endZoomAmt;
 		cam = Camera.main.gameObject.GetComponent<CameraMove>().startFocus;
 		endCam = Camera.main.gameObject.GetComponent<CameraMove>().endFocus;
 
@@ -62,7 +65,7 @@ public class Drag : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (panMode && !GetComponent<CraneGame>().beginCraneGame){
+		if (panMode && !CraneGame.beginCraneGame){
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 			RaycastHit beamHit = new RaycastHit();
@@ -149,6 +152,8 @@ public class Drag : MonoBehaviour {
 			}
 		} else { //if !panmode
 			
+			pipCam.GetComponent<Camera>().enabled = false;
+			pipCanvas.SetActive(false);
 			//reset them if the player swapped back to blood while hovering or dragging
 			if (dragItem != null) resetColor(dragItem);
 			if (hoverItem != null) resetColor(hoverItem);
@@ -157,10 +162,11 @@ public class Drag : MonoBehaviour {
 
 		if (flickItem != null) flick(flickItem);
 
-		if (!GetComponent<CraneGame>().beginCraneGame){
+		if (!CraneGame.beginCraneGame){
 			//swapping between modes
 			if (Input.GetButtonDown("Toggle") && panToggle) {
 				panMode = !panMode;
+
 				audio.PlayOneShot(toggleClip);
 			}
 
@@ -168,6 +174,8 @@ public class Drag : MonoBehaviour {
 
 			mouseVelo = Input.mousePosition - pMouse;
 			pMouse = Input.mousePosition;
+		} else {
+			panMode = false;
 		}
 
 	}
@@ -287,6 +295,8 @@ public class Drag : MonoBehaviour {
 			GetComponent<CameraMove>().forceAmt += 0.01f;
 
 			if (amtPanned >= maxPanRight / 6f){
+				//zoom in
+				if (CameraMove.endZoomAmt > dragZoomAmt) CameraMove.endZoomAmt -= 20 * Time.deltaTime;
 				//enable and fade in the pip stuff
 				pipCam.GetComponent<Camera>().enabled = true;
 				pipCanvas.SetActive(true);
@@ -302,6 +312,9 @@ public class Drag : MonoBehaviour {
 					lArrow.SetActive(true);
 				}
 			} else {
+				//resetting camera position
+				if (CameraMove.endZoomAmt < origEndZoomAmt) CameraMove.endZoomAmt += 20 * Time.deltaTime;
+
 			//fade out and then disable the pip stuff
 				Color pipColor = pipMaterial.color;
 				if (pipColor.a > 0f) {
@@ -341,6 +354,8 @@ public class Drag : MonoBehaviour {
 				panCam *= 0.75f;
 			}
 		} else {
+			if (CameraMove.endZoomAmt < origEndZoomAmt && !CraneGame.beginCraneGame) CameraMove.endZoomAmt += 30 * Time.deltaTime;
+			
 			//hide guide arrows
 			rArrow.SetActive(false);
 			lArrow.SetActive(false);

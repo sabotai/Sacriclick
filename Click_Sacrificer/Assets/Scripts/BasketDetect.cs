@@ -16,7 +16,7 @@ public class BasketDetect : MonoBehaviour {
 
 	void OnTriggerEnter(Collider col){
 		if (col.tag == "organ"){
-			Camera.main.gameObject.GetComponent<CraneGame>().beginCraneGame = false;
+			CraneGame.beginCraneGame = false;
 			StartCoroutine(Camera.main.gameObject.GetComponent<CraneGame>().winCraneGame());
 		}
 	}

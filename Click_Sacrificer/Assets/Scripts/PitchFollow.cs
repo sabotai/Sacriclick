@@ -23,6 +23,6 @@ public class PitchFollow : MonoBehaviour {
 
 		float smoothTime = 0.5F;
 		float yVelocity = 0.0F;
-		audio.pitch = Mathf.SmoothDamp(audio.pitch, pitch, ref yVelocity, smoothTime);
+		if (!CraneGame.beginCraneGame) audio.pitch = Mathf.SmoothDamp(audio.pitch, pitch, ref yVelocity, smoothTime);
 	}
 }

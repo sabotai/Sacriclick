@@ -28,7 +28,7 @@ public class SunPct : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!Camera.main.gameObject.GetComponent<CraneGame>().beginCraneGame) rotateSun(rotAmt);
+		if (!CraneGame.beginCraneGame) rotateSun(rotAmt);
 	}
 
 	public void rotateSun(float pct){

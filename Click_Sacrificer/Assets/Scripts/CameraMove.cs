@@ -6,8 +6,8 @@ public class CameraMove : MonoBehaviour {
 
 	public Transform startFocus;
 	public Transform endFocus;
-	public float startZoomAmt = 2f;
-	public float endZoomAmt = 10.41f;
+	public float startZoomAmt = 38f;
+	public static float endZoomAmt = 75f;
 	public float oldZoom;
 	public bool perspectiveCam = true;
 	public bool forceShift = false;
@@ -15,10 +15,14 @@ public class CameraMove : MonoBehaviour {
 	public Camera[] chainedCams;
 	public bool zoomable = false;
 	public float zoom = 0f;
+	public float initialWideZoom = 120f;
+	public static float currentEndZoom;
+	public bool initialFlyIn = true;
 	
 
 	// Use this for initialization
 	void Start () {
+		currentEndZoom = initialWideZoom;
 		/*
 		Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -36,7 +40,8 @@ public class CameraMove : MonoBehaviour {
 			Debug.Log("hit " + beamHit.transform.gameObject);
 		}
 		*/
-		oldZoom = 0.35f; //starting %
+		oldZoom = 1f; //starting %
+
 	}
 	
 	void resetZoom(){
@@ -46,6 +51,19 @@ public class CameraMove : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if (initialFlyIn){
+			//initial fly in zoom
+			if (zoom < initialWideZoom){
+				if (currentEndZoom > endZoomAmt){
+					currentEndZoom -= (Time.deltaTime * 10f);
+				} else {
+					initialFlyIn = false;
+				}
+			}
+		} else {
+			currentEndZoom = endZoomAmt;
+		}
+
 
 		//calculate the cpm / 5
 		float newZoom = Camera.main.GetComponent<Sacrifice>().cps / 5f;
@@ -60,14 +78,14 @@ public class CameraMove : MonoBehaviour {
 		//focus should find the new intermediate position based on the zoom amount
 		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
 		if (perspectiveCam){
-			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
 			foreach (Camera cam in chainedCams){
-				cam.fieldOfView = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+				cam.fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
 			}
 		} else {
-			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
 			foreach (Camera cam in chainedCams){
-				cam.orthographicSize = Mathf.Lerp(startZoomAmt, endZoomAmt, zoom);
+				cam.orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
 			}
 		}
 		transform.position = focus;

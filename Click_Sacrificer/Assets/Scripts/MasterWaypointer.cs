@@ -56,7 +56,7 @@ public class MasterWaypointer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (!sacrificer.GetComponent<CraneGame>().beginCraneGame){
+		if (!CraneGame.beginCraneGame){
 			InitRandomSpecial();
 
 
@@ -149,7 +149,7 @@ public class MasterWaypointer : MonoBehaviour {
 
 		if (vic.transform.GetSiblingIndex() == 0 && vic.name != "dumb-idol-placeholder"){ //protection against it sac'ing the same one twice
 			if (vic.transform.GetChild(1).GetComponent<SpecialStatus>().specialStat){
-				sacrificer.GetComponent<CraneGame>().beginCraneGame = true;
+				CraneGame.beginCraneGame = true;
 			}
 			//Debug.Log("SACRIFICING: " + vic.name);
 			//StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));

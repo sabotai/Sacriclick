@@ -2,37 +2,37 @@ fileFormatVersion: 2
 guid: bc62d58f6a8fd6c47ad5be44e4a911c8
 SpeedTreeImporter:
   serializedVersion: 4
-  mainColor: {r: 0, g: 0, b: 0, a: 1}
-  hueVariation: {r: 0, g: 0, b: 0, a: 1}
-  alphaTestRef: 0.383
+  mainColor: {r: 0.36764705, g: 1, b: 0.47667345, a: 1}
+  hueVariation: {r: 0.7058823, g: 0.5086505, b: 0.5086505, a: 1}
+  alphaTestRef: 0.332
   bestWindQuality: 5
   hasBillboard: 1
   lODSettings:
-  - height: 0.01
-    castShadows: 1
-    receiveShadows: 1
+  - height: 0.819836
+    castShadows: 0
+    receiveShadows: 0
     useLightProbes: 0
     reflectionProbeUsage: 1
     enableBump: 0
     enableHue: 0
-    windQuality: 5
-  - height: 0.01
-    castShadows: 1
+    windQuality: 0
+  - height: 0.31484398
+    castShadows: 0
     receiveShadows: 0
-    useLightProbes: 1
+    useLightProbes: 0
     reflectionProbeUsage: 1
     enableBump: 0
     enableHue: 1
-    windQuality: 5
-  - height: 0.01
-    castShadows: 1
+    windQuality: 0
+  - height: 0.160604
+    castShadows: 0
     receiveShadows: 0
-    useLightProbes: 1
+    useLightProbes: 0
     reflectionProbeUsage: 1
     enableBump: 0
-    enableHue: 1
-    windQuality: 5
-  - height: 0.01
+    enableHue: 0
+    windQuality: 0
+  - height: 0.017496001
     castShadows: 1
     receiveShadows: 0
     useLightProbes: 0

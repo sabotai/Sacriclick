@@ -53,7 +53,7 @@ public class BloodMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-			if (!GetComponent<CraneGame>().beginCraneGame){
+			if (!CraneGame.beginCraneGame){
 			if (!firstClick && Input.GetButtonDown("Sacrifice")){
 				firstClick = true;
 			}
