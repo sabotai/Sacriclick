@@ -5,6 +5,7 @@ using UnityEngine;
 public class OrganReset : MonoBehaviour {
 	ParticleSystem myPS;
 	GameObject clawObj;
+	public string organType;
 
 	Vector3 origin;
 	// Use this for initialization
@@ -32,6 +33,7 @@ public class OrganReset : MonoBehaviour {
 				if (clawObj.GetComponent<Claw>().clawVert <= 0f && clawObj.GetComponent<Claw>().stage != 0){
 					Debug.Log("crane game reset ... organ hit temple");
 					CraneGame.beginCraneGame = false;
+					OnEnable();
 				}
 			}
 		}

@@ -168,7 +168,7 @@ public class CraneGame : MonoBehaviour {
 	}
 
 	//currently kills all the available vics
-	public IEnumerator winCraneGame(){
+	public IEnumerator winCraneGame(int howManySac){
 		aud.PlayOneShot(winSound);
 		GameObject diffManager = GameObject.Find("DifficultyManager");
 		GameObject[] vics = diffManager.GetComponent<MasterWaypointer>().movables;
@@ -176,7 +176,7 @@ public class CraneGame : MonoBehaviour {
 		//Debug.Log("Win dat crane game... kill " + vics.Length);
 		int howManySacced = 0;
 		Camera.main.gameObject.GetComponent<Sacrifice>().easyMode = true; //use easy mode so they arent penalized for mood
-		while (howManySacced < vics.Length * 5){
+		while (howManySacced < howManySac){
 			Debug.Log("trying to sac " + howManySacced);
 			if (diffManager.GetComponent<MasterWaypointer>().vicReady){					
 				Camera.main.gameObject.GetComponent<Sacrifice>().DoSacrifice(Camera.main.gameObject.GetComponent<Sacrifice>().clickable);

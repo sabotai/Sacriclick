@@ -13,7 +13,7 @@ public class MapKeys : MonoBehaviour {
 	float initialX = 0f;
 	public static float gripOpenDelta = 0f;
 	public Vector2[] allKeys;
-	public static int keyThreshold = 4;
+	public static int keyThreshold = 5;
 
 	// Use this for initialization
 	void Start () {

@@ -35,7 +35,7 @@ public class UpdateLabel : MonoBehaviour {
 	void Update () {
 		if (GetComponent<SpecialStatus>().specialStat) {
 			//if (GetComponent<TextMesh>().text == label) label
-			GetComponent<TextMesh>().text = "" + (int)GetComponent<SpecialStatus>().timeRemaining;
+			GetComponent<TextMesh>().text = "" + (int)(GetComponent<SpecialStatus>().timeRemaining + 1f);
 		} else {
 			if (wasSpecial) GetComponent<TextMesh>().text = "#" + myCount;
 			

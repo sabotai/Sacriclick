@@ -29,6 +29,8 @@ public class MasterWaypointer : MonoBehaviour {
 	public Color spawnColor;
 	public Color spawnEmitColor;
 	public AudioClip slideClip;
+	public int firstSpecialEligible = 10;
+	public float specialSpawnRate = 1000;
 
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
@@ -89,8 +91,8 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	void InitRandomSpecial(){
-		if (Time.frameCount % 600 == 0){
-			movables[Random.Range(6, movables.Length)].transform.GetChild(1).gameObject.GetComponent<SpecialStatus>().specialStat = true;
+		if (Time.frameCount % specialSpawnRate == 0){
+			movables[Random.Range(firstSpecialEligible, movables.Length)].transform.GetChild(1).gameObject.GetComponent<SpecialStatus>().specialStat = true;
 		}
 	}
 

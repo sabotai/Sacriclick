@@ -1,15 +1,22 @@
 fileFormatVersion: 2
-guid: 647ee47cb2259ef428173651b992029b
-timeCreated: 1512169174
+guid: cb8f36f1c9f09f246a917c94880e48ad
+timeCreated: 1512858990
 licenseType: Free
 ModelImporter:
   serializedVersion: 21
   fileIDToRecycleName:
     100000: //RootNode
+    100002: model
+    100004: model_001
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
+    400002: model
+    400004: model_001
+    2300000: model
+    2300002: model_001
+    3300000: model
+    3300002: model_001
     4300000: model
+    4300002: model_001
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -58,7 +65,7 @@ ModelImporter:
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
-    normalSmoothAngle: 180
+    normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
