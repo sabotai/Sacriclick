@@ -177,7 +177,7 @@ public class CraneGame : MonoBehaviour {
 		int howManySacced = 0;
 		Camera.main.gameObject.GetComponent<Sacrifice>().easyMode = true; //use easy mode so they arent penalized for mood
 		while (howManySacced < howManySac){
-			Debug.Log("trying to sac " + howManySacced);
+			//Debug.Log("trying to sac " + howManySacced);
 			if (diffManager.GetComponent<MasterWaypointer>().vicReady){					
 				Camera.main.gameObject.GetComponent<Sacrifice>().DoSacrifice(Camera.main.gameObject.GetComponent<Sacrifice>().clickable);
 				howManySacced++;	
