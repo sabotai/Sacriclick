@@ -351,15 +351,19 @@ public class Sacrifice : MonoBehaviour {
 				SceneManager.LoadScene(0);
 			}
 		} else {
-			Camera.main.cullingMask = 0001111111;
 
 			//Camera.main.transform.DetachChildren();
-			easyMode = true;
 			int rando = (int)Random.Range(0, rumbleSound.Length);
-			audio.clip = rumbleSound[rando];
 			//audio.loop = true;
-			if (audio.isPlaying) audio.PlayOneShot(rumbleSound[rando]);
-			if (!audio.isPlaying) audio.Play();
+			if (!easyMode){
+				Camera.main.cullingMask = 0001111111;
+				for (int i = 0; i < 20; i++){
+					audio.clip = rumbleSound[rando];
+					if (audio.isPlaying) audio.PlayOneShot(rumbleSound[rando]);
+					if (!audio.isPlaying) audio.Play();
+				}
+			}
+			easyMode = true;
 			//Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
 		}
 	}

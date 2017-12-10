@@ -15,7 +15,7 @@ public class BasketDetect : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider col){
-		if (col.tag == "organ"){
+		if (col.tag == "organ" && CraneGame.beginCraneGame){
 			int howMany = 0;
 			switch (col.gameObject.GetComponent<OrganReset>().organType){
 				case "heart":
@@ -31,6 +31,7 @@ public class BasketDetect : MonoBehaviour {
 					howMany = 50;
 					break;
 			}
+			Debug.Log(col.gameObject.GetComponent<OrganReset>().organType + " win");
 			CraneGame.beginCraneGame = false;
 			StartCoroutine(Camera.main.gameObject.GetComponent<CraneGame>().winCraneGame(howMany));
 		}

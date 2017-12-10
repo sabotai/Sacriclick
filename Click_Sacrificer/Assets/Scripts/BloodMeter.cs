@@ -53,49 +53,53 @@ public class BloodMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-			if (!CraneGame.beginCraneGame){
-			if (!firstClick && Input.GetButtonDown("Sacrifice")){
-				firstClick = true;
-			}
-			if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
-				failureAllowed = false;
-
-				bloodPlayer.Stop();
-				//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Stop();
-			} else {
-				//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
-				bloodPlayer.Play();
-				failureAllowed = true;
-				if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
-				secondsRemaining = bloodAmt / bloodSecondRatio;
-			}
-
-			if (bloodAmt < 0.01f && bloodJarNumber > 0 && useAutoJar){
-				useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
-			}
+		if (!CraneGame.beginCraneGame){
 			if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
-			if (failed)	GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
-			
-			if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
-				if (bloodJarNumber < jarLimit){
-					createJar();
+			if (failed){
+				GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
+			} else {
+				if (!firstClick && Input.GetButtonDown("Sacrifice")){
+					firstClick = true;
+				}
+				if (GetComponent<Sacrifice>().easyMode){ //use easy mode as a debug to stop blood
+					failureAllowed = false;
+
+					bloodPlayer.Stop();
+					//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Stop();
 				} else {
-					//create auto clicker?
-					createAuto();
+					//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
+					bloodPlayer.Play();
+					failureAllowed = true;
+					if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
+					secondsRemaining = bloodAmt / bloodSecondRatio;
+				}
+				if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
+					if (bloodJarNumber < jarLimit){
+						createJar();
+					} else {
+						Debug.Log("blood overflow autosac being created...");
+						//create auto clicker?
+						if (autosacNumber < jarLimit) createAuto();
+
+					}
 
 				}
 
-			}
-			bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
-			Color bloodColor;
-			bloodColor = bloodMat.GetColor("_TintColor");
-			float bloodPct = bloodAmt / 20f;
-			float maxA = 0.22f;
-			float bloodA = maxA - maxA * (bloodAmt / 20f);
-			bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
-			bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen
+				if (bloodAmt < 0.01f && bloodJarNumber > 0 && useAutoJar){
+					useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
+				}
 
-			jarCast();
+				bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
+				Color bloodColor;
+				bloodColor = bloodMat.GetColor("_TintColor");
+				float bloodPct = bloodAmt / 20f;
+				float maxA = 0.22f;
+				float bloodA = maxA - maxA * (bloodAmt / 20f);
+				bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
+				bloodUI.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, bloodAmt); //sets the blood movement on screen
+
+				jarCast();
+			}
 		}
 	}
 
@@ -156,9 +160,12 @@ public class BloodMeter : MonoBehaviour {
 
 	}
 	public void createAuto(){
+		//bloodAmt -= (bloodJarAmt * jarEfficiency);
+		bloodAmt = 5f;
 
 		audsrc.PlayOneShot(timerSnd);
 		autosacNumber++;
+		//bloodAmt -= (bloodJarAmt * 0.8f);
 		diffManager.GetComponent<Autosac>().numAutosacs = autosacNumber;
 		diffManager.GetComponent<Autosac>().clicksRemaining = autosacNumber * diffManager.GetComponent<Autosac>().numClicks;
 		GameObject newAutosac = Instantiate(autosacPrefab, autosacSpawn);
