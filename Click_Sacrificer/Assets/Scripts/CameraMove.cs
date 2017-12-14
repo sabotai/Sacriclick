@@ -51,55 +51,57 @@ public class CameraMove : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (initialFlyIn){
-			//initial fly in zoom
-			if (zoom < initialWideZoom){
-				if (currentEndZoom > endZoomAmt){
-					currentEndZoom -= (Time.deltaTime * 10f);
-				} else {
-					initialFlyIn = false;
+		if (GameState.state > 0){
+			if (initialFlyIn){
+				//initial fly in zoom
+				if (zoom < initialWideZoom){
+					if (currentEndZoom > endZoomAmt){
+						currentEndZoom -= (Time.deltaTime * 10f);
+					} else {
+						initialFlyIn = false;
+					}
+				}
+			} else {
+				currentEndZoom = endZoomAmt;
+			}
+
+
+			//calculate the cpm / 5
+			float newZoom = Camera.main.GetComponent<Sacrifice>().cps / 5f;
+
+			//lerp between these 2 zoom amounts by 0.75% each frame
+			zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
+			forceAmt = Mathf.Clamp(forceAmt, 0f, 1f);
+			zoom += forceAmt;
+			zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
+			//Debug.Log("zoomAmt = " + zoom);
+
+			//focus should find the new intermediate position based on the zoom amount
+			Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
+			if (perspectiveCam){
+				gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
+				foreach (Camera cam in chainedCams){
+					cam.fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
+				}
+			} else {
+				gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
+				foreach (Camera cam in chainedCams){
+					cam.orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
 				}
 			}
-		} else {
-			currentEndZoom = endZoomAmt;
-		}
+			transform.position = focus;
 
+	        transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
+			//transform.LookAt(focus);
 
-		//calculate the cpm / 5
-		float newZoom = Camera.main.GetComponent<Sacrifice>().cps / 5f;
+			oldZoom = zoom;
 
-		//lerp between these 2 zoom amounts by 0.75% each frame
-		zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
-		forceAmt = Mathf.Clamp(forceAmt, 0f, 1f);
-		zoom += forceAmt;
-		zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
-		//Debug.Log("zoomAmt = " + zoom);
+			if (zoomable){
 
-		//focus should find the new intermediate position based on the zoom amount
-		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
-		if (perspectiveCam){
-			gameObject.GetComponent<Camera>().fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
-			foreach (Camera cam in chainedCams){
-				cam.fieldOfView = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
+				float scrolled = Input.GetAxis("Mouse ScrollWheel") * -10f;
+				//startZoomAmt += scrolled;
+				endZoomAmt += scrolled;
 			}
-		} else {
-			gameObject.GetComponent<Camera>().orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
-			foreach (Camera cam in chainedCams){
-				cam.orthographicSize = Mathf.Lerp(startZoomAmt, currentEndZoom, zoom);
-			}
-		}
-		transform.position = focus;
-
-        transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
-		//transform.LookAt(focus);
-
-		oldZoom = zoom;
-
-		if (zoomable){
-
-			float scrolled = Input.GetAxis("Mouse ScrollWheel") * -10f;
-			//startZoomAmt += scrolled;
-			endZoomAmt += scrolled;
 		}
 	}
 }

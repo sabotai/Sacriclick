@@ -89,9 +89,8 @@ public class Sacrifice : MonoBehaviour {
 		if (!CraneGame.beginCraneGame){
 			if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
 			if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
-			if (Input.GetKeyDown("escape")) Application.Quit();
 			if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
-			if (GetComponent<Drag>().panMode){
+			if (Drag.panMode){
 				clickable.GetComponent<MeshRenderer>().material.color = Color.black;
 			} 
 			//cps = cpm/60f;
@@ -110,7 +109,7 @@ public class Sacrifice : MonoBehaviour {
 			//declare and initialize our raycasthit to store hit information
 			RaycastHit beamHit = new RaycastHit();
 
-			if (!GetComponent<Drag>().panMode && !CraneGame.beginCraneGame){
+			if (GameState.state == 1){
 				if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("click-toy"))){
 					if (!hovering){ //use hovering to efficiently only run once
 						lights(0.15f);
@@ -142,7 +141,7 @@ public class Sacrifice : MonoBehaviour {
 
 						if (beamHit.collider.gameObject == clickable || beamHit.collider.gameObject.tag == "click-toy"){
 							if (!limitAvailSac || sacReady){ //if limited, check if ready
-								if (!GetComponent<Drag>().panMode && !CraneGame.beginCraneGame){
+								if (GameState.state == 1){
 									sacReady = false;
 
 									if (diffManager.GetComponent<MasterWaypointer>() != null){
@@ -332,7 +331,7 @@ public class Sacrifice : MonoBehaviour {
 
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;
-		GetComponent<Drag>().panMode = false;
+		Drag.panMode = false;
 		CraneGame.beginCraneGame = false;
 		GetComponent<Drag>().panCam = Vector3.zero;
 		GetComponent<CameraMove>().forceAmt = 0f;

@@ -28,7 +28,7 @@ public class Autosac : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!CraneGame.beginCraneGame){
+		if (GameState.state == 1 || GameState.state == 2){
 			if (ssacrificer.GetComponent<Sacrifice>().failed) numAutosacs = 0;
 
 			float interval = duration / numAutosacs;

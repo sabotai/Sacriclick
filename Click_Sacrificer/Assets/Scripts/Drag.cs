@@ -23,7 +23,7 @@ public class Drag : MonoBehaviour {
 	public AudioClip hover;
 	public AudioClip goodRelease;
 	public AudioClip badRelease;
-	public bool panMode = false;
+	public static bool panMode = false;
 	public bool panToggle = true;
 	bool dragFail = false;
 	public AudioClip toggleClip;
@@ -65,7 +65,7 @@ public class Drag : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (panMode && !CraneGame.beginCraneGame){
+		if (GameState.state == 2){
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
 			RaycastHit beamHit = new RaycastHit();
@@ -151,18 +151,19 @@ public class Drag : MonoBehaviour {
 				if (!panToggle) panMode = false;
 			}
 		} else { //if !panmode
-			
-			pipCam.GetComponent<Camera>().enabled = false;
-			pipCanvas.SetActive(false);
-			//reset them if the player swapped back to blood while hovering or dragging
-			if (dragItem != null) resetColor(dragItem);
-			if (hoverItem != null) resetColor(hoverItem);
+			if (GameState.state != -1){
+				pipCam.GetComponent<Camera>().enabled = false;
+				pipCanvas.SetActive(false);
+				//reset them if the player swapped back to blood while hovering or dragging
+				if (dragItem != null) resetColor(dragItem);
+				if (hoverItem != null) resetColor(hoverItem);
+			}
 		}
 
 
 		if (flickItem != null) flick(flickItem);
 
-		if (!CraneGame.beginCraneGame){
+		if (GameState.state == 1 || GameState.state == 2){
 			//swapping between modes
 			if (Input.GetButtonDown("Toggle") && panToggle) {
 				panMode = !panMode;
@@ -175,7 +176,7 @@ public class Drag : MonoBehaviour {
 			mouseVelo = Input.mousePosition - pMouse;
 			pMouse = Input.mousePosition;
 		} else {
-			panMode = false;
+			//panMode = false;
 		}
 
 	}

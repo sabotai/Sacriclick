@@ -175,7 +175,7 @@ public class VictimGenToo : MonoBehaviour {
 		}
 
 
-
+		
 	}
 	
 	// Update is called once per frame

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HideUI : MonoBehaviour {
 
-	bool hide = false;
+	public static bool hide = false;
 	public GameObject[] uiElements;
 	GameObject[] labels;
 	GameObject uiCam;
@@ -22,21 +22,41 @@ public class HideUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (GameState.state == 1 && hide) {
+			hide = false;
+			Unhide();
+		}
+		if (GameState.state == 0 && !hide) {
+			hide = true;
+			Hide();
+		}
+
 		if (Input.GetKeyDown(KeyCode.H) && !CraneGame.beginCraneGame) {
 			hide = !hide;
 			if (hide) {
-				labels = GameObject.FindGameObjectsWithTag("label");
-				foreach (GameObject uie in uiElements){
-					uie.SetActive(false);
-				}
+				Hide();
+			} else {	
+				Unhide();	
+			}
+		}
+	}
 
-				foreach (GameObject label in labels){
-					label.SetActive(false);
-				}
+	void Hide(){
+		labels = GameObject.FindGameObjectsWithTag("label");
+		foreach (GameObject uie in uiElements){
+			uie.SetActive(false);
+		}
 
-				uiCam.SetActive(false);
-				Camera.main.cullingMask = 0001111111;
-			} else {		
+		foreach (GameObject label in labels){
+			label.SetActive(false);
+		}
+
+		uiCam.SetActive(false);
+		Camera.main.cullingMask = 0001111111;
+
+	}
+	void Unhide(){
+
 				foreach (GameObject uie in uiElements){
 
 					uie.SetActive(true);
@@ -47,7 +67,5 @@ public class HideUI : MonoBehaviour {
 				}
 				Camera.main.cullingMask = origMask;
 				uiCam.SetActive(true);
-			}
-		}
 	}
 }
