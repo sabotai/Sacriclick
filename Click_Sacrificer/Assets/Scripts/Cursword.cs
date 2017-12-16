@@ -32,7 +32,7 @@ public class Cursword : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Drag.panMode && GameState.state != -1) { 
+		if (Drag.panMode && GameState.state != -1 && !Tips.displayingTip) { 
 			if (Camera.main.gameObject.GetComponent<Drag>().hoverItem != null) {
 				hideCursor = false; 
 				} else {

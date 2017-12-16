@@ -80,7 +80,7 @@ public class CraneGame : MonoBehaviour {
 				origCraneGameEE = Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp;
 				origCraneGameSD = Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist;
 				//claw.transform.SetParent(Camera.main.transform, false);
-				GetComponent<CameraMove>().zoom = 0f;
+				CameraMove.zoom = 0f;
 				GetComponent<CameraMove>().oldZoom = 0f;
 
 				//make initial assignments based on new hierarchy
@@ -92,7 +92,7 @@ public class CraneGame : MonoBehaviour {
 				//keep pushing
 				GetComponent<CameraMove>().forceAmt += transitionSpeed;
 
-				if (GetComponent<CameraMove>().zoom >= 1f && GetComponent<CameraMove>().oldZoom >= 1f){
+				if (CameraMove.zoom >= 1f && GetComponent<CameraMove>().oldZoom >= 1f){
 
 					Camera.main.gameObject.GetComponent<EdgeDetection>().edgeExp = craneGameEE;
 					Camera.main.gameObject.GetComponent<EdgeDetection>().sampleDist = craneGameSD;

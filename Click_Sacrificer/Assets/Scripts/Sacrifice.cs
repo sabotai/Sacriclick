@@ -86,7 +86,7 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (!CraneGame.beginCraneGame){
+		if (!CraneGame.beginCraneGame && !Tips.displayingTip){
 			if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
 			if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 			if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
@@ -347,6 +347,7 @@ public class Sacrifice : MonoBehaviour {
 			
 			if (Input.anyKey)	{
 				easyMode = false;
+				PlayerPrefs.SetInt("init", 1);
 				SceneManager.LoadScene(0);
 			}
 		} else {

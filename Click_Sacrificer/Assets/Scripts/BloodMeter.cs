@@ -53,8 +53,8 @@ public class BloodMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (GameState.state == -1) bloodPlayer.Stop();
-		if (GameState.state == 1 || GameState.state == 2){
+		if (GameState.state == -1 || Tips.displayingTip) bloodPlayer.Stop();
+		if (!Tips.displayingTip && (GameState.state == 1 || GameState.state == 2)){
 			if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
 			if (failed){
 				GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen

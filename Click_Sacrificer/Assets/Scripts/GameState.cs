@@ -6,15 +6,16 @@ public class GameState : MonoBehaviour {
 
 	public static int state = 0;
 	public int stateRO;
-	GameObject intro;
+	public GameObject intro;
 	bool paused = false;
 	public GameObject pauseObj;
+	public GameObject tipPanel;
 	int prevState;
 
 	// Use this for initialization
 	void Start () {
-		intro = GameObject.Find("Intro");
-		pauseObj = GameObject.Find("Pause");
+		if (intro == null) intro = GameObject.Find("Intro");
+		if (pauseObj == null) pauseObj = GameObject.Find("Pause");
 		
 		pauseObj.SetActive(false);
 		prevState = state;
@@ -22,7 +23,6 @@ public class GameState : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Debug.Log("state= " + state);
 		if (intro.activeSelf){
 			state = 0;
 		} else if (paused){

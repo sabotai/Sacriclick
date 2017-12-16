@@ -67,21 +67,22 @@ public class Claw : MonoBehaviour {
 
 	// Update is called once per frame
 	void FixedUpdate () {
+		if (!Tips.displayingTip){
 
-
-		if ((graspAttempted) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
-			stage = 1;
-			if (completed) { //autorelease for completed
-				stage = 2;
+			if ((graspAttempted) && Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
+				stage = 1;
+				if (completed) { //autorelease for completed
+					stage = 2;
+				}
 			}
-		}
 
-		lowerClaw();
-		rotateCrane();
-		gripClaw();
+			lowerClaw();
+			rotateCrane();
+			gripClaw();
 
-		if (craneRotPct >= 0.99f){
-			completed = true;
+			if (craneRotPct >= 0.99f){
+				completed = true;
+			}
 		}
 	}
 

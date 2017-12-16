@@ -28,7 +28,7 @@ public class SunPct : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!CraneGame.beginCraneGame) rotateSun(rotAmt);
+		if ((GameState.state == 1 || GameState.state == 2) && !Tips.displayingTip) rotateSun(rotAmt);
 	}
 
 	public void rotateSun(float pct){
