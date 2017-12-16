@@ -89,15 +89,13 @@ public class Claw : MonoBehaviour {
 	void lowerClaw(){
 		//LOWER CLAW
 
-		if (!goingDown && !graspAttempted && (Input.GetKeyDown(downKey) || 
-			Input.GetMouseButtonDown(0)  ||
-			MapKeys.howManyKeys >= MapKeys.keyThreshold) && 
+		if (!goingDown && !graspAttempted && (MapKeys.howManyKeys >= MapKeys.keyThreshold) && 
 			Mathf.Approximately(clawMechanism.transform.position.y, defaultHeight)) {
 
 				goingDown = true;
 		}
 
-		if (Input.GetKey(downKey) || goingDown == false || Input.GetMouseButton(0) || MapKeys.howManyKeys >= MapKeys.keyThreshold){
+		if (goingDown == false || MapKeys.howManyKeys >= MapKeys.keyThreshold){
 			int dir = 1;
 			if (!goingDown) {
 				//lets reverse it if no longer going down
@@ -115,8 +113,7 @@ public class Claw : MonoBehaviour {
 		} 
 
 		if (Mathf.Approximately(clawVert, 1f) && startTime < 0f) startTime = Time.time;
-		if (Input.GetKeyUp(downKey) || Input.GetMouseButtonUp(0) || 
-			(Time.time > startTime + clawHoldDuration && startTime > 0f)) {
+		if ((Time.time > startTime + clawHoldDuration && startTime > 0f)) {
 			goingDown = false;
 			startTime = -1f;
 		}

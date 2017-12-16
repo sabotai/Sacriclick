@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DifficultyManager : MonoBehaviour {
 
@@ -24,6 +25,7 @@ public class DifficultyManager : MonoBehaviour {
 	public GameObject victimPrefab;
 	public int initFreebies = 15;
 	public float autosacDuration = 5f;
+	public Slider difficultySlider;
 
 	void Awake(){
 
@@ -62,11 +64,14 @@ public class DifficultyManager : MonoBehaviour {
 			vic.GetComponent<Mood>().diffProgression = diffProgression;
 			vic.GetComponent<Mood>().constrainMood = constrainMood;
 		}
+
+
+		SetDifficulty(PlayerPrefs.GetFloat("difficulty"));
 	}
 	
 	public void SetDifficulty(float newDiff){
 		diffProgression = (float)(newDiff * 0.0005f);
-		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * (newDiff/4f));
+		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((newDiff-1)/7f));
 
 		GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
@@ -86,5 +91,8 @@ public class DifficultyManager : MonoBehaviour {
 			vic.GetComponent<Mood>().diffProgression = diffProgression;
 			vic.GetComponent<Mood>().constrainMood = constrainMood;
 		}
+
+		PlayerPrefs.SetFloat("difficulty", newDiff);
+		difficultySlider.value = newDiff;
 	}
 }

@@ -47,6 +47,7 @@ public class Sacrifice : MonoBehaviour {
 	public AudioClip templeHoverClip;
 	public float pitchMin, pitchMax;
 
+
 	void Awake(){
 		sacCount = 0;
 	}
@@ -343,6 +344,18 @@ public class Sacrifice : MonoBehaviour {
 			failed = true;
 
 			StartCoroutine(Shake.ShakeThis(Camera.main.transform, restartTime / 10f, 0.5f));
+
+			GameObject[] templePieces = GameObject.FindGameObjectsWithTag("particletrigger");
+			foreach(GameObject temp in templePieces){
+				if (temp.GetComponent<ParticleSystem>() != null) temp.GetComponent<ParticleSystem>().Play();
+				if (temp.GetComponents<BoxCollider>() != null)	{
+					foreach (Component comp in temp.GetComponents<BoxCollider>()){
+						//Destroy(comp);
+					}
+				}
+				//foreach (Component comp in comps) comp.enabled = false;
+				//temp.AddComponent(typeof(Rigidbody));
+			}
 		}
 
 		if (failedTime + restartTime < Time.time){
