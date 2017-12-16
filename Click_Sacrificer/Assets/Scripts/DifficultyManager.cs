@@ -64,9 +64,27 @@ public class DifficultyManager : MonoBehaviour {
 		}
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-		
+	public void SetDifficulty(float newDiff){
+		diffProgression = (float)(newDiff * 0.0005f);
+		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * (newDiff/4f));
+
+		GameObject victimParent = GameObject.Find("Victims");
+		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
+		for (int i = 0; i < victimz.Length; i++){ //assign each one
+			victimz[i] = victimParent.transform.GetChild(i).gameObject;
+		}
+		foreach (GameObject vic in victimz){
+			if (vic.GetComponent<Pathfinder>() != null){
+				vic.GetComponent<Pathfinder>().waySpeed = waySpeed;
+			} else if (Camera.main.gameObject.GetComponent<MasterWaypointer>() != null){
+				Camera.main.gameObject.GetComponent<MasterWaypointer>().waySpeed = waySpeed;
+			}
+			vic.GetComponent<CheckSwordHover>().hoverMoodSpeedMult = hoverMoodSpeedMult;
+			vic.GetComponent<CheckSwordHover>().moodHoverDir = moodHoverDir;
+			vic.GetComponent<Mood>().moodFailThresh = moodFailThresh;
+			vic.GetComponent<Mood>().diff = diff;
+			vic.GetComponent<Mood>().diffProgression = diffProgression;
+			vic.GetComponent<Mood>().constrainMood = constrainMood;
+		}
 	}
 }

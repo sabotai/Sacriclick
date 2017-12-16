@@ -7,6 +7,7 @@ public class GameState : MonoBehaviour {
 	public static int state = 0;
 	public int stateRO;
 	public GameObject intro;
+	public GameObject tipObj;
 	bool paused = false;
 	public GameObject pauseObj;
 	public GameObject tipPanel;
@@ -50,11 +51,13 @@ public class GameState : MonoBehaviour {
 		paused = true;
 
 		pauseObj.SetActive(true);
+		tipObj.SetActive(false);
 		prevState = state;
 	}
 	public void Resume(){
 		paused = false;
 		pauseObj.SetActive(false);
+		tipObj.SetActive(true);
 		state = prevState;
 	}
 

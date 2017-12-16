@@ -59,7 +59,7 @@ public class BloodMeter : MonoBehaviour {
 			if (failed){
 				GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
 			} else {
-				if (!firstClick && Input.GetButtonDown("Sacrifice")){
+				if (!firstClick && GetComponent<Sacrifice>().sacCount > 0){
 					firstClick = true;
 				}
 				if (GetComponent<Sacrifice>().easyMode || GameState.state == -1){ //use easy mode as a debug to stop blood

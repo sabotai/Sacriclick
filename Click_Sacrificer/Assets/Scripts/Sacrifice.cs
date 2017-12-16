@@ -83,13 +83,15 @@ public class Sacrifice : MonoBehaviour {
 		}
 
 	}
+	public void SetEasyMode(bool setE){
+		easyMode = setE;
+	}
 
 	// Update is called once per frame
 	void Update () {
 		if (!CraneGame.beginCraneGame && !Tips.displayingTip){
 			if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
-			if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
-			if (Input.GetKeyDown(KeyCode.E)) easyMode = !easyMode;
+			//if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 			if (Drag.panMode){
 				clickable.GetComponent<MeshRenderer>().material.color = Color.black;
 			} 

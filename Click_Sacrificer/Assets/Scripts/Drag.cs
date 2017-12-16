@@ -64,7 +64,7 @@ public class Drag : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		if (!Tips.displayingTip){
 		if (GameState.state == 2){
 			Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 			Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.red);
@@ -177,6 +177,7 @@ public class Drag : MonoBehaviour {
 			pMouse = Input.mousePosition;
 		} else {
 			//panMode = false;
+		}
 		}
 
 	}
