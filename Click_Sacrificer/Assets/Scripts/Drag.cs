@@ -236,7 +236,7 @@ public class Drag : MonoBehaviour {
 	void flick(GameObject flickee){
 		Debug.Log("flicking item ... " + flickee.name);
 		int sibIndex = flickee.transform.GetSiblingIndex();
-		if (flickee.transform.position.x > -1f && flickee.transform.position.x < maxPanRight && flickee.transform.position.z < 10f && flickee.transform.position.z > 0f ){
+		if (flickee.transform.position.x > vicParent.transform.GetChild(0).position.x && flickee.transform.position.x < (vicParent.transform.GetChild(vicParent.transform.childCount - 1).position.x) && flickee.transform.position.z < 10f && flickee.transform.position.z > 0f ){
 			if (placeholderItem.transform.parent != null) {
 				sibIndex = placeholderItem.transform.GetSiblingIndex(); //override it if it has already swapped
 			} else {
@@ -252,7 +252,7 @@ public class Drag : MonoBehaviour {
 
 			}
 
-			if (insert(flickee, true)) { //if havent found a new home yet
+			if (insert(flickee, true)) { //if found a new home 
 				Debug.Log("putting back flickee at " + sibIndex);
 				placeholderItem.transform.SetParent(null);
 				diffManager.GetComponent<MasterWaypointer>().UpdateOrder();

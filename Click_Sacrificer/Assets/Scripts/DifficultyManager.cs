@@ -66,12 +66,22 @@ public class DifficultyManager : MonoBehaviour {
 		}
 
 
-		SetDifficulty(PlayerPrefs.GetFloat("difficulty"));
+		SetDifficulty((float)PlayerPrefs.GetInt("difficulty"));
 	}
-	
+
+	public void SetDifficultyDelay(float newDiff){
+
+		PlayerPrefs.SetInt("difficulty", (int)newDiff);
+	}
+
 	public void SetDifficulty(float newDiff){
-		diffProgression = (float)(newDiff * 0.0005f);
-		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((newDiff-1)/7f));
+		float diffNumber = 3f;
+		if (newDiff == 1f) diffNumber = 1f;
+		else if (newDiff == 2f) diffNumber = 3f;
+		else if (newDiff == 3f) diffNumber = 5f;
+
+		diffProgression = (float)(diffNumber * 0.0005f);
+		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((diffNumber-1)/7f));
 
 		GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
@@ -92,7 +102,7 @@ public class DifficultyManager : MonoBehaviour {
 			vic.GetComponent<Mood>().constrainMood = constrainMood;
 		}
 
-		PlayerPrefs.SetFloat("difficulty", newDiff);
+		PlayerPrefs.SetInt("difficulty", (int)newDiff);
 		difficultySlider.value = newDiff;
 	}
 }

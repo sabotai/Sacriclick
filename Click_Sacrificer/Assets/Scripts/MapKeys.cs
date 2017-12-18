@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.UI;
 
 public class MapKeys : MonoBehaviour {
 
@@ -14,6 +15,7 @@ public class MapKeys : MonoBehaviour {
 	public static float gripOpenDelta = 0f;
 	public Vector2[] allKeys;
 	public static int keyThreshold = 5;
+	public Slider keyMenuSlider;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +27,14 @@ public class MapKeys : MonoBehaviour {
 		howManyKeys = 0;
 
 		gripOpenDelta = 0f;
+
+		SetKeyThresh((float)keyThreshold);
+	}
+
+	public void SetKeyThresh(float num){
+		keyThreshold = (int)num;
+		keyMenuSlider.value = keyThreshold;
+
 	}
 	
 	// Update is called once per frame
