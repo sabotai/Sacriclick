@@ -26,6 +26,7 @@ public class DifficultyManager : MonoBehaviour {
 	public int initFreebies = 15;
 	public float autosacDuration = 5f;
 	public Slider difficultySlider;
+	public static int currentDifficulty;
 
 	void Awake(){
 
@@ -65,6 +66,7 @@ public class DifficultyManager : MonoBehaviour {
 			vic.GetComponent<Mood>().constrainMood = constrainMood;
 		}
 
+		currentDifficulty = PlayerPrefs.GetInt("difficulty");
 
 		SetDifficulty((float)PlayerPrefs.GetInt("difficulty"));
 	}

@@ -37,7 +37,7 @@ public class Sacrifice : MonoBehaviour {
 	public bool failed = false;
 	float failedTime = 0.0f;
 	GameObject failObj;
-	public bool playScreams = false;
+	public static bool playScreams = false;
 	public Vector3 bloodOffset;
 	GameObject selectedObj;
 	GameObject diffManager;
@@ -88,10 +88,13 @@ public class Sacrifice : MonoBehaviour {
 		easyMode = setE;
 	}
 
+	public void SetScreams(bool setS){
+		playScreams = setS;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (!CraneGame.beginCraneGame && !Tips.displayingTip){
-			if (Input.GetKeyDown(KeyCode.P)) playScreams = !playScreams;
 			//if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 			if (Drag.panMode){
 				clickable.GetComponent<MeshRenderer>().material.color = Color.black;

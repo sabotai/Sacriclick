@@ -70,7 +70,7 @@ public class Pathfinder : MonoBehaviour {
 	}
 
 	void Start(){
-		playScreams = Camera.main.gameObject.GetComponent<Sacrifice>().playScreams;
+		playScreams = Sacrifice.playScreams;
 		failed = false;
 		if (myCount == 0) myCount = transform.parent.childCount - currentWaypoint;
 		//screams = Resources.Load("/screams") as AudioClip;

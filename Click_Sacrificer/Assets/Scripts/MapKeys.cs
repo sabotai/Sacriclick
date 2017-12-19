@@ -28,12 +28,13 @@ public class MapKeys : MonoBehaviour {
 
 		gripOpenDelta = 0f;
 
-		SetKeyThresh((float)keyThreshold);
+		SetKeyThresh(PlayerPrefs.GetInt("keyThreshold"));
 	}
 
 	public void SetKeyThresh(float num){
 		keyThreshold = (int)num;
 		keyMenuSlider.value = keyThreshold;
+		PlayerPrefs.SetInt("keyThreshold", keyThreshold);
 
 	}
 	

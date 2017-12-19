@@ -32,6 +32,11 @@ public class MasterWaypointer : MonoBehaviour {
 	public int firstSpecialEligible = 10;
 	public float specialSpawnRate = 1000;
 
+	AudioClip myClip;
+	Object[] posScreams;
+	Object[] neuScreams;
+	Object[] negScreams;
+
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
 		if (macuahuitl == null) macuahuitl = GameObject.Find("sword").transform;
@@ -54,6 +59,16 @@ public class MasterWaypointer : MonoBehaviour {
 		for (int i = 0; i < howMany; i++){
 			movables[i] = victimParent.GetChild(i).gameObject;
 		}
+
+
+
+		posScreams = Resources.LoadAll("Screams/positive", typeof(AudioClip));
+		negScreams = Resources.LoadAll("Screams/negative", typeof(AudioClip));
+		neuScreams = Resources.LoadAll("Screams/neutral", typeof(AudioClip));
+		//Debug.Log(screams.Length + " screams");
+		// print("AudioClips " + Resources.FindObjectsOfTypeAll(typeof(AudioClip)).Length);
+		//audio = GetComponent<AudioSource>();
+		//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
 	}
 	
 	// Update is called once per frame
@@ -167,17 +182,30 @@ public class MasterWaypointer : MonoBehaviour {
 			//game failed if you sacrificed one who did not conset
 			float myDeathMood = vic.GetComponent<Mood>().mood;
 			float mt = vic.GetComponent<Mood>().moodFailThresh;
-			if (myDeathMood < mt){
-				//Debug.Log("sacrificed someone without consent! " + myDeathMood + "  " + vic.name);
-				//myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
-				if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
-			} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
-				//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
-			} else { //pos moods
-				//myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+
+
+			if (Sacrifice.playScreams){
+				if (myDeathMood < mt){
+					Debug.Log("sacrificed someone without consent! " + myDeathMood + "  " + vic.name);
+					myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
+					if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+				} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
+					myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+				} else { //pos moods
+					myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+				}
+				
+				AudioSource audio = vic.GetComponent<AudioSource>();
+				audio.pitch = Random.Range(0.8f, 1.2f);
+				audio.PlayOneShot(myClip);
+
+			} else {
+				if (myDeathMood < mt){
+					if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+				}
+				
 			}
 
-			//if (playScreams) audio.PlayOneShot(myClip);
 			ReleaseVic(vic);
 			MoveUp();
 			//instantiate the new one

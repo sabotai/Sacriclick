@@ -57,7 +57,8 @@ public class GameState : MonoBehaviour {
 	public void Resume(){
 		paused = false;
 		pauseObj.SetActive(false);
-		tipObj.SetActive(true);
+
+		//tipObj.SetActive(true);
 		state = prevState;
 	}
 

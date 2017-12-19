@@ -48,6 +48,11 @@ public class Tips : MonoBehaviour
 		//dispBloodTip = true;
 		//dispClawTip = true;
 		//dispBrokerTip = true;
+		if (PlayerPrefs.GetInt("help") == 1){
+			helpToggle.GetComponent<Toggle> ().isOn = true;
+		} else if (PlayerPrefs.GetInt("help") == 0){
+			helpToggle.GetComponent<Toggle> ().isOn = false;
+		}
 	}
 	
 	// Update is called once per frame
@@ -56,10 +61,12 @@ public class Tips : MonoBehaviour
 		if (PlayerPrefs.GetInt ("help") == 0)
 			tipPanel.SetActive (false);
 
-		if (tipPanel.activeSelf)
+		if (tipPanel.activeSelf){
 			displayingTip = true;
-		else
+		}
+		else{
 			displayingTip = false;
+		}
 
 		if (currentBloodTip == bloodTips.Length && currentBrokerTip == brokerTips.Length && currentClawTip == clawTips.Length) {
 			SetHelpBool (false);
@@ -70,8 +77,9 @@ public class Tips : MonoBehaviour
 			tipPanel.SetActive (false);
 			break;
 		case 1:
-			if (backwardButton.activeSelf && currentBloodTip == 0)
+			if (backwardButton.activeSelf && currentBloodTip == 0){
 				backwardButton.SetActive (false);
+			}
 			if (currentBloodTip != bloodTips.Length) {
 				if (currentBloodTip == 0) {
 					bloodTipObj.GetComponent<Text> ().font = titleFont;
