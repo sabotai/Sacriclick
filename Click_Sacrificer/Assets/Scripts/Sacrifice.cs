@@ -268,7 +268,7 @@ public class Sacrifice : MonoBehaviour {
 				audio.pitch = Random.Range(pitchMin, pitchMax);
 				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				int rando = (int)Random.Range(0, rumbleSound.Length);
-				if (cps > 4f) audio.Stop();
+				if (cps > 2.5f) audio.Stop();
 				audio.PlayOneShot(rumbleSound[rando]);
 				//sacCount++;
 				//}

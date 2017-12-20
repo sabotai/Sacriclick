@@ -51,7 +51,8 @@ public class CraneGame : MonoBehaviour {
 
 			if (!craneParent.active){
 				aud.Stop();
-				aud.PlayOneShot(enterSound);
+				aud.clip = enterSound;
+				if (!aud.isPlaying) aud.Play();
 				startTime = -1f;
 				//move/rotate camera
 
@@ -143,7 +144,9 @@ public class CraneGame : MonoBehaviour {
 			//reset all the camera stuff and items
 			if (craneParent.active){
 				aud.Stop();
-				aud.PlayOneShot(exitSound);
+				//aud.PlayOneShot(exitSound);
+				aud.clip = exitSound;
+				if (!aud.isPlaying) aud.Play();
 				ready = false;
 				vics.SetActive(true);
 
@@ -171,7 +174,9 @@ public class CraneGame : MonoBehaviour {
 
 	//currently kills all the available vics
 	public IEnumerator winCraneGame(int howManySac){
-		aud.PlayOneShot(winSound);
+		//aud.PlayOneShot(winSound);
+		aud.clip = winSound;
+		if (!aud.isPlaying) aud.Play();
 		GameObject diffManager = GameObject.Find("DifficultyManager");
 		GameObject[] vics = diffManager.GetComponent<MasterWaypointer>().movables;
 

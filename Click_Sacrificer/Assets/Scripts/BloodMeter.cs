@@ -118,7 +118,10 @@ public class BloodMeter : MonoBehaviour {
 	void useJar(GameObject jar){
 		bloodAmt += (bloodJarAmt * jarEfficiency);
 		bloodJarNumber -= 1;
-		audsrc.PlayOneShot(shatterSnd);
+		audsrc.Stop();
+		audsrc.clip = shatterSnd;
+		audsrc.Play();
+		//audsrc.PlayOneShot(shatterSnd);
 		Destroy(jar);
 	}
 	void jarCast(){
@@ -151,7 +154,12 @@ public class BloodMeter : MonoBehaviour {
 		bloodAmt -= bloodJarAmt;
 		//GameObject newJar = Instantiate(bloodJar, bloodSpawn.position, Quaternion.identity);
 		GameObject newJar = Instantiate(bloodJarPrefab, bloodSpawn);
-		audsrc.PlayOneShot(pourSnd);
+		audsrc.Stop();
+		audsrc.clip = pourSnd;
+		audsrc.Play();
+		Debug.Log("playing jar audio " + audsrc.isPlaying);
+		//AudioSource.PlayClipAtPoint(pourSnd, bloodSpawn.position);
+		//audsrc.PlayOneShot(pourSnd);
 		Vector3 bldSpwn = bloodSpawn.position;
 		//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
 		bldSpwn += (newJar.transform.up * -1.2f * (bloodJarNumber - 1));
@@ -165,7 +173,10 @@ public class BloodMeter : MonoBehaviour {
 		//bloodAmt -= (bloodJarAmt * jarEfficiency);
 		bloodAmt = 5f;
 
-		audsrc.PlayOneShot(timerSnd);
+		audsrc.Stop();
+		//audsrc.PlayOneShot(timerSnd);
+		audsrc.clip = timerSnd;
+		audsrc.Play();
 		autosacNumber++;
 		//bloodAmt -= (bloodJarAmt * 0.8f);
 		diffManager.GetComponent<Autosac>().numAutosacs = autosacNumber;

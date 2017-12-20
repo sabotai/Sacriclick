@@ -18,7 +18,7 @@ public class Drag : MonoBehaviour {
 	Transform endCam;
 	public float maxPanRight;
 	float velocityY = 0.0f;
-	public AudioSource audio;
+	public AudioSource audio, audioInd;
 	public AudioClip pickup;
 	public AudioClip hover;
 	public AudioClip goodRelease;
@@ -96,11 +96,19 @@ public class Drag : MonoBehaviour {
 
 	 				if( Input.GetMouseButtonDown(0)){ //init drag
 	 					//panMode = true;
-	 					audio.PlayOneShot(pickup);
+	 					//audio.PlayOneShot(pickup);
 						dragItem = hoverItem;
-						hoverItem = null;
-					} else { //if just newly hovering
-		 				audio.PlayOneShot(hover);
+							hoverItem = null;
+							audioInd = dragItem.GetComponent<AudioSource>();
+							audioInd.Stop();
+							audioInd.clip = pickup;
+							audioInd.Play();
+						} else { //if just newly hovering
+							audioInd = hoverItem.GetComponent<AudioSource>();
+							audioInd.Stop();
+							audioInd.clip = hover;
+							audioInd.Play();
+		 				//audio.PlayOneShot(hover);
 
 						//set color for both pieces of the victim
 						setColor(hoverItem, highlightColor);
@@ -122,7 +130,7 @@ public class Drag : MonoBehaviour {
 
 			//if something is being dragged
 			if (dragItem != null){
-
+					audioInd = dragItem.GetComponent<AudioSource>();
 				//release
 				if (Input.GetMouseButtonUp(0)){
 
@@ -139,10 +147,16 @@ public class Drag : MonoBehaviour {
 						Debug.Log("velo = " + mouseVelo.magnitude);
 						flickItem = dragItem;
 						flickItem.GetComponent<Rigidbody>().velocity = Vector3.zero;
-					} else if (dragFail) {
-						audio.PlayOneShot(badRelease);
-					} else {
-						audio.PlayOneShot(goodRelease);
+						} else if (dragFail) {
+							//audioInd.Stop();
+							//audioInd.clip = badRelease;
+							//audioInd.Play();
+							audio.PlayOneShot(badRelease);
+						} else {
+							//audioInd.Stop();
+							//audioInd.clip = goodRelease;
+							//audioInd.Play();
+							audioInd.PlayOneShot(goodRelease);
 					}
 					dragItem = null;
 
@@ -167,8 +181,9 @@ public class Drag : MonoBehaviour {
 			//swapping between modes
 			if (Input.GetButtonDown("Toggle") && panToggle) {
 				panMode = !panMode;
-
-				audio.PlayOneShot(toggleClip);
+					audio.Stop();
+					audio.clip = toggleClip;
+					audio.Play();
 			}
 
 			 doPanMode(Input.GetButton("Toggle") || panMode);
@@ -203,6 +218,7 @@ public class Drag : MonoBehaviour {
 
 	}
 	bool insert(GameObject relObj, bool isThrow){
+		audioInd = relObj.GetComponent<AudioSource>();
 		GameObject victimParent;
 		int sibIndex = relObj.transform.GetSiblingIndex();
 		//Debug.Log("sibindex = " + sibIndex);
@@ -235,12 +251,16 @@ public class Drag : MonoBehaviour {
 
 	void flick(GameObject flickee){
 		Debug.Log("flicking item ... " + flickee.name);
+		audioInd = flickee.GetComponent<AudioSource>();
 		int sibIndex = flickee.transform.GetSiblingIndex();
 		if (flickee.transform.position.x > vicParent.transform.GetChild(0).position.x && flickee.transform.position.x < (vicParent.transform.GetChild(vicParent.transform.childCount - 1).position.x) && flickee.transform.position.z < 10f && flickee.transform.position.z > 0f ){
 			if (placeholderItem.transform.parent != null) {
 				sibIndex = placeholderItem.transform.GetSiblingIndex(); //override it if it has already swapped
 			} else {
-				audio.PlayOneShot(flickClip);
+				//audio.PlayOneShot(flickClip);
+				audioInd.Stop();
+				audioInd.clip = flickClip;
+				audioInd.Play();
 				placeholderItem.transform.SetParent(vicParent.transform);
 				placeholderItem.transform.SetSiblingIndex(sibIndex);
 				diffManager.GetComponent<MasterWaypointer>().movables[sibIndex] = placeholderItem;
@@ -259,6 +279,9 @@ public class Drag : MonoBehaviour {
 				flickItem = null;
 			}
 		} else {
+			//audioInd.Stop();
+			//audioInd.clip = badRelease;
+			//audioInd.Play();
 			audio.PlayOneShot(badRelease);
 			Debug.Log("flicked item out of bounds, resetting... " );
 			if (flickee.transform.parent == null){ //if it is currently parentless
