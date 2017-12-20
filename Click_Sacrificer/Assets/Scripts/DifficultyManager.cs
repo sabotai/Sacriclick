@@ -27,6 +27,9 @@ public class DifficultyManager : MonoBehaviour {
 	public float autosacDuration = 5f;
 	public Slider difficultySlider;
 	public static int currentDifficulty;
+	public float easyDiff = 3f;
+	public float mediumDiff = 8f;
+	public float hardDiff = 11f;
 
 	void Awake(){
 
@@ -74,16 +77,17 @@ public class DifficultyManager : MonoBehaviour {
 	public void SetDifficultyDelay(float newDiff){
 
 		PlayerPrefs.SetInt("difficulty", (int)newDiff);
+		if (!BloodMeter.firstClick) SetDifficulty(newDiff);
 	}
 
 	public void SetDifficulty(float newDiff){
-		float diffNumber = 3f;
-		if (newDiff == 1f) diffNumber = 1f;
-		else if (newDiff == 2f) diffNumber = 3f;
-		else if (newDiff == 3f) diffNumber = 5f;
+		float diffNumber = mediumDiff;
+		if (newDiff == 1f) diffNumber = easyDiff;
+		else if (newDiff == 2f) diffNumber = mediumDiff;
+		else if (newDiff == 3f) diffNumber = hardDiff;
 
 		diffProgression = (float)(diffNumber * 0.0005f);
-		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((diffNumber-1)/7f));
+		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((diffNumber-1)/9f));
 
 		GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child

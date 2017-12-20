@@ -50,6 +50,7 @@ public class CraneGame : MonoBehaviour {
 
 
 			if (!craneParent.active){
+				aud.Stop();
 				aud.PlayOneShot(enterSound);
 				startTime = -1f;
 				//move/rotate camera
@@ -141,6 +142,7 @@ public class CraneGame : MonoBehaviour {
 			//assuming you are coming from the crane game...
 			//reset all the camera stuff and items
 			if (craneParent.active){
+				aud.Stop();
 				aud.PlayOneShot(exitSound);
 				ready = false;
 				vics.SetActive(true);

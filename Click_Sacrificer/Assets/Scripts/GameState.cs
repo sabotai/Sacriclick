@@ -17,8 +17,8 @@ public class GameState : MonoBehaviour {
     DepthOfField dof;
     float maxAperture = 2.5f;
     float minAperture = 11f;
-    float maxFL = 30;
-    float minFL = 20;
+    float maxFL = 15;
+    float minFL = 5;
 
 
 
@@ -53,39 +53,48 @@ public class GameState : MonoBehaviour {
 			state = 1;
 		}
 
-		if (Tips.displayingTip) {
-			Defocus(2f);
-			} else {
-				if (!paused) Refocus(2f);
-			}
 
 		if (Input.GetKeyDown("escape") && state != 0) {
 			if (!paused){
 				Pause();
 			} else {
 				Resume();
-				//Refocus();
+				Refocus(50f);
 			}
 		}
 		stateRO = state;
 	}
+
+	void FixedUpdate(){
+
+		if (Tips.displayingTip) {
+			Defocus(50f);
+		} else {
+			if (!paused) Refocus(50f);
+		}
+	}
 	public void Defocus(float speed){
-		dof.enabled.Override(true);
+		dof.enabled.value = true;
 		//if (dof.aperture > maxAperture) dof.aperture.Override(dof.aperture - Time.deltaTime);
 		if (dof.focalLength < maxFL) {
-			dof.focalLength.Override(dof.focalLength.value + Time.deltaTime * speed);
-			Debug.Log("defocusing... " + dof.focalLength.value);
+			//dof.focalLength.Override(dof.focalLength.value + Time.deltaTime * speed);
+			dof.focalLength.value = dof.focalLength.value + Time.deltaTime * speed;
+			//Debug.Log("defocusing... " + dof.focalLength.value);
 		}
 
 	}
 
 	public void Refocus(float speed){
-		if (dof.focalLength > minFL && dof.enabled.value) {
-			dof.focalLength.Override(dof.focalLength.value - Time.deltaTime * speed);
-			Debug.Log("refocusing... " + dof.focalLength.value);
+		//dof.focalLength.value = 25f + 20f * Mathf.Sin(Time.realtimeSinceStartup);
+		//Debug.Log("refocusing... " + dof.focalLength.value);
 
+		if (dof.focalLength > minFL && dof.enabled.value) {
+			//dof.focalLength.Override(dof.focalLength.value - Time.deltaTime * speed);
+			dof.focalLength.value = dof.focalLength.value - Time.deltaTime * speed;
+
+		} else {
+			dof.enabled.value = false;
 		}
-			else dof.enabled.Override(false);
 			/*
 		if (dof.aperture < minAperture) {
 			dof.aperture.Override(dof.aperture + Time.deltaTime);
@@ -98,7 +107,7 @@ public class GameState : MonoBehaviour {
 
 	public void Pause(){
 		paused = true;
-		Defocus(2f);
+		Defocus(50f);
 		pauseObj.SetActive(true);
 		tipObj.SetActive(false);
 		prevState = state;
@@ -106,7 +115,7 @@ public class GameState : MonoBehaviour {
 	public void Resume(){
 		paused = false;
 		pauseObj.SetActive(false);
-		dof.enabled.Override(false);
+		dof.enabled.value = false;
 
 		//tipObj.SetActive(true);
 		state = prevState;

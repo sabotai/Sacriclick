@@ -24,7 +24,7 @@ public class Mood : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		float manDiff = GameObject.Find("DifficultyManager").GetComponent<DifficultyManager>().diff;
-		if (diff != manDiff) diff = manDiff;
+		if (diff != manDiff) diff = manDiff; //override if differs
 		float manDiffP = GameObject.Find("DifficultyManager").GetComponent<DifficultyManager>().diffProgression;
 		if (diffProgression != manDiffP) diffProgression = manDiffP;
 

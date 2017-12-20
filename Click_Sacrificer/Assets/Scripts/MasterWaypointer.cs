@@ -280,6 +280,7 @@ public class MasterWaypointer : MonoBehaviour {
 				releaseMe.transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
 				releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
 				releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+				releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().isKinematic = false;
 				releaseMe.transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 				releaseMe.transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
 			}

@@ -9,12 +9,17 @@ public class HighScore : MonoBehaviour {
 	public Text highScoreMediumUI;
 	public Text highScoreHardUI;
 	bool allowHighScore = true;
+	public GameObject godsModeOption;
 	// Use this for initialization
 	void Start () {
 		highScoreEasyUI.text = PlayerPrefs.GetInt("highScoreEasy") + "";
 		highScoreMediumUI.text = PlayerPrefs.GetInt("highScoreMedium") + "";
 		highScoreHardUI.text = PlayerPrefs.GetInt("highScoreHard") + "";
 		allowHighScore = true;
+
+		if (PlayerPrefs.GetInt("highScoreEasy") > 500 || PlayerPrefs.GetInt("highScoreMedium") > 300 || PlayerPrefs.GetInt("highScoreHard") > 150){
+			godsModeOption.SetActive(true);
+		}
 	}
 	
 	// Update is called once per frame

@@ -46,7 +46,7 @@ public class Sacrifice : MonoBehaviour {
 	public GameObject lightParent;
 	public AudioClip templeHoverClip;
 	public float pitchMin, pitchMax;
-
+	public AudioClip goodSacClip, badSacClip;
 
 	void Awake(){
 		sacCount = 0;
@@ -153,20 +153,14 @@ public class Sacrifice : MonoBehaviour {
 									if (diffManager.GetComponent<MasterWaypointer>() != null){
 										//Debug.Log("found master waypointer");
 										if (diffManager.GetComponent<MasterWaypointer>().vicReady){
-											if (beamHit.collider.gameObject == clickable) {
-												DoSacrifice(beamHit);
-											} else {
+											
 												DoSacrifice(clickable);
-											}
+
 										}
 
 
 									} else {
-										if (beamHit.collider.gameObject == clickable) {
-											DoSacrifice(beamHit);
-										} else {
 											DoSacrifice(clickable);
-										}
 									}
 									//Debug.Log("sac reset");
 								}
@@ -274,11 +268,13 @@ public class Sacrifice : MonoBehaviour {
 				audio.pitch = Random.Range(pitchMin, pitchMax);
 				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				int rando = (int)Random.Range(0, rumbleSound.Length);
+				if (cps > 4f) audio.Stop();
 				audio.PlayOneShot(rumbleSound[rando]);
 				//sacCount++;
 				//}
 				GetComponent<BloodMeter>().updateMood();
 				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
+		if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) audio.PlayOneShot(badSacClip, 0.65f); else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) audio.PlayOneShot(goodSacClip, 0.65f);
 				sacCount++;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
@@ -297,43 +293,6 @@ public class Sacrifice : MonoBehaviour {
 				//}
 	}
 
-	public void DoSacrifice(RaycastHit _beamHit){
-				//we use insideunitsphere to get a random 3D direction and multiply the direction by our power variable
-				//beamHit.rigidbody.AddForce(Random.insideUnitSphere * laserPower);
-				//pulsate = true;
-
-				//dont pulsate again before it has returned to its orig scale to prevent warping
-				//if (clickOrigScale == clickable.transform.localScale){
-				//Debug.Log("sacrificing... " + (1 + sacCount));
-				StartCoroutine(Pulsate.Pulse(_beamHit.transform.gameObject, 0.15f, 0.5f, clickOrigScale));
-
-				StartCoroutine(Radiate.oneSmoothPulse(_beamHit.transform.gameObject, Color.red, Color.black, 0.07f));
-				audio.pitch = Random.Range(pitchMin, pitchMax);
-		//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
-		int rando = (int)Random.Range(0, rumbleSound.Length);
-		audio.PlayOneShot(rumbleSound[rando]);
-				//sacCount++;
-				//}
-				GetComponent<BloodMeter>().updateMood();
-				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
-				sacCount++;
-				//sacReady = false;
-				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
-
-				sacCountDisplay.text = " " + sacCount;//Sacrifices";
-				if (diffManager.GetComponent<MasterWaypointer>() != null) {
-					Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity);
-				} else {
-					Instantiate(headPrefab, _beamHit.point, Quaternion.identity);
-
-				}
-				advance = true;
-				diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
-				//increase Clicks-per-minute
-				//if (Time.time < startTime + cpmDuration){
-				cpf++;
-				//}
-	}
 
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;

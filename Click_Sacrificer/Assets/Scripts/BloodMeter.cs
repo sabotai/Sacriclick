@@ -38,7 +38,7 @@ public class BloodMeter : MonoBehaviour {
 	public bool useMood = true;
 	GameObject victims;
 	public bool useAutoJar = true;
-	bool firstClick = false;
+	public static bool firstClick = false;
 
 	// Use this for initialization
 	void Start () {
@@ -49,6 +49,7 @@ public class BloodMeter : MonoBehaviour {
 		bloodCanvasItem = GameObject.Find("RawImage");
 		victims = GameObject.Find("Victims");
 		origSacBloodValue = sacBloodValue;
+		firstClick = false;
 	}
 	
 	// Update is called once per frame
