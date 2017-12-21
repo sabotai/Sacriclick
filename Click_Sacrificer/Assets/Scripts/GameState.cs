@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.SceneManagement;
 
 public class GameState : MonoBehaviour {
 
@@ -119,6 +120,18 @@ public class GameState : MonoBehaviour {
 
 		//tipObj.SetActive(true);
 		state = prevState;
+	}
+
+	IEnumerator LoudYourAsyncScene(){
+		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(0);
+		while (!asyncLoad.isDone){
+			yield return null;
+		}
+	}
+
+	public void RestartGame(){
+		StartCoroutine(LoudYourAsyncScene());
+		SceneManager.LoadScene(0);
 	}
 
 	public void QuitGame (){

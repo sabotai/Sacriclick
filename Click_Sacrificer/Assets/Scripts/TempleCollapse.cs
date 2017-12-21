@@ -16,7 +16,8 @@ public class TempleCollapse : MonoBehaviour {
 
 	void OnTriggerEnter(Collider col){
 		if (col.name == "TempleCollapse"){
-			GetComponent<ParticleSystem>().Play();
+			if (GetComponent<ParticleSystem>() != null) GetComponent<ParticleSystem>().Play();
+			if (GetComponent<AudioSource>() != null) GetComponent<AudioSource>().Play();
 			GetComponent<Rigidbody>().isKinematic = true;
 			Debug.Log("trigger smoke");
 		}
