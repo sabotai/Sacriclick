@@ -86,7 +86,7 @@ public class BloodMeter : MonoBehaviour {
 					} else {
 						Debug.Log("blood overflow autosac being created...");
 						//create auto clicker?
-						if (autosacNumber < jarLimit) createAuto();
+						if (autosacNumber < jarLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
 
 					}
 

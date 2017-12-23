@@ -151,12 +151,13 @@ public class Drag : MonoBehaviour {
 							//audioInd.Stop();
 							//audioInd.clip = badRelease;
 							//audioInd.Play();
-							audio.PlayOneShot(badRelease);
+							audio.PlayOneShot(badRelease, 0.6f);
 						} else {
 							//audioInd.Stop();
 							//audioInd.clip = goodRelease;
 							//audioInd.Play();
-							audioInd.PlayOneShot(goodRelease);
+
+							audio.PlayOneShot(goodRelease, 0.5f);
 					}
 					dragItem = null;
 
