@@ -167,7 +167,7 @@ public class CraneGame : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetKeyDown(KeyCode.F10) && !beginCraneGame) beginCraneGame = true;
+		if (Input.GetKeyDown(KeyCode.F10) && !beginCraneGame && GetComponent<Sacrifice>().easyMode) beginCraneGame = true;
 
 
 	}

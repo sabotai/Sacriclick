@@ -14,6 +14,9 @@ public class BloodMeter : MonoBehaviour {
 	public bool failureAllowed = false;
 	public RectTransform bloodUI;
 	public Material bloodMat;
+	public Color positiveBloodColor;
+	public Color defaultBloodColor;
+	public float bloodColorRecoverySpeed = 0.1f;
 	public float restartTimeoutAmt = 3f;
 	public float bloodJarAmt = 15f;
 	public float jarEfficiency = 0.3f;
@@ -39,6 +42,7 @@ public class BloodMeter : MonoBehaviour {
 	GameObject victims;
 	public bool useAutoJar = true;
 	public static bool firstClick = false;
+
 
 	// Use this for initialization
 	void Start () {
@@ -73,6 +77,7 @@ public class BloodMeter : MonoBehaviour {
 					bloodPlayer.Play();
 					failureAllowed = true;
 					if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
+
 					secondsRemaining = bloodAmt / bloodSecondRatio;
 				}
 				if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
@@ -94,6 +99,10 @@ public class BloodMeter : MonoBehaviour {
 				bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes
 				Color bloodColor;
 				bloodColor = bloodMat.GetColor("_TintColor");
+				if (bloodColor.r != defaultBloodColor.r || bloodColor.g != defaultBloodColor.g || bloodColor.b != defaultBloodColor.b){
+					bloodColor = Color.Lerp(bloodColor, defaultBloodColor, bloodColorRecoverySpeed);
+				}
+				
 				float bloodPct = bloodAmt / 20f;
 				float maxA = 0.22f;
 				float bloodA = maxA - maxA * (bloodAmt / 20f);

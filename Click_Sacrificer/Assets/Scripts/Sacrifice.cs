@@ -46,7 +46,7 @@ public class Sacrifice : MonoBehaviour {
 	public GameObject lightParent;
 	public AudioClip templeHoverClip;
 	public float pitchMin, pitchMax;
-	public AudioClip goodSacClip, badSacClip;
+	public AudioClip goodSacClip, badSacClip, loseClip;
 
 	void Awake(){
 		sacCount = 0;
@@ -274,7 +274,12 @@ public class Sacrifice : MonoBehaviour {
 				//}
 				GetComponent<BloodMeter>().updateMood();
 				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
-		if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) audio.PlayOneShot(badSacClip, 0.65f); else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) audio.PlayOneShot(goodSacClip, 0.65f);
+				if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) {
+					audio.PlayOneShot(badSacClip, 0.65f); 
+					} else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) {
+						audio.PlayOneShot(goodSacClip, 0.65f);
+						GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", GetComponent<BloodMeter>().positiveBloodColor);
+					}
 				sacCount++;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
@@ -282,7 +287,11 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = " " + sacCount;//Sacrifices";
 				advance = true;
 				if (diffManager.GetComponent<MasterWaypointer>() != null) {
-					Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity);
+					GameObject heart = Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity) as GameObject;
+					var main = heart.GetComponent<ParticleSystem>().main;
+					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 150f);
+					if (maxx < 25) maxx = 0;
+					main.maxParticles = maxx;
 					diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				} else {
 					Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
@@ -334,11 +343,15 @@ public class Sacrifice : MonoBehaviour {
 			//audio.loop = true;
 			if (!easyMode){
 				Camera.main.cullingMask = 0001111111;
-				for (int i = 0; i < 20; i++){
+				for (int i = 0; i < 5; i++){
 					audio.clip = rumbleSound[rando];
 					if (audio.isPlaying) audio.PlayOneShot(rumbleSound[rando]);
 					if (!audio.isPlaying) audio.Play();
+
 				}
+				audio2.clip = loseClip;
+				audio2.Stop();
+				audio2.Play();
 			}
 			easyMode = true;
 			//Debug.Log("FAILED restarting in... " + (restartTime - Time.time));
