@@ -305,6 +305,7 @@ public class Sacrifice : MonoBehaviour {
 
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;
+		failObj.GetComponent<Text>().fontSize = (int)(failObj.GetComponent<Text>().fontSize * 1.1f);
 		Drag.panMode = false;
 		CraneGame.beginCraneGame = false;
 		GetComponent<Drag>().panCam = Vector3.zero;
