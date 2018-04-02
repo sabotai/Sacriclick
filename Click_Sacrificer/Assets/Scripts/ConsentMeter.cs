@@ -41,12 +41,13 @@ public class ConsentMeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		/*
+		///*
 		if (ColorblindMode.cbMode){
 			totalConsentColor = ColorblindMode.cbGreen;
 			nonconsentColor = ColorblindMode.cbRed;
+			midColor = Color.white;
 		}
-		*/
+		//*/
 
 		if (consentPct > 0.5f){
 			consentColor = Color.Lerp(midColor, totalConsentColor, consentPct - 0.5f);

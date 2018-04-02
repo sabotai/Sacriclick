@@ -47,6 +47,8 @@ public class Sacrifice : MonoBehaviour {
 	public AudioClip templeHoverClip;
 	public float pitchMin, pitchMax;
 	public AudioClip goodSacClip, badSacClip, loseClip;
+	float fontSize;
+	float nLerpTime = 0.0015f;
 
 	void Awake(){
 		sacCount = 0;
@@ -82,6 +84,7 @@ public class Sacrifice : MonoBehaviour {
 		for(int i = 0; i < cpmSamples.Length; i++){
 			cpmSamples[i] = 0f;
 		}
+		fontSize = (float)failObj.GetComponent<Text>().fontSize;
 
 	}
 	public void SetEasyMode(bool setE){
@@ -305,7 +308,12 @@ public class Sacrifice : MonoBehaviour {
 
 	public void Fail(float restartTime, string failMsg){
 		failObj.GetComponent<Text>().text = failMsg;
-		failObj.GetComponent<Text>().fontSize = (int)(failObj.GetComponent<Text>().fontSize * 1.1f);
+		//failObj.GetComponent<Text>().fontSize = (int)(fontSize);
+		Vector3 startScale = new Vector3(0.001f, 0.001f, 0.001f);
+		Vector3 endScale = new Vector3(50f, 50f, 50f);
+		failObj.transform.localScale = Vector3.Lerp(startScale, endScale, nLerpTime);
+		nLerpTime = nLerpTime + (nLerpTime * nLerpTime);
+
 		Drag.panMode = false;
 		CraneGame.beginCraneGame = false;
 		GetComponent<Drag>().panCam = Vector3.zero;
