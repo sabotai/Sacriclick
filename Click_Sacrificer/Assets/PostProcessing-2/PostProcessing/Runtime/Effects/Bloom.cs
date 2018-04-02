@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Serialization;
 
 namespace UnityEngine.Rendering.PostProcessing
 {
@@ -25,11 +26,16 @@ namespace UnityEngine.Rendering.PostProcessing
         [Range(-1f, 1f), Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
         public FloatParameter anamorphicRatio = new FloatParameter { value = 0f };
 
+#if UNITY_2018_1_OR_NEWER
+        [ColorUsage(false, true), Tooltip("Global tint of the bloom filter.")]
+#else
         [ColorUsage(false, true, 0f, 8f, 0.125f, 3f), Tooltip("Global tint of the bloom filter.")]
+#endif
         public ColorParameter color = new ColorParameter { value = Color.white };
 
-        [Tooltip("Boost performances by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms.")]
-        public BoolParameter mobileOptimized = new BoolParameter { value = false };
+        [FormerlySerializedAs("mobileOptimized")]
+        [Tooltip("Boost performances by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
+        public BoolParameter fastMode = new BoolParameter { value = false };
 
         [Tooltip("Dirtiness texture to add smudges or dust to the bloom effect."), DisplayName("Texture")]
         public TextureParameter dirtTexture = new TextureParameter { value = null };
@@ -100,11 +106,11 @@ namespace UnityEngine.Rendering.PostProcessing
 
             // Do bloom on a half-res buffer, full-res doesn't bring much and kills performances on
             // fillrate limited platforms
-            int tw = context.width / 2;
-            int th = context.height / 2;
+            int tw = Mathf.FloorToInt(context.screenWidth / (2f - rw));
+            int th = Mathf.FloorToInt(context.screenHeight / (2f - rh));
 
             // Determine the iteration count
-            int s = Mathf.Max((Mathf.FloorToInt(context.screenWidth / (2f - rw))), (Mathf.FloorToInt(context.screenHeight / (2f - rh))));
+            int s = Mathf.Max(tw, th);
             float logs = Mathf.Log(s, 2f) + Mathf.Min(settings.diffusion.value, 10f) - 10f;
             int logs_i = Mathf.FloorToInt(logs);
             int iterations = Mathf.Clamp(logs_i, 1, k_MaxPyramidSize);
@@ -116,11 +122,11 @@ namespace UnityEngine.Rendering.PostProcessing
             float knee = lthresh * settings.softKnee.value + 1e-5f;
             var threshold = new Vector4(lthresh, lthresh - knee, knee * 2f, 0.25f / knee);
             sheet.properties.SetVector(ShaderIDs.Threshold, threshold);
-            
-            int qualityOffset = settings.mobileOptimized ? 1 : 0;
+
+            int qualityOffset = settings.fastMode ? 1 : 0;
 
             // Downsample
-            var last = context.source;
+            var lastDown = context.source;
             for (int i = 0; i < iterations; i++)
             {
                 int mipDown = m_Pyramid[i].down;
@@ -131,23 +137,22 @@ namespace UnityEngine.Rendering.PostProcessing
 
                 context.GetScreenSpaceTemporaryRT(cmd, mipDown, 0, context.sourceFormat, RenderTextureReadWrite.Default, FilterMode.Bilinear, tw, th);
                 context.GetScreenSpaceTemporaryRT(cmd, mipUp, 0, context.sourceFormat, RenderTextureReadWrite.Default, FilterMode.Bilinear, tw, th);
+                cmd.BlitFullscreenTriangle(lastDown, mipDown, sheet, pass);
 
-                cmd.BlitFullscreenTriangle(last, mipDown, sheet, pass);
-
-                last = mipDown;
+                lastDown = mipDown;
                 tw = Mathf.Max(tw / 2, 1);
                 th = Mathf.Max(th / 2, 1);
             }
 
             // Upsample
-            last = m_Pyramid[iterations - 1].down;
+            int lastUp = m_Pyramid[iterations - 1].down;
             for (int i = iterations - 2; i >= 0; i--)
             {
                 int mipDown = m_Pyramid[i].down;
                 int mipUp = m_Pyramid[i].up;
                 cmd.SetGlobalTexture(ShaderIDs.BloomTex, mipDown);
-                cmd.BlitFullscreenTriangle(last, mipUp, sheet, (int)Pass.UpsampleTent + qualityOffset);
-                last = mipUp;
+                cmd.BlitFullscreenTriangle(lastUp, mipUp, sheet, (int)Pass.UpsampleTent + qualityOffset);
+                lastUp = mipUp;
             }
 
             var linearColor = settings.color.value.linear;
@@ -194,16 +199,20 @@ namespace UnityEngine.Rendering.PostProcessing
             uberSheet.properties.SetVector(ShaderIDs.Bloom_Settings, shaderSettings);
             uberSheet.properties.SetColor(ShaderIDs.Bloom_Color, linearColor);
             uberSheet.properties.SetTexture(ShaderIDs.Bloom_DirtTex, dirtTexture);
-            cmd.SetGlobalTexture(ShaderIDs.BloomTex, m_Pyramid[0].up);
+            cmd.SetGlobalTexture(ShaderIDs.BloomTex, lastUp);
 
             // Cleanup
             for (int i = 0; i < iterations; i++)
             {
-                cmd.ReleaseTemporaryRT(m_Pyramid[i].down);
-                cmd.ReleaseTemporaryRT(m_Pyramid[i].up);
+                if (m_Pyramid[i].down != lastUp)
+                    cmd.ReleaseTemporaryRT(m_Pyramid[i].down);
+                if (m_Pyramid[i].up != lastUp)
+                    cmd.ReleaseTemporaryRT(m_Pyramid[i].up);
             }
 
             cmd.EndSample("BloomPyramid");
+
+            context.bloomBufferNameID = lastUp;
         }
     }
 }

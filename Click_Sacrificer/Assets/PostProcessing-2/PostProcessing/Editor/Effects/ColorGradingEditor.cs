@@ -32,6 +32,7 @@ namespace UnityEditor.Rendering.PostProcessing
         SerializedParameterOverride m_ToneCurveGamma;
 
         SerializedParameterOverride m_LdrLut;
+        SerializedParameterOverride m_LdrLutContribution;
 
         SerializedParameterOverride m_Temperature;
         SerializedParameterOverride m_Tint;
@@ -108,6 +109,7 @@ namespace UnityEditor.Rendering.PostProcessing
             m_ToneCurveGamma = FindParameterOverride(x => x.toneCurveGamma);
 
             m_LdrLut = FindParameterOverride(x => x.ldrLut);
+            m_LdrLutContribution = FindParameterOverride(x => x.ldrLutContribution);
 
             m_Temperature = FindParameterOverride(x => x.temperature);
             m_Tint = FindParameterOverride(x => x.tint);
@@ -181,12 +183,12 @@ namespace UnityEditor.Rendering.PostProcessing
             {
                 if (QualitySettings.activeColorSpace == ColorSpace.Gamma)
                     EditorGUILayout.HelpBox("ColorSpace in project settings is set to Gamma, HDR color grading won't look correct. Switch to Linear or use LDR color grading mode instead.", MessageType.Warning);
+            }
 
-                if (m_GradingMode.overrideState.boolValue)
-                {
-                    if (!SystemInfo.supports3DRenderTextures || !SystemInfo.supportsComputeShaders)
-                        EditorGUILayout.HelpBox("HDR color grading requires compute shader & 3D render texture support.", MessageType.Warning);
-                }
+            if (m_GradingMode.overrideState.boolValue && gradingMode == GradingMode.External)
+            {
+                if (!SystemInfo.supports3DRenderTextures || !SystemInfo.supportsComputeShaders)
+                    EditorGUILayout.HelpBox("HDR color grading requires compute shader & 3D render texture support.", MessageType.Warning);
             }
 
             if (gradingMode == GradingMode.LowDefinitionRange)
@@ -195,7 +197,7 @@ namespace UnityEditor.Rendering.PostProcessing
                 DoStandardModeGUI(true);
             else if (gradingMode == GradingMode.External)
                 DoExternalModeGUI();
-            
+
             EditorGUILayout.Space();
         }
 
@@ -241,6 +243,7 @@ namespace UnityEditor.Rendering.PostProcessing
             if (!hdr)
             {
                 PropertyField(m_LdrLut);
+                PropertyField(m_LdrLutContribution);
 
                 var lut = (target as ColorGrading).ldrLut.value;
                 CheckLutImportSettings(lut);
@@ -266,7 +269,7 @@ namespace UnityEditor.Rendering.PostProcessing
 
             EditorGUILayout.Space();
             EditorUtilities.DrawHeaderLabel("White Balance");
-            
+
             PropertyField(m_Temperature);
             PropertyField(m_Tint);
 
@@ -686,8 +689,14 @@ namespace UnityEditor.Rendering.PostProcessing
 
             float scale = EditorGUIUtility.pixelsPerPoint;
 
+        #if UNITY_2018_1_OR_NEWER
+            const RenderTextureReadWrite kReadWrite = RenderTextureReadWrite.sRGB;
+        #else
+            const RenderTextureReadWrite kReadWrite = RenderTextureReadWrite.Linear;
+        #endif
+
             var oldRt = RenderTexture.active;
-            var rt = RenderTexture.GetTemporary(Mathf.CeilToInt(rect.width * scale), Mathf.CeilToInt(rect.height * scale), 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+            var rt = RenderTexture.GetTemporary(Mathf.CeilToInt(rect.width * scale), Mathf.CeilToInt(rect.height * scale), 0, RenderTextureFormat.ARGB32, kReadWrite);
             s_MaterialGrid.SetFloat("_DisabledState", GUI.enabled ? 1f : 0.5f);
             s_MaterialGrid.SetFloat("_PixelScaling", EditorGUIUtility.pixelsPerPoint);
 

@@ -26,6 +26,7 @@ public class UpdateLabel : MonoBehaviour {
 	}
 
 	void Start(){
+
 		if (!useNumber) GetComponent<TextMesh>().text = label;
 		myCount = sacrificer.GetComponent<Sacrifice>().sacCount + transform.parent.GetSiblingIndex() + 1;
 
@@ -33,13 +34,21 @@ public class UpdateLabel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
 		if (GetComponent<SpecialStatus>().specialStat) {
 			//if (GetComponent<TextMesh>().text == label) label
 			GetComponent<TextMesh>().text = "" + (int)(GetComponent<SpecialStatus>().timeRemaining + 1f);
 		} else {
 			if (wasSpecial) GetComponent<TextMesh>().text = "#" + myCount;
 			
-			if (!useNumber) label = "◌";
+			if (!useNumber) { //calculate the percentage so that ones below the fail theshold are below 0%
+				float failThresh = Mathf.Abs(transform.parent.gameObject.GetComponent<Mood>().moodFailThresh);
+				float moodRange = failThresh + 1f;
+
+				float consentPct = (GetComponent<ConsentMeter>().consentPct + failThresh) / moodRange; 
+				label = (int)(consentPct * 100) + "%";
+				GetComponent<TextMesh>().text = label;
+			}
 
 		}
 		wasSpecial = GetComponent<SpecialStatus>().specialStat;

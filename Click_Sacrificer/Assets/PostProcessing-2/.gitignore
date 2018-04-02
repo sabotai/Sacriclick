@@ -2,6 +2,7 @@
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
+/artifacts/
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/AssetStoreTools*
@@ -21,10 +22,6 @@
 
 # Unity3D generated meta files
 *.pidb.meta
-LICENSE.meta
-PostProcessing.meta
-README.md.meta
-package.json.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt

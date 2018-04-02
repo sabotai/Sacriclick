@@ -14,6 +14,22 @@ namespace UnityEngine.Rendering.PostProcessing
         {
             return ((ParameterOverride<T>)this).value;
         }
+
+        // This is used in case you need to access fields/properties that can't be accessed in the
+        // constructor of a ScriptableObject (ParameterOverride are generally declared and inited in
+        // a PostProcessEffectSettings which is a ScriptableObject). This will be called right
+        // after the settings object has been constructed, thus allowing previously "forbidden"
+        // fields/properties.
+        protected internal virtual void OnEnable()
+        {
+        }
+
+        // Here for consistency reasons (cf. OnEnable)
+        protected internal virtual void OnDisable()
+        {
+        }
+
+        internal abstract void SetValue(ParameterOverride parameter);
     }
 
     [Serializable]
@@ -54,6 +70,11 @@ namespace UnityEngine.Rendering.PostProcessing
         {
             overrideState = true;
             value = x;
+        }
+
+        internal override void SetValue(ParameterOverride parameter)
+        {
+            value = parameter.GetValue<T>();
         }
 
         public override int GetHash()
@@ -159,8 +180,28 @@ namespace UnityEngine.Rendering.PostProcessing
     [Serializable]
     public sealed class SplineParameter : ParameterOverride<Spline>
     {
+        protected internal override void OnEnable()
+        {
+            if (value != null)
+                value.Cache(int.MinValue);
+        }
+
+        internal override void SetValue(ParameterOverride parameter)
+        {
+            base.SetValue(parameter);
+
+            if (value != null)
+                value.Cache(Time.renderedFrameCount);
+        }
+
         public override void Interp(Spline from, Spline to, float t)
         {
+            if (from == null || to == null)
+            {
+                base.Interp(from, to, t);
+                return;
+            }
+            
             int frameCount = Time.renderedFrameCount;
             from.Cache(frameCount);
             to.Cache(frameCount);
@@ -174,18 +215,73 @@ namespace UnityEngine.Rendering.PostProcessing
         }
     }
 
+    public enum TextureParameterDefault
+    {
+        None,
+        Black,
+        White,
+        Transparent,
+        Lut2D
+    }
+
     [Serializable]
     public sealed class TextureParameter : ParameterOverride<Texture>
     {
+        public TextureParameterDefault defaultState = TextureParameterDefault.Black;
+
         public override void Interp(Texture from, Texture to, float t)
         {
-            if (from == null || to == null)
+            // Both are null, do nothing
+            if (from == null && to == null)
             {
-                base.Interp(from, to, t);
+                value = null;
                 return;
             }
 
-            value = TextureLerper.instance.Lerp(from, to, t);
+            // Both aren't null we're ready to blend
+            if (from != null && to != null)
+            {
+                value = TextureLerper.instance.Lerp(from, to, t);
+                return;
+            }
+
+            // One of them is null, blend to/from a default value is applicable
+            {
+                Texture defaultTexture;
+
+                switch (defaultState)
+                {
+                    case TextureParameterDefault.Black:
+                        defaultTexture = RuntimeUtilities.blackTexture;
+                        break;
+                    case TextureParameterDefault.White:
+                        defaultTexture = RuntimeUtilities.whiteTexture;
+                        break;
+                    case TextureParameterDefault.Transparent:
+                        defaultTexture = RuntimeUtilities.transparentTexture;
+                        break;
+                    case TextureParameterDefault.Lut2D:
+                        // Find the current lut size
+                        int size = from != null ? from.height : to.height;
+                        defaultTexture = RuntimeUtilities.GetLutStrip(size);
+                        break;
+                    default:
+                        defaultTexture = null;
+                        break;
+                }
+
+                if (from == null) from = defaultTexture;
+                if (to == null) to = defaultTexture;
+
+                // defaultState could have been explicitly set to None
+                if (from == null || to == null)
+                {
+                    base.Interp(from, to, t);
+                    return;
+                }
+
+                value = TextureLerper.instance.Lerp(from, to, t);
+            }
         }
     }
-} 
+}

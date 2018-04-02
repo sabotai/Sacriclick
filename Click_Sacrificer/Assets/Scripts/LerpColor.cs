@@ -8,6 +8,10 @@ public class LerpColor : MonoBehaviour {
     public Renderer rend;
     void Start() {
         rend = GetComponent<Renderer>();
+        if (ColorblindMode.cbMode){
+            colorStart = ColorblindMode.cbRed;
+            colorEnd = ColorblindMode.cbGreen;
+        }
     }
     void Update() {
         float lerp = Mathf.PingPong(Time.time, duration) / duration;

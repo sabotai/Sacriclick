@@ -11,6 +11,10 @@ public class ConsentMeter : MonoBehaviour {
 	float moodDir;
 	GameObject dirLabel;
 	public Color totalConsentColor;
+	//public Color totalConsentColorCB;
+	public Color nonconsentColor = Color.red;
+	//public Color nonconsentColorCB;
+	Color midColor;
 
 	// Use this for initialization
 	void Start () {
@@ -24,14 +28,30 @@ public class ConsentMeter : MonoBehaviour {
 		//Debug.Log("sibling index = " + transform.GetSiblingIndex());
 		if (transform.GetChild(0).gameObject != null)
 			dirLabel = transform.GetChild(0).gameObject;
+
+		midColor = Color.yellow;//Color.Lerp(nonconsentColor, totalConsentColor, 0.5f);
+
+		if (ColorblindMode.cbMode){
+			totalConsentColor = ColorblindMode.cbGreen;
+			nonconsentColor = ColorblindMode.cbRed;
+			midColor = Color.white;
+		}
 	}
+
 	
 	// Update is called once per frame
 	void Update () {
+		/*
+		if (ColorblindMode.cbMode){
+			totalConsentColor = ColorblindMode.cbGreen;
+			nonconsentColor = ColorblindMode.cbRed;
+		}
+		*/
+
 		if (consentPct > 0.5f){
-			consentColor = Color.Lerp(Color.yellow, totalConsentColor, consentPct - 0.5f);
+			consentColor = Color.Lerp(midColor, totalConsentColor, consentPct - 0.5f);
 		} else {
-			consentColor = Color.Lerp(Color.red, Color.yellow, consentPct + 0.5f);			
+			consentColor = Color.Lerp(nonconsentColor, midColor, consentPct + 0.5f);			
 		}
 		GetComponent<TextMesh>().color = consentColor;
 		//consentPct -= decreaseAmt * Time.deltaTime;
@@ -57,32 +77,32 @@ public class ConsentMeter : MonoBehaviour {
 			dirLabel.GetComponent<TextMesh>().fontSize = 100;
 			if (dir == -1){
 				dirLabel.SetActive(true);
-				dirLabel.GetComponent<TextMesh>().color = Color.red;
+				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().text = "▼";
 			} else if (dir == 0){
 				dirLabel.SetActive(false);
 			} else {
 				dirLabel.SetActive(true);
-				dirLabel.GetComponent<TextMesh>().color = Color.green;
+				dirLabel.GetComponent<TextMesh>().color = consentColor;
 				dirLabel.GetComponent<TextMesh>().text = "▲";
 			}
 
 			if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh * 1f){
 
 				dirLabel.SetActive(true);
-				dirLabel.GetComponent<TextMesh>().color = Color.red;
+				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!!!";
 			} else if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh / 1.2f){
 
 				dirLabel.SetActive(true);
-				dirLabel.GetComponent<TextMesh>().color = Color.red;
+				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!!";
 			} else if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh / 1.4f){
 
 				dirLabel.SetActive(true);
-				dirLabel.GetComponent<TextMesh>().color = Color.red;
+				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!";
 			}

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Assertions;
 
 namespace UnityEngine.Rendering.PostProcessing
 {
@@ -31,6 +32,7 @@ namespace UnityEngine.Rendering.PostProcessing
 
         public Spline(AnimationCurve curve, float zeroValue, bool loop, Vector2 bounds)
         {
+            Assert.IsNotNull(curve);
             this.curve = curve;
             m_ZeroValue = zeroValue;
             m_Loop = loop;
@@ -38,6 +40,8 @@ namespace UnityEngine.Rendering.PostProcessing
             cachedData = new float[k_Precision];
         }
 
+        // Note: it would be nice to have a way to check if a curve has changed in any way, that
+        // would save quite a few CPU cycles instead of having to force cache it once per frame :/
         public void Cache(int frame)
         {
             // Only cache once per frame
@@ -61,20 +65,28 @@ namespace UnityEngine.Rendering.PostProcessing
             }
 
             for (int i = 0; i < k_Precision; i++)
-                cachedData[i] = Evaluate((float)i * k_Step);
+                cachedData[i] = Evaluate((float)i * k_Step, length);
 
             frameCount = Time.renderedFrameCount;
         }
 
-        public float Evaluate(float t)
+        public float Evaluate(float t, int length)
         {
-            if (curve.length == 0)
+            if (length == 0)
                 return m_ZeroValue;
 
-            if (!m_Loop || curve.length == 1)
+            if (!m_Loop || length == 1)
                 return curve.Evaluate(t);
 
             return m_InternalLoopingCurve.Evaluate(t);
+        }
+
+        public float Evaluate(float t)
+        {
+            // Calling the length getter on a curve is expensive (!?) so it's better to cache its
+            // length and call Evaluate(t, length) instead of getting the length for every call to
+            // Evaluate(t)
+            return Evaluate(t, curve.length);
         }
 
         public override int GetHashCode()

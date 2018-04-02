@@ -1,6 +1,6 @@
 {
     "name": "com.unity.postprocessing",
-    "version": "0.1.2",
+    "version": "2.0.3-preview",
     "unity": "2018.1",
     "description": "Unity postprocessing",
     "dependencies": {

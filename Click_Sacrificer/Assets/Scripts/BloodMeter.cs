@@ -54,10 +54,18 @@ public class BloodMeter : MonoBehaviour {
 		victims = GameObject.Find("Victims");
 		origSacBloodValue = sacBloodValue;
 		firstClick = false;
+
+		if (ColorblindMode.cbMode){
+			positiveBloodColor = ColorblindMode.cbGreen;
+			defaultBloodColor = ColorblindMode.cbRed;
+		}
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+
 		if (GameState.state == -1 || Tips.displayingTip) bloodPlayer.Stop();
 		if (!Tips.displayingTip && (GameState.state == 1 || GameState.state == 2)){
 			if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames

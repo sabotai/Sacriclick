@@ -27,6 +27,12 @@ public class Cursword : MonoBehaviour {
 		if (maxSize == null) maxSize = transform.localScale;
 		if (minSize == null) minSize = new Vector3(0.1f,0.1f,0.1f);
 		currentSize = transform.localScale.x;
+
+
+		if (ColorblindMode.cbMode){
+			greenSwordColor = ColorblindMode.cbGreen;
+			defaultSwordColor = ColorblindMode.cbRed;
+		}
 	}
 	
 	// Update is called once per frame
