@@ -55,6 +55,10 @@ public class ConsentMeter : MonoBehaviour {
 			consentColor = Color.Lerp(nonconsentColor, midColor, consentPct + 0.5f);			
 		}
 		GetComponent<TextMesh>().color = consentColor;
+
+		//make sure the person is colored the same
+		transform.parent.gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
+		transform.parent.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
 		//consentPct -= decreaseAmt * Time.deltaTime;
 		consentPct = mommy.GetComponent<Mood>().mood;
 		moodDir = mommy.GetComponent<Mood>().moodDir;
