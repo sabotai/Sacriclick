@@ -42,6 +42,8 @@ public class BloodMeter : MonoBehaviour {
 	GameObject victims;
 	public bool useAutoJar = true;
 	public static bool firstClick = false;
+	public bool slowBroker = true;
+	public float slowBrokerPct = 0.5f;
 
 
 	// Use this for initialization
@@ -84,7 +86,13 @@ public class BloodMeter : MonoBehaviour {
 					//((MovieTexture)bloodCanvasItem.GetComponent<RawImage>().mainTexture).Play();
 					bloodPlayer.Play();
 					failureAllowed = true;
-					if (firstClick) bloodAmt -= Time.deltaTime * bloodSecondRatio; //1 ratio is 1:1 seconds to blood
+
+					if (firstClick) {
+						float currentBSR = bloodSecondRatio;
+						if (Drag.panMode && slowBroker) currentBSR = bloodSecondRatio * slowBrokerPct;
+						bloodAmt -= Time.deltaTime * currentBSR; //1 ratio is 1:1 seconds to blood
+						
+					}
 
 					secondsRemaining = bloodAmt / bloodSecondRatio;
 				}
