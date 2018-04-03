@@ -89,7 +89,9 @@ public class BloodMeter : MonoBehaviour {
 
 					if (firstClick) {
 						float currentBSR = bloodSecondRatio;
-						if (Drag.panMode && slowBroker) currentBSR = bloodSecondRatio * slowBrokerPct;
+
+						//slow it down if the temple is offscreen and/or if it is in broker mode
+						if (Drag.panMode && slowBroker) currentBSR = bloodSecondRatio * (slowBrokerPct - (slowBrokerPct * (GetComponent<Drag>().pipMaterial.color.a / 2f)));
 						bloodAmt -= Time.deltaTime * currentBSR; //1 ratio is 1:1 seconds to blood
 						
 					}
