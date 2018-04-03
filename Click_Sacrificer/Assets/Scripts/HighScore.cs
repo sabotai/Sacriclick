@@ -27,19 +27,19 @@ public class HighScore : MonoBehaviour {
 		if (!GetComponent<Sacrifice>().easyMode && allowHighScore){
 			switch(DifficultyManager.currentDifficulty){
 				case 1:
-				if (GetComponent<Sacrifice>().sacCount > PlayerPrefs.GetInt("highScoreEasy")){
+				if (GetComponent<Sacrifice>().scoreCount > PlayerPrefs.GetInt("highScoreEasy")){
 					PlayerPrefs.SetInt("highScoreEasy", GetComponent<Sacrifice>().sacCount);
 					highScoreEasyUI.text = PlayerPrefs.GetInt("highScoreEasy") + "";
 				}
 					break;
 				case 2:
-					if (GetComponent<Sacrifice>().sacCount > PlayerPrefs.GetInt("highScoreMedium")){
+				if (GetComponent<Sacrifice>().scoreCount > PlayerPrefs.GetInt("highScoreMedium")){
 						PlayerPrefs.SetInt("highScoreMedium", GetComponent<Sacrifice>().sacCount);
 						highScoreMediumUI.text = PlayerPrefs.GetInt("highScoreMedium") + "";
 					}
 					break;
 				case 3:
-					if (GetComponent<Sacrifice>().sacCount > PlayerPrefs.GetInt("highScoreHard")){
+				if (GetComponent<Sacrifice>().scoreCount > PlayerPrefs.GetInt("highScoreHard")){
 						PlayerPrefs.SetInt("highScoreHard", GetComponent<Sacrifice>().sacCount);
 						highScoreHardUI.text = PlayerPrefs.GetInt("highScoreHard") + "";
 					}

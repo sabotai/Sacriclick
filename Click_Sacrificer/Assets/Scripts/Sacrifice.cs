@@ -34,6 +34,8 @@ public class Sacrifice : MonoBehaviour {
 	public bool limitAvailSac = true;
 	public bool sacReady = true;
 	public int sacCount = 0;
+	public int scoreCount = 0;
+	public int expenses = 0;
 	public bool failed = false;
 	float failedTime = 0.0f;
 	GameObject failObj;
@@ -52,6 +54,8 @@ public class Sacrifice : MonoBehaviour {
 
 	void Awake(){
 		sacCount = 0;
+		scoreCount = 0;
+		expenses = 0;
 	}
 	// Use this for initialization
 	void Start () {
@@ -97,6 +101,10 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if (scoreCount != sacCount - expenses){
+			scoreCount = sacCount - expenses;
+			sacCountDisplay.text = " " + scoreCount;//Sacrifices";
+		}
 		if (!CraneGame.beginCraneGame && !Tips.displayingTip){
 			//if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 			if (Drag.panMode){
@@ -221,8 +229,8 @@ public class Sacrifice : MonoBehaviour {
 
 		//if fast enough to generate autosac
 		if (cps > autoThresh){
-			if (GetComponent<BloodMeter>().autosacNumber < 8){
-				GetComponent<BloodMeter>().createAuto();
+			if (GetComponent<Inventory>().autosacNumber < 8){
+				GetComponent<Inventory>().createAuto();
 				
 				//reset the samples so they cant spam it
 				for (int i = 0; i < cpsSamples.Length; i++){
@@ -286,8 +294,8 @@ public class Sacrifice : MonoBehaviour {
 				sacCount++;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
-
-				sacCountDisplay.text = " " + sacCount;//Sacrifices";
+				scoreCount = sacCount - expenses;
+				sacCountDisplay.text = " " + scoreCount;//Sacrifices";
 				advance = true;
 				if (diffManager.GetComponent<MasterWaypointer>() != null) {
 					GameObject heart = Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity) as GameObject;

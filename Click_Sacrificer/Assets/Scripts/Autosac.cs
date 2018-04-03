@@ -60,6 +60,6 @@ public class Autosac : MonoBehaviour {
 		audsrc.PlayOneShot(autoExhaustSnd);
 		Destroy(spawn.transform.GetChild(spawn.transform.childCount - 1).gameObject);
 		numAutosacs--;
-		ssacrificer.GetComponent<BloodMeter>().autosacNumber = numAutosacs;
+		ssacrificer.GetComponent<Inventory>().autosacNumber = numAutosacs;
 	}
 }

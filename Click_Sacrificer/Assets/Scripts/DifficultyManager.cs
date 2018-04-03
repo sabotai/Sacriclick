@@ -45,7 +45,7 @@ public class DifficultyManager : MonoBehaviour {
 		sword.GetComponent<Cursword>().minSize = swordMin;
 		sword.GetComponent<Cursword>().swordScaleDecay = swordScaleDecay;
 		Camera.main.gameObject.GetComponent<BloodMeter>().useAutoJar = useAutoJar;
-		Camera.main.gameObject.GetComponent<BloodMeter>().jarEfficiency = jarEfficiency;
+		Camera.main.gameObject.GetComponent<Inventory>().jarEfficiency = jarEfficiency;
 		Camera.main.gameObject.GetComponent<BloodMeter>().sacBloodValue = sacBloodValue;
 		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = bloodSecondRatio;
 		Camera.main.gameObject.GetComponent<BloodMeter>().useAutoJar = useAutoJar;
