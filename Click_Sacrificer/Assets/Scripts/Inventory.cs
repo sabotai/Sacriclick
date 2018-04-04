@@ -18,10 +18,13 @@ public class Inventory : MonoBehaviour {
 	public AudioClip pourSnd;
 	public AudioClip shatterSnd;
 	public AudioClip timerSnd;
+	public AudioClip campaignSnd;
 	public bool failed = false;
 	public GameObject[] storeItems = new GameObject[3];
 	public int[] storeCosts = new int[3];
 	public int storeEntryMin = 100;
+	public Transform vicParent;
+	public GameObject storeParent;
 
 
 	// Use this for initialization
@@ -32,13 +35,18 @@ public class Inventory : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (GameState.state == 1 || DifficultyManager.currentDifficulty == 1) {
+			storeParent.SetActive(true);
+		} else {
+			storeParent.SetActive(false);
+		}
 		itemCast();
 		if (failed) GetComponent<Sacrifice>().Fail(3f, "" +	"\"Ungrateful parasites\""); //make fail stuff happen
 
 		//show them after the player has earned enough
 		if (!storeItems[storeItems.Length - 1].activeSelf){
 			for (int i = 0; i < storeItems.Length; i++){
-				if (GetComponent<Sacrifice>().scoreCount > storeCosts[i] + storeEntryMin){
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[i] + storeEntryMin) || DifficultyManager.currentDifficulty == 1){
 					storeItems[i].SetActive(true);
 				}
 			}
@@ -105,9 +113,22 @@ public class Inventory : MonoBehaviour {
 				createAuto();
 				break;
 			case 2:
-				
+				createCampaign();
 				break;
 			}
+	}
+	public void createCampaign(){
+		audsrc.Stop();
+		audsrc.clip = campaignSnd;
+		audsrc.Play();
+
+		for (int i = 0; i < vicParent.childCount; i++){
+			
+			//vicParent.GetChild(i).gameObject.GetComponent<Mood>().mood = 1f;
+			vicParent.GetChild(i).GetComponent<Mood>().moodDir = 1f;
+			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult += 2f;
+			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult *= 5f;
+		}
 	}
 
 	public void createJar(bool purchased){
@@ -138,21 +159,25 @@ public class Inventory : MonoBehaviour {
 
 		GetComponent<BloodMeter>().bloodAmt = 5f;
 
-		audsrc.Stop();
-		//audsrc.PlayOneShot(timerSnd);
-		audsrc.clip = timerSnd;
-		audsrc.Play();
-		autosacNumber++;
-		//bloodAmt -= (bloodJarAmt * 0.8f);
-		diffManager.GetComponent<Autosac>().numAutosacs = autosacNumber;
-		diffManager.GetComponent<Autosac>().clicksRemaining = autosacNumber * diffManager.GetComponent<Autosac>().numClicks;
-		GameObject newAutosac = Instantiate(autosacPrefab, autosacSpawn);
-		//audsrc.PlayOneShot(pourSnd);
-		Vector3 autoSpwn = autosacSpawn.position;
-		//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
-		autoSpwn += (-newAutosac.transform.right * -1.2f * (autosacNumber - 1));
-		newAutosac.transform.position = autoSpwn;
-		//Debug.Log("spawn auto... " + );
+		if (autosacNumber < itemLimit){
+			audsrc.Stop();
+			//audsrc.PlayOneShot(timerSnd);
+			audsrc.clip = timerSnd;
+			audsrc.Play();
+			autosacNumber++;
+			//bloodAmt -= (bloodJarAmt * 0.8f);
+			diffManager.GetComponent<Autosac>().numAutosacs = autosacNumber;
+			diffManager.GetComponent<Autosac>().clicksRemaining = autosacNumber * diffManager.GetComponent<Autosac>().numClicks;
+			GameObject newAutosac = Instantiate(autosacPrefab, autosacSpawn);
+			//audsrc.PlayOneShot(pourSnd);
+			Vector3 autoSpwn = autosacSpawn.position;
+			//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
+			autoSpwn += (-newAutosac.transform.right * -1.2f * (autosacNumber - 1));
+			newAutosac.transform.position = autoSpwn;
+			//Debug.Log("spawn auto... " + );
+		} else {
+			createCampaign();
+		}
 
 	}
 

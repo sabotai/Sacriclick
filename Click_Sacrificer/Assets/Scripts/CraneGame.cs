@@ -36,7 +36,7 @@ public class CraneGame : MonoBehaviour {
 		if (aud == null) aud = claw.GetComponent<AudioSource>();
 		m_Vignette = ScriptableObject.CreateInstance<Vignette>();
         m_Vignette.enabled.Override(false);
-        m_Vignette.intensity.Override(0.275f);
+        m_Vignette.intensity.Override(0.33f);
         m_Vignette.smoothness.Override(0.482f);
         m_Vignette.roundness.Override(0.871f);
         m_Vignette.center.Override(new Vector2(0.48f, 0.1f));
