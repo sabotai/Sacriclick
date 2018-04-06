@@ -105,9 +105,37 @@ public class CameraMove : MonoBehaviour {
 		}
 		transform.position = focus;
 
-		transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
+		if (GameState.state != 2 && GetComponent<DragMultipan>() != null)	transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
 		//transform.LookAt(focus);
 		//if (Mathf.Approximately(zoom, 1f)) cameraDone = true; else cameraDone = false;
 		oldZoom = zoom;
 	}
+/*
+	public Transform PanCamera(Transform startObj, Transform endObj, float pct){
+
+		Transform tempTrans = gameObject.transform;
+		//calculate the cpm / 5
+		float newZoom = pct;
+
+		//lerp between these 2 zoom amounts by 0.75% each frame
+		zoom = Mathf.Lerp(oldZoom, newZoom, 0.0075f);
+		forceAmt = Mathf.Clamp(forceAmt, 0f, 1f);
+		zoom += forceAmt;
+		zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
+		//Debug.Log("zoomAmt = " + zoom);
+
+		//focus should find the new intermediate position based on the zoom amount
+		Vector3 focus = Vector3.Slerp(startObj.position, endObj.position, zoom);
+
+		tempTrans.position = focus;
+
+		tempTrans.rotation = Quaternion.Lerp(startObj.rotation, endObj.rotation, zoom);
+		//transform.LookAt(focus);
+		//if (Mathf.Approximately(zoom, 1f)) cameraDone = true; else cameraDone = false;
+		oldZoom = zoom;
+
+		return tempTrans;
+	}
+*/
 }
+

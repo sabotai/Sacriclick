@@ -58,8 +58,8 @@ public class BloodMeter : MonoBehaviour {
 		if (GameState.state == -1 || Tips.displayingTip) bloodPlayer.Stop();
 		if (!Tips.displayingTip && (GameState.state == 1 || GameState.state == 2)){
 			if (bloodAmt < 0.01f && failureAllowed) failed = true; //start fail action frames
-			if (failed && !GetComponent<Sacrifice>().failed){
-				GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are displeased."); //make fail stuff happen
+			if (failed && !GetComponent<Inventory>().failed){
+				GetComponent<Sacrifice>().Fail(restartTimeoutAmt, "The gods are surely displeased."); //make fail stuff happen
 			} else {
 				if (!firstClick && GetComponent<Sacrifice>().sacCount > 0){
 					firstClick = true;

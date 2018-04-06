@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class Drag : MonoBehaviour {
+
+public class DragMultipan : MonoBehaviour {
 	[System.NonSerialized]public GameObject dragItem;
 	[System.NonSerialized]public GameObject hoverItem;
 	[System.NonSerialized]public GameObject flickItem;
@@ -13,7 +14,7 @@ public class Drag : MonoBehaviour {
 	public Material origMat;
 	public Vector3 panCam;
 	public float insertThresh = 0.5f;
-	float amtPanned = 0f;
+	Vector3 amtPanned = new Vector3(0f, 0f, 0f);
 	Transform cam;
 	Transform endCam;
 	public float maxPanRight;
@@ -44,6 +45,10 @@ public class Drag : MonoBehaviour {
 	public float dragZoomAmt = 49f;
 	float origEndZoomAmt;
 
+	public Transform pPanObj, currentPanObj, nextPanObj;
+	public int panObjNum = 0;
+	public float panSegmentPct = 0f;
+
 	// Use this for initialization
 	void Start () {
 		vicParent = GameObject.Find("Victims");
@@ -60,11 +65,14 @@ public class Drag : MonoBehaviour {
 		} else {
 			maxPanRight = GameObject.Find("Victims").transform.GetChild(lastVisiblePan).position.x;
 		}
-
 		if (ColorblindMode.cbMode || PlayerPrefs.GetInt("color") > 2){
 			lArrow.GetComponent<Text>().color = ColorblindMode.cbGreen;
 			rArrow.GetComponent<Text>().color = ColorblindMode.cbGreen;
 		}
+
+		currentPanObj = vicParent.transform.GetChild(0);
+		pPanObj = currentPanObj;
+		nextPanObj = vicParent.transform.GetChild(1);
 	}
 	
 	// Update is called once per frame
@@ -79,7 +87,6 @@ public class Drag : MonoBehaviour {
 
 
 				if (hoverItem != null){ //restore hover colors
-					//Debug.Log("restoring prehover colors");
 					resetColor(hoverItem);
 					hoverItem = null;
 				}
@@ -87,7 +94,6 @@ public class Drag : MonoBehaviour {
 
 				if (obj.transform.parent != null && (obj.transform.parent.name == "Victims" || obj.name == "VictimLabel (1)")){ //if start hovering
 					if (obj.name == "VictimLabel (1)") {
-						//Debug.Log("Hovering over label");
 						hoverItem = obj.transform.parent.gameObject;
 					} else {
 						//sup new hover item
@@ -100,8 +106,6 @@ public class Drag : MonoBehaviour {
 					}
 
 	 				if( Input.GetMouseButtonDown(0)){ //init drag
-	 					//panMode = true;
-	 					//audio.PlayOneShot(pickup);
 						dragItem = hoverItem;
 							hoverItem = null;
 							audioInd = dragItem.GetComponent<AudioSource>();
@@ -153,14 +157,8 @@ public class Drag : MonoBehaviour {
 						flickItem = dragItem;
 						flickItem.GetComponent<Rigidbody>().velocity = Vector3.zero;
 						} else if (dragFail) {
-							//audioInd.Stop();
-							//audioInd.clip = badRelease;
-							//audioInd.Play();
 							audio.PlayOneShot(badRelease, 0.6f);
 						} else {
-							//audioInd.Stop();
-							//audioInd.clip = goodRelease;
-							//audioInd.Play();
 
 							audio.PlayOneShot(goodRelease, 0.5f);
 					}
@@ -196,9 +194,7 @@ public class Drag : MonoBehaviour {
 
 			mouseVelo = Input.mousePosition - pMouse;
 			pMouse = Input.mousePosition;
-		} else {
-			//panMode = false;
-		}
+		} 
 		}
 
 	}
@@ -227,7 +223,6 @@ public class Drag : MonoBehaviour {
 		audioInd = relObj.GetComponent<AudioSource>();
 		GameObject victimParent;
 		int sibIndex = relObj.transform.GetSiblingIndex();
-		//Debug.Log("sibindex = " + sibIndex);
 		if (relObj.transform.parent != null){ 
 			victimParent = relObj.transform.parent.gameObject; //find my parent
 		} else {
@@ -263,7 +258,6 @@ public class Drag : MonoBehaviour {
 			if (placeholderItem.transform.parent != null) {
 				sibIndex = placeholderItem.transform.GetSiblingIndex(); //override it if it has already swapped
 			} else {
-				//audio.PlayOneShot(flickClip);
 				audioInd.Stop();
 				audioInd.clip = flickClip;
 				audioInd.Play();
@@ -273,7 +267,6 @@ public class Drag : MonoBehaviour {
 				flickee.transform.SetParent(null);
 				flickee.GetComponent<Rigidbody>().velocity = Vector3.zero; //needs to be zeroed from old return velocity
 				flickee.GetComponent<Rigidbody>().AddForce(Vector3.Normalize(mouseVelo) * flickForce);
-				//flickee.GetComponent<Rigidbody>().AddForce(mouseVelo * 200f);
 				Debug.Log("sending it on its way...");
 
 			}
@@ -285,9 +278,6 @@ public class Drag : MonoBehaviour {
 				flickItem = null;
 			}
 		} else {
-			//audioInd.Stop();
-			//audioInd.clip = badRelease;
-			//audioInd.Play();
 			audio.PlayOneShot(badRelease);
 			Debug.Log("flicked item out of bounds, resetting... " );
 			if (flickee.transform.parent == null){ //if it is currently parentless
@@ -314,20 +304,17 @@ public class Drag : MonoBehaviour {
 			//display guide arrows by default
 			float originalPos = 0.5f; //default position
 			float arrowOffset = Mathf.PingPong((Time.time/6f) * arrowBounceSpeed, .1f) - .1f/2f;
-			//lArrow.GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.left, arrowOffset, ); 
-			lArrow.GetComponent<RectTransform>().pivot = new Vector2(originalPos + arrowOffset, 0f);
-			//originalPos = -105f; //default position for r side
-
-			//rArrow.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, arrowOffset); 
+			lArrow.GetComponent<RectTransform>().pivot = new Vector2(originalPos + arrowOffset, 0f); 
 			rArrow.GetComponent<RectTransform>().pivot = new Vector2(originalPos - arrowOffset, 0f);
 
 			RenderSettings.fogColor = brokerModeFogColor;
 			//force the front perspective
-			GetComponent<CameraMove>().forceAmt += 0.01f;
+			//GetComponent<CameraMove>().forceAmt += 0.01f;
 
+			/*
 			if (amtPanned >= maxPanRight / 6f){
 				//zoom in
-				if (CameraMove.endZoomAmt > dragZoomAmt) CameraMove.endZoomAmt -= 20 * Time.deltaTime;
+				//if (CameraMove.endZoomAmt > dragZoomAmt) CameraMove.endZoomAmt -= 20 * Time.deltaTime;
 				//enable and fade in the pip stuff
 				pipCam.GetComponent<Camera>().enabled = true;
 				pipCanvas.SetActive(true);
@@ -344,7 +331,7 @@ public class Drag : MonoBehaviour {
 				}
 			} else {
 				//resetting camera position
-				if (CameraMove.endZoomAmt < origEndZoomAmt) CameraMove.endZoomAmt += 20 * Time.deltaTime;
+				//if (CameraMove.endZoomAmt < origEndZoomAmt) CameraMove.endZoomAmt += 20 * Time.deltaTime;
 
 			//fade out and then disable the pip stuff
 				Color pipColor = pipMaterial.color;
@@ -358,31 +345,65 @@ public class Drag : MonoBehaviour {
 				rArrow.SetActive(true);
 				lArrow.SetActive(false);
 			}
+			*/
+
+			//shifting down if youd arrived at the next one
+			if (panSegmentPct > 1f){
+				if (panObjNum < vicParent.transform.childCount - 2){
+					panObjNum += 1;
+					panSegmentPct = 0f;
+				} else {
+					panSegmentPct = 1f;
+				}
+			} else if (panSegmentPct < 0f){
+				if (panObjNum > 1){
+					panObjNum -= 1;
+					panSegmentPct = 1f;
+				}else {
+					panSegmentPct = 0f;
+				}
+			}
+			
+			if (panObjNum > 1) pPanObj = vicParent.transform.GetChild(panObjNum - 1);
+			else pPanObj = vicParent.transform.GetChild(0);
+
+			currentPanObj = vicParent.transform.GetChild(panObjNum);
+
+			if (panObjNum < vicParent.transform.childCount - 1) nextPanObj = vicParent.transform.GetChild(panObjNum + 1);
+			else nextPanObj = vicParent.transform.GetChild(vicParent.transform.childCount - 1);
+			//transform.LookAt(currentPanObj);
+ 
+			//Vector3 dir = Vector3.Normalize(nextPanObj.GetChild(3).position - pPanObj.GetChild(3).position);
+			Vector3 dir = Vector3.Normalize(Vector3.Lerp(pPanObj.GetChild(3).position, nextPanObj.GetChild(3).position, 0.01f));
+			Debug.Log("dir = " + dir);
+			//if (panObjNum == 0 && panSegmentPct < 0f) dir = Vector3.zero;
+			//else if (nextPanObj == currentPanObj && panSegmentPct == 1f ) dir = new Vector3(0f,0f,0f);
 
 			//if outside the boundaries
-			if (amtPanned >= 0 && amtPanned <= maxPanRight){
-				//allow player to scroll along path
-				if (Input.mousePosition.x > Screen.width * 0.9f){
-						panCam += new Vector3(1f, 0f, 0f) * Time.deltaTime;
-						//Debug.Log("panning right");
-					} else if (Input.mousePosition.x < Screen.width * 0.1f){
-						panCam -= new Vector3(1f, 0f, 0f) * Time.deltaTime;
-						//Debug.Log("panning left");
-					} else {
+			//if (amtPanned >= 0 && amtPanned <= maxPanRight){
+			if (panObjNum >= 0 && panSegmentPct >= 0f && panSegmentPct <= 1f){//panObjNum >= 0 && panObjNum <= vicParent.transform.childCount - 1){
+				//allow player to scroll along path				transform.rotation = Quaternion.Lerp(currentPanObj.rotation, nextPanObj.rotation, panSegmentPct);
+
+				if (Input.mousePosition.x > Screen.width * 0.9f){ //right side pull
+						panSegmentPct += (0.01f * Time.deltaTime);
+						panCam += dir * Time.deltaTime;
+					} else if (Input.mousePosition.x < Screen.width * 0.1f){ //left side pull
+						panSegmentPct -=  (0.01f * Time.deltaTime);
+						panCam -= dir * Time.deltaTime;
+					} else { //middle (slow down)
 						panCam *= 0.9f;
 					}
-					//max pan speed in either direction
-					panCam = new Vector3(Mathf.Clamp(panCam.x,-0.9f, 0.9f), 0f, 0f);
-
 					cam.position += panCam;
 					endCam.position += panCam;
-					amtPanned += panCam.x;
-			} else { //if inside the boundaries ... pan the cam
+					amtPanned += panCam;
+
+			} else { //if outside the boundaries ... send back in
+				Debug.Log("slow down partner");
 				panCam -= panCam * 2f;
 				cam.position += panCam;
 				endCam.position += panCam;
-				amtPanned += panCam.x;
-				panCam *= 0.75f;
+				amtPanned += panCam;
+				panCam *= 0.75f; //slow down panCam
 			}
 		} else {
 			if (CameraMove.endZoomAmt < origEndZoomAmt && !CraneGame.beginCraneGame) CameraMove.endZoomAmt += 30 * Time.deltaTime;
@@ -406,13 +427,14 @@ public class Drag : MonoBehaviour {
 
 			//reset camera position
 			GetComponent<CameraMove>().forceAmt = 0f;
-
+			panObjNum = 0;
+			panSegmentPct = 0f;
 
 			//soft reset pan position
-			panCam = new Vector3(Mathf.SmoothDamp(0, -amtPanned, ref velocityY, 0.3f), 0f, 0f);
+			panCam = new Vector3(Mathf.SmoothDamp(0, -amtPanned.x, ref velocityY, 0.3f), Mathf.SmoothDamp(0, -amtPanned.y, ref velocityY, 0.3f), Mathf.SmoothDamp(0, -amtPanned.z, ref velocityY, 0.3f));
 			cam.position += panCam;
 			endCam.position += panCam;				
-			amtPanned += panCam.x;
+			amtPanned += panCam;
 		}
 	}
 }
