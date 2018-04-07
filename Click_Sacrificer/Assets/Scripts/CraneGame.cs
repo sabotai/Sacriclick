@@ -47,7 +47,7 @@ public class CraneGame : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if (beginCraneGame){
-
+			Camera.main.allowHDR = false;
 
 			if (!craneParent.active){
 				aud.Stop();
@@ -164,6 +164,8 @@ public class CraneGame : MonoBehaviour {
 				Camera.main.transform.SetParent(null, false);
 				basket.SetActive(false);
 				craneParent.SetActive(false);
+
+				Camera.main.allowHDR = true;
 			}
 		}
 

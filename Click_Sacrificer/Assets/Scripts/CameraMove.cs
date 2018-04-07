@@ -105,7 +105,8 @@ public class CameraMove : MonoBehaviour {
 		}
 		transform.position = focus;
 
-		if (GameState.state != 2 && GetComponent<DragMultipan>() != null)	transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
+		//if (GameState.state != 2 && GetComponent<DragMultipan>() != null)	
+			transform.rotation = Quaternion.Lerp(startFocus.rotation, endFocus.rotation, zoom);
 		//transform.LookAt(focus);
 		//if (Mathf.Approximately(zoom, 1f)) cameraDone = true; else cameraDone = false;
 		oldZoom = zoom;
