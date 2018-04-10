@@ -351,7 +351,8 @@ public class Sacrifice : MonoBehaviour {
 			if (Input.anyKey)	{
 				easyMode = false;
 				PlayerPrefs.SetInt("init", 1);
-				SceneManager.LoadScene(0);
+				if (scoreCount > HighScore.minGodsAccess * 2) SceneManager.LoadScene(1);
+				else SceneManager.LoadScene(0);
 			}
 		} else {
 

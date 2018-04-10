@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class HighScore : MonoBehaviour {
 
@@ -10,6 +11,7 @@ public class HighScore : MonoBehaviour {
 	public Text highScoreHardUI;
 	bool allowHighScore = true;
 	public GameObject godsModeOption;
+	public static int minGodsAccess = 100;
 	// Use this for initialization
 	void Start () {
 		highScoreEasyUI.text = PlayerPrefs.GetInt("highScoreEasy") + "";
@@ -17,8 +19,10 @@ public class HighScore : MonoBehaviour {
 		highScoreHardUI.text = PlayerPrefs.GetInt("highScoreHard") + "";
 		allowHighScore = true;
 
-		if (PlayerPrefs.GetInt("highScoreEasy") > 500 || PlayerPrefs.GetInt("highScoreMedium") > 300 || PlayerPrefs.GetInt("highScoreHard") > 150){
+		if (PlayerPrefs.GetInt("highScoreEasy") > minGodsAccess * 3 || PlayerPrefs.GetInt("highScoreMedium") > minGodsAccess * 2 || PlayerPrefs.GetInt("highScoreHard") > minGodsAccess){
 			godsModeOption.SetActive(true);
+
+
 		}
 	}
 	
