@@ -16,7 +16,9 @@ public class Cursword : MonoBehaviour {
 	Vector3 prevCursor;
 	public Vector3 maxSize;
 	public Vector3 minSize;
-	public bool hideCursor = true;
+	bool hideCursor = true;
+
+	public bool alwaysHideCursor = true;
 	[System.NonSerialized] public float currentSize = 0f;
 	public Color defaultSwordColor;
 	public Color greenSwordColor;
@@ -33,6 +35,9 @@ public class Cursword : MonoBehaviour {
 			greenSwordColor = ColorblindMode.cbGreen;
 			defaultSwordColor = ColorblindMode.cbRed;
 		}
+
+
+		if (!alwaysHideCursor) Cursor.visible = true;
 	}
 	
 	// Update is called once per frame
@@ -50,12 +55,13 @@ public class Cursword : MonoBehaviour {
 			GetComponent<SpriteRenderer> ().enabled = false;
 		}
 			
+		if (alwaysHideCursor){
+			if (hideCursor) {
+				Cursor.visible = false;
 
-		if (hideCursor) {
-			Cursor.visible = false;
-
-		} else {
-			Cursor.visible = true;
+			} else {
+				Cursor.visible = true;
+			}
 		}
 
 		if (Camera.main.gameObject.GetComponent<Drag>().dragItem != null || Camera.main.gameObject.GetComponent<Drag>().hoverItem != null){
