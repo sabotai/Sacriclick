@@ -37,6 +37,8 @@ public class MasterWaypointer : MonoBehaviour {
 	Object[] neuScreams;
 	Object[] negScreams;
 
+	float randoGen;
+
 	//added this because ontriggerenter was running before sacrificer was assigned
 	void Awake () {
 		if (macuahuitl == null) macuahuitl = GameObject.Find("sword").transform;
@@ -60,7 +62,7 @@ public class MasterWaypointer : MonoBehaviour {
 			movables[i] = victimParent.GetChild(i).gameObject;
 		}
 
-
+		randoGen = Random.value;
 
 		posScreams = Resources.LoadAll("Screams/positive", typeof(AudioClip));
 		negScreams = Resources.LoadAll("Screams/negative", typeof(AudioClip));
@@ -80,7 +82,13 @@ public class MasterWaypointer : MonoBehaviour {
 			bool releaseVics = false;
 			if(failed) {
 				releaseVics = true;
-				if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT");// "You sacrificed someone without their consent!");
+				if (randoGen < 0.8f){
+					if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT");// "You sacrificed someone without their consent!");
+				} else {
+
+					if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "SENO EKTO GAMAT!");// "You sacrificed someone without their consent!");
+
+				}
 			} else {
 				if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
 					Advance();
