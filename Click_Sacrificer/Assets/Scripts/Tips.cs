@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class Tips : MonoBehaviour
 {
-
+	[TextArea]
 	public string[] bloodTips;
+	[TextArea]
 	public string[] brokerTips;
+	[TextArea]
 	public string[] clawTips;
 	[SerializeField]int currentBloodTip;
 	[SerializeField]int currentBrokerTip;

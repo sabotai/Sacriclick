@@ -9,9 +9,13 @@ public class HighScore : MonoBehaviour {
 	public Text highScoreEasyUI;
 	public Text highScoreMediumUI;
 	public Text highScoreHardUI;
-	bool allowHighScore = true;
+	public bool allowHighScore = true;
 	public GameObject godsModeOption;
-	public static int minGodsAccess = 100;
+	public GameObject altBeginButton;
+	public Slider difficultySlider;
+	public static int minGodsAccess = 500;
+	public static int minEasyAccess = 100;
+	public static int minSceneAccess = 200;
 	// Use this for initialization
 	void Start () {
 		highScoreEasyUI.text = PlayerPrefs.GetInt("highScoreEasy") + "";
@@ -22,7 +26,12 @@ public class HighScore : MonoBehaviour {
 		if (PlayerPrefs.GetInt("highScoreEasy") > minGodsAccess * 3 || PlayerPrefs.GetInt("highScoreMedium") > minGodsAccess * 2 || PlayerPrefs.GetInt("highScoreHard") > minGodsAccess){
 			godsModeOption.SetActive(true);
 
-
+		}
+		if (PlayerPrefs.GetInt("highScoreEasy") > minEasyAccess * 3 || PlayerPrefs.GetInt("highScoreMedium") > minEasyAccess * 2 || PlayerPrefs.GetInt("highScoreHard") > minEasyAccess){
+			difficultySlider.minValue = 1;
+		}
+		if (PlayerPrefs.GetInt("highScoreEasy") > minSceneAccess * 3 || PlayerPrefs.GetInt("highScoreMedium") > minSceneAccess * 2 || PlayerPrefs.GetInt("highScoreHard") > minSceneAccess){
+			altBeginButton.SetActive(true);
 		}
 	}
 	
@@ -52,6 +61,16 @@ public class HighScore : MonoBehaviour {
 			}
 		} else {
 			allowHighScore = false;
+		}
+	}
+
+
+	public void loadScene(){
+		if (SceneManager.GetActiveScene().buildIndex == 0){
+			SceneManager.LoadScene(1);
+		}
+		else {
+			SceneManager.LoadScene(0);
 		}
 	}
 }

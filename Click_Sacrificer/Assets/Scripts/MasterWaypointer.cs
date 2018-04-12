@@ -80,7 +80,7 @@ public class MasterWaypointer : MonoBehaviour {
 			bool releaseVics = false;
 			if(failed) {
 				releaseVics = true;
-				if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT!");// "You sacrificed someone without their consent!");
+				if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT");// "You sacrificed someone without their consent!");
 			} else {
 				if (!sacrificer.GetComponent<BloodMeter>().failed && !sacrificer.GetComponent<Sacrifice>().failed){
 					Advance();

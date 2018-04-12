@@ -54,7 +54,7 @@ public class Drag : MonoBehaviour {
 		cam = Camera.main.gameObject.GetComponent<CameraMove>().startFocus;
 		endCam = Camera.main.gameObject.GetComponent<CameraMove>().endFocus;
 
-		int lastVisiblePan = 5;
+		int lastVisiblePan = 2;
 		if (diffManager.GetComponent<MasterWaypointer>() != null){
 			maxPanRight = GameObject.Find("Victims").transform.GetChild(GameObject.Find("Victims").transform.childCount - 1 - lastVisiblePan).position.x;
 		} else {

@@ -12,6 +12,7 @@ public class GameState : MonoBehaviour {
 	public GameObject tipObj;
 	bool paused = false;
 	public GameObject pauseObj;
+	public GameObject[] pauseOptionsObj;
 	public GameObject tipPanel;
 	int prevState;
 	PostProcessVolume m_Volume;
@@ -117,6 +118,11 @@ public class GameState : MonoBehaviour {
 		paused = false;
 		pauseObj.SetActive(false);
 		dof.enabled.value = false;
+
+		pauseOptionsObj[0].SetActive(true);
+		for (int i = 1; i < pauseOptionsObj.Length; i++){
+			pauseOptionsObj[i].SetActive(false);
+		}
 
 		//tipObj.SetActive(true);
 		state = prevState;
