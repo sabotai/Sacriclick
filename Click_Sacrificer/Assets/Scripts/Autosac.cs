@@ -13,7 +13,7 @@ public class Autosac : MonoBehaviour {
 	GameObject diffManager;
 	GameObject ssacrificer;
 	AudioSource audsrc;
-	GameObject spawn;
+	public GameObject spawn;
 	public AudioClip autoExhaustSnd;
 	public Material autosacMat;
 
@@ -22,8 +22,9 @@ public class Autosac : MonoBehaviour {
 		startX = Time.time;
 		diffManager = GameObject.Find("DifficultyManager");
 		ssacrificer = Camera.main.gameObject;
-		spawn = GameObject.Find("autosacSpawn");
+		if (spawn == null) spawn = GameObject.Find("autosacSpawn");
 		audsrc = spawn.GetComponent<AudioSource>();
+		if (audsrc == null) Debug.Log("null audio on autosacSpawn");
 	}
 	
 	// Update is called once per frame
