@@ -25,20 +25,24 @@ public class Inventory : MonoBehaviour {
 	public int storeEntryMin = 100;
 	public Transform vicParent;
 	public GameObject storeParent;
+	public GameObject inventoryParent;
 
 
 	// Use this for initialization
 	void Start () {
 		diffManager = GameObject.Find("DifficultyManager");
 		failed = false;
+		if (inventoryParent == null) inventoryParent = GameObject.Find("InventoryItems");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (GameState.state == 1 || DifficultyManager.currentDifficulty == 1) {
-			storeParent.SetActive(true);
+			if (storeParent.activeSelf == false) storeParent.SetActive(true);
+			if (inventoryParent.activeSelf == false) inventoryParent.SetActive(true);
 		} else {
 			storeParent.SetActive(false);
+			if (GameState.state == 3) inventoryParent.SetActive(false);
 		}
 		itemCast();
 		if (failed) GetComponent<Sacrifice>().Fail(3f, "" +	"\"Ungrateful parasites\""); //make fail stuff happen

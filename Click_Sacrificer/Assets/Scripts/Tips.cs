@@ -8,14 +8,18 @@ public class Tips : MonoBehaviour
 	[TextArea]
 	public string[] bloodTips;
 	[TextArea]
+	public string[] storeTips;
+	[TextArea]
 	public string[] brokerTips;
 	[TextArea]
 	public string[] clawTips;
 	[SerializeField]int currentBloodTip;
 	[SerializeField]int currentBrokerTip;
 	[SerializeField]int currentClawTip;
+	[SerializeField]int currentStoreTip;
 	//bool dispBloodTip, dispBrokerTip, dispClawTip;
 	public GameObject bloodTipObj;
+	public GameObject storeTipObj;
 	public GameObject brokerTipObj;
 	public GameObject clawTipObj;
 	public GameObject tipPanel;
@@ -23,6 +27,7 @@ public class Tips : MonoBehaviour
 	public GameObject forwardButton, backwardButton;
 	public Font titleFont;
 	public Font tipFont;
+	int storeMinimum = 0;
 
 	public static bool displayingTip = true;
 	public static bool tipsOn = true;
@@ -35,18 +40,22 @@ public class Tips : MonoBehaviour
 		currentClawTip = 0;
 		currentBrokerTip = 0;
 		currentBloodTip = 0;
+		currentStoreTip = 0;
 		if (bloodTipObj == null)
 			bloodTipObj = GameObject.Find ("BloodTip");
 		if (brokerTipObj == null)
 			brokerTipObj = GameObject.Find ("BrokerTip");
 		if (clawTipObj == null)
 			clawTipObj = GameObject.Find ("ClawTip");
+		if (storeTipObj == null)
+			clawTipObj = GameObject.Find ("StoreTip");
 		if (tipPanel == null)
 			tipPanel = GameObject.Find ("TipPanel");
 
 		bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
 		brokerTipObj.GetComponent<Text> ().text = brokerTips [currentBrokerTip];
 		clawTipObj.GetComponent<Text> ().text = clawTips [currentClawTip];
+		storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
 		//dispBloodTip = true;
 		//dispClawTip = true;
 		//dispBrokerTip = true;
@@ -55,6 +64,7 @@ public class Tips : MonoBehaviour
 		} else if (PlayerPrefs.GetInt("help") == 0){
 			helpToggle.GetComponent<Toggle> ().isOn = false;
 		}
+		storeMinimum = Camera.main.GetComponent<Inventory>().storeCosts[0] + Camera.main.GetComponent<Inventory>().storeEntryMin;
 	}
 	
 	// Update is called once per frame
@@ -70,7 +80,7 @@ public class Tips : MonoBehaviour
 			displayingTip = false;
 		}
 
-		if (currentBloodTip == bloodTips.Length && currentBrokerTip == brokerTips.Length && currentClawTip == clawTips.Length) {
+		if (currentBloodTip == bloodTips.Length && currentBrokerTip == brokerTips.Length && currentClawTip == clawTips.Length && currentStoreTip == storeTips.Length) {
 			SetHelpBool (false);
 		}
 
@@ -78,86 +88,33 @@ public class Tips : MonoBehaviour
 		case -1:
 			tipPanel.SetActive (false);
 			break;
-		case 1:
-			if (backwardButton.activeSelf && currentBloodTip == 0){
-				backwardButton.SetActive (false);
-			}
-			if (currentBloodTip != bloodTips.Length) {
-				if (currentBloodTip == 0) {
-					bloodTipObj.GetComponent<Text> ().font = titleFont;
-					bloodTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
-				} else {
-					bloodTipObj.GetComponent<Text> ().font = tipFont;
-					bloodTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleLeft;
-				}
-				if (currentBloodTip == bloodTips.Length - 1) {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
-				} else {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = Color.white;
-				}
-				bloodTipObj.SetActive (true); 
-				if (tipsOn) {
-					tipPanel.SetActive (true);
-				}
+		case 1:			
+			if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
+				DisplayTips(bloodTipObj, currentBloodTip, bloodTips);
+				brokerTipObj.SetActive (false);
+				clawTipObj.SetActive (false);
+				storeTipObj.SetActive (false);
 			} else {
-				tipPanel.SetActive (false);
+				DisplayTips(storeTipObj, currentStoreTip, storeTips);
+				brokerTipObj.SetActive (false);
+				clawTipObj.SetActive (false);
+				bloodTipObj.SetActive (false);
 			}
-			brokerTipObj.SetActive (false);
-			clawTipObj.SetActive (false);
+	
 
 			break;
 		case 2:
-			if (backwardButton.activeSelf && currentBrokerTip == 0)
-				backwardButton.SetActive (false);
-			if (currentBrokerTip != brokerTips.Length) {
-				if (currentBrokerTip == 0) {
-					brokerTipObj.GetComponent<Text> ().font = titleFont;
-					brokerTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
-				} else {
-					brokerTipObj.GetComponent<Text> ().font = tipFont;
-					brokerTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleLeft;
-				}
-				if (currentBrokerTip == brokerTips.Length - 1) {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
-				} else {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = Color.white;
-				}
-				brokerTipObj.SetActive (true); 
-				if (Mathf.Approximately (CameraMove.zoom, 1f) && tipsOn) {
-					tipPanel.SetActive (true);
-				}
-			} else { 
-				tipPanel.SetActive (false);
-			}
+			DisplayTips(brokerTipObj, currentBrokerTip, brokerTips);
 			bloodTipObj.SetActive (false);
 			clawTipObj.SetActive (false);
+			storeTipObj.SetActive (false);
 			
 			break;
 		case 3:
-			if (backwardButton.activeSelf && currentClawTip == 0)
-				backwardButton.SetActive (false);
-			if (currentClawTip != clawTips.Length) {
-				if (currentClawTip == 0) {
-					clawTipObj.GetComponent<Text> ().font = titleFont;
-					clawTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
-				} else {
-					clawTipObj.GetComponent<Text> ().font = tipFont;
-					clawTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleLeft;
-				}
-				if (currentClawTip == clawTips.Length - 1) {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
-				} else {
-					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = Color.white;
-				}
-				clawTipObj.SetActive (true); 
-				if (Mathf.Approximately (CameraMove.zoom, 1f) && tipsOn) {
-					tipPanel.SetActive (true);
-				}
-			} else {
-				tipPanel.SetActive (false);
-			}
+			DisplayTips(clawTipObj, currentClawTip, clawTips);
 			brokerTipObj.SetActive (false);
 			bloodTipObj.SetActive (false);
+			storeTipObj.SetActive (false);
 
 			break;
 
@@ -165,6 +122,32 @@ public class Tips : MonoBehaviour
 
 		pState = GameState.state;
 			
+	}
+
+	public void DisplayTips(GameObject currentTipObj, int currentTip, string[] tips){
+			if (backwardButton.activeSelf && currentTip == 0)
+				backwardButton.SetActive (false);
+			if (currentTip != tips.Length) {
+				if (currentTip == 0) {
+					currentTipObj.GetComponent<Text> ().font = titleFont;
+					currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
+				} else {
+					currentTipObj.GetComponent<Text> ().font = tipFont;
+					currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleLeft;
+				}
+				if (currentTip == tips.Length - 1) {
+					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
+				} else {
+					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = Color.white;
+				}
+				currentTipObj.SetActive (true); 
+				if (Mathf.Approximately (CameraMove.zoom, 1f) && tipsOn) {
+					tipPanel.SetActive (true);
+				}
+			} else {
+				tipPanel.SetActive (false);
+			}
+
 	}
 
 	public void SetHelpBool (bool helpOn)
@@ -180,27 +163,42 @@ public class Tips : MonoBehaviour
 		currentBloodTip = 0;
 		currentBrokerTip = 0;
 		currentClawTip = 0;
+		currentStoreTip = 0;
 
 		bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
 		brokerTipObj.GetComponent<Text> ().text = brokerTips [currentBrokerTip];
 		clawTipObj.GetComponent<Text> ().text = clawTips [currentClawTip];
+		storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
 	}
 
 	public void AdvanceTip ()
 	{
 		switch (GameState.state) {
 		case 1:
-			currentBloodTip++;
-			if (currentBloodTip < bloodTips.Length) {	
-				if (!backwardButton.activeSelf)
-					backwardButton.SetActive (true);	
-				bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
-				//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
+			if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
+				currentBloodTip++;
+				if (currentBloodTip < bloodTips.Length) {	
+					if (!backwardButton.activeSelf)
+						backwardButton.SetActive (true);	
+					bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
+					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
+				} else {
+					tipPanel.SetActive (false);
+				}
 			} else {
-				tipPanel.SetActive (false);
+
+				currentStoreTip++;
+				if (currentStoreTip < storeTips.Length) {	
+					if (!backwardButton.activeSelf)
+						backwardButton.SetActive (true);	
+					storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
+					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
+				} else {
+					tipPanel.SetActive (false);
+				}
 			}
-				
 			break;
+			
 		case 2:
 			currentBrokerTip++;
 			if (currentBrokerTip < brokerTips.Length) {
@@ -231,11 +229,15 @@ public class Tips : MonoBehaviour
 	{
 		switch (GameState.state) {
 		case 1:
-			if (currentBloodTip > 0) {	
+			if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
 
 				currentBloodTip--;
 				bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
-			} 
+			} else {
+
+				currentStoreTip--;
+				storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
+			}
 
 			break;
 		case 2:
