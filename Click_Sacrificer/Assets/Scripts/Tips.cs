@@ -89,12 +89,14 @@ public class Tips : MonoBehaviour
 			tipPanel.SetActive (false);
 			break;
 		case 1:			
-			if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
+			if (Camera.main.GetComponent<Sacrifice>().scoreCount <= storeMinimum){
 				DisplayTips(bloodTipObj, currentBloodTip, bloodTips);
 				brokerTipObj.SetActive (false);
 				clawTipObj.SetActive (false);
 				storeTipObj.SetActive (false);
 			} else {
+				if (currentStoreTip == 0 && PlayerPrefs.GetInt ("help") == 1)
+					tipPanel.SetActive (true);
 				DisplayTips(storeTipObj, currentStoreTip, storeTips);
 				brokerTipObj.SetActive (false);
 				clawTipObj.SetActive (false);

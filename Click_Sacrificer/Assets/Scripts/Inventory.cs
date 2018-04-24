@@ -50,7 +50,7 @@ public class Inventory : MonoBehaviour {
 		//show them after the player has earned enough
 		if (!storeItems[storeItems.Length - 1].activeSelf){
 			for (int i = 0; i < storeItems.Length; i++){
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[i] + storeEntryMin) || DifficultyManager.currentDifficulty == 1){
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[i] + storeEntryMin)){
 					storeItems[i].SetActive(true);
 				}
 			}
