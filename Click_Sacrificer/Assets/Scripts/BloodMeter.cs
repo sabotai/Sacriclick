@@ -32,6 +32,8 @@ public class BloodMeter : MonoBehaviour {
 	public float slowBrokerPct = 0.5f;
 	public RectTransform bloodUI;
 	float bloodUIOrigY;
+	public AudioSource rumbleAud;
+	float lastShake;
 
 
 	// Use this for initialization
@@ -43,6 +45,7 @@ public class BloodMeter : MonoBehaviour {
 		victims = GameObject.Find("Victims");
 		origSacBloodValue = sacBloodValue;
 		firstClick = false;
+		lastShake = 0f;
 
 		if (ColorblindMode.cbMode){
 			positiveBloodColor = ColorblindMode.cbGreen;
@@ -85,13 +88,27 @@ public class BloodMeter : MonoBehaviour {
 
 					secondsRemaining = bloodAmt / bloodSecondRatio;
 				}
-				if (bloodAmt > bloodScreenAmt){ //increment blood jars if enough blood is shed
+
+				if (bloodAmt > 0.01 && bloodAmt < (bloodScreenAmt * 0.09) && GetComponent<Inventory>().bloodJarNumber == 0 && !failed){ //signal to the player that their time is running out
+					//pitchF.pitch *= 1.5f;
+					rumbleAud.volume = 1f - (bloodAmt / bloodScreenAmt);
+					//if (!rumbleAud.isPlaying) rumbleAud.Play();
+					if (bloodAmt < (bloodScreenAmt * 0.07) && Time.time > lastShake + 0.05f) {
+
+						//increase rumble amt as time runs out
+						float rumbleAmt = 0.000000001f * (1f - (bloodAmt / bloodScreenAmt));
+
+						StartCoroutine(Shake.ShakeThis(Camera.main.transform, 0.001f, rumbleAmt));
+						lastShake = Time.time;
+					}
+				} else if (bloodAmt > bloodScreenAmt) { //increment blood jars if enough blood is shed
 					GetComponent<Inventory>().createJar(false);
 
-				}
-
-				if (bloodAmt < 0.01f && GetComponent<Inventory>().bloodJarNumber > 0 && useAutoJar){
+				} else if (bloodAmt < 0.01f && GetComponent<Inventory>().bloodJarNumber > 0 && useAutoJar){
 					GetComponent<Inventory>().useJar(GetComponent<Inventory>().bloodSpawn.GetChild(GetComponent<Inventory>().bloodSpawn.childCount - 1).gameObject);
+				} else {
+					rumbleAud.volume -= 0.1f;
+
 				}
 
 				bloodAmt = Mathf.Clamp(bloodAmt, 0f, 20f); //dont allow to go below zero or over 30 for ui purposes

@@ -8,7 +8,7 @@ public class PitchFollow : MonoBehaviour {
 	public float basePitch = 0.3f;
 	public float maxPitch = 1.5f;
 	public float followSpeed = 0.5f;
-	float pitch;
+	public float pitch;
 	public AudioClip[] clips;
 	float originalVol;
 	public float adjustedVol = 0.4f;

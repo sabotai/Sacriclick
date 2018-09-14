@@ -1,9 +1,7 @@
 fileFormatVersion: 2
 guid: fb43652db841427449082692766d8a34
-timeCreated: 1494205735
-licenseType: Free
 ModelImporter:
-  serializedVersion: 21
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: 1494205016.5168328
     100002: 1494205016.5168328_MeshPart0
@@ -231,10 +229,43 @@ ModelImporter:
     13700004: 1494205016.5168328_MeshPart2
     13700006: 1494205016.5168328_MeshPart3
     13700008: 1494205016.5168328_MeshPart4
+    2186277476908879412: ImportLogs
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_cornea
+    second: {fileID: 2100000, guid: b6739ca75fb84ea4fb7b86b8a0340985, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_fur
+    second: {fileID: 2100000, guid: 0e02ac445d92bee438e04426abcdcb40, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_human_eyes1494205016.5168328
+    second: {fileID: 2100000, guid: 51642628866386942834d01891733b2d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_human_skin1494205016.5168328
+    second: {fileID: 2100000, guid: 7051300e7eb30db4f9a51ded2b4a79b0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_human_teeth1494205016.5168328
+    second: {fileID: 2100000, guid: 3f3ce26a79a16b14b86a16e5ed972313, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MBlab_pupil
+    second: {fileID: 2100000, guid: 88a141c5ee85f53498cb488961ffb096, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -247,6 +278,8 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -271,6 +304,8 @@ ModelImporter:
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88

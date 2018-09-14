@@ -31,6 +31,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public AudioClip slideClip;
 	public int firstSpecialEligible = 10;
 	public float specialSpawnRate = 1000;
+	public VictimHider victimHid;
 
 	AudioClip myClip;
 	Object[] posScreams;
@@ -265,6 +266,12 @@ public class MasterWaypointer : MonoBehaviour {
 		newVic.transform.SetParent(victimParent);
 		newVic.transform.SetAsLastSibling();
 		movables[movables.Length -1] = newVic;
+
+		if (victimHid.enabled){ //if hiding vics early on
+			if (sacrificer.GetComponent<Sacrifice>().sacCount % 10 == 0) victimHid.numRevealed++;
+		
+			victimHid.Reveal();
+		}
 
 	}
 
