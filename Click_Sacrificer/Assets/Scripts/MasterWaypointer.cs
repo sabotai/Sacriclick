@@ -33,6 +33,9 @@ public class MasterWaypointer : MonoBehaviour {
 	public float specialSpawnRate = 1000;
 	public VictimHider victimHid;
 
+	public GameObject bloodEffect, fireEffect;
+	public Transform sacrificeSpot;
+
 	AudioClip myClip;
 	Object[] posScreams;
 	Object[] neuScreams;
@@ -175,7 +178,8 @@ public class MasterWaypointer : MonoBehaviour {
 
 		if (vic.transform.GetSiblingIndex() == 0 && vic.name != "dumb-idol-placeholder"){ //protection against it sac'ing the same one twice
 			if (vic.transform.GetChild(1).GetComponent<SpecialStatus>().specialStat){
-				CraneGame.beginCraneGame = true;
+				bloodEffect.SetActive(true);
+				//Instantiate(bloodEffect, sacrificeSpot.position, Quaternion.identity);
 			}
 			//Debug.Log("SACRIFICING: " + vic.name);
 			//StartCoroutine(Shake.ShakeThis(macuahuitl, 0.6f, 0.2f));

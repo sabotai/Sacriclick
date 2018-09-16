@@ -43,6 +43,7 @@ public class Drag : MonoBehaviour {
 	public AudioClip flickClip;
 	public float dragZoomAmt = 49f;
 	float origEndZoomAmt;
+	public float panSpeed = 1.5f;
 
 	// Use this for initialization
 	void Start () {
@@ -363,16 +364,16 @@ public class Drag : MonoBehaviour {
 			if (amtPanned >= 0 && amtPanned <= maxPanRight){
 				//allow player to scroll along path
 				if (Input.mousePosition.x > Screen.width * 0.9f){
-						panCam += new Vector3(1f, 0f, 0f) * Time.deltaTime;
+						panCam += new Vector3(panSpeed, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning right");
 					} else if (Input.mousePosition.x < Screen.width * 0.1f){
-						panCam -= new Vector3(1f, 0f, 0f) * Time.deltaTime;
+						panCam -= new Vector3(panSpeed, 0f, 0f) * Time.deltaTime;
 						//Debug.Log("panning left");
 					} else {
 						panCam *= 0.9f;
 					}
 					//max pan speed in either direction
-					panCam = new Vector3(Mathf.Clamp(panCam.x,-0.9f, 0.9f), 0f, 0f);
+					panCam = new Vector3(Mathf.Clamp(panCam.x,-panSpeed, panSpeed), 0f, 0f);
 
 					cam.position += panCam;
 					endCam.position += panCam;

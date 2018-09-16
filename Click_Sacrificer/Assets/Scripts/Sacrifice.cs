@@ -51,6 +51,8 @@ public class Sacrifice : MonoBehaviour {
 	public AudioClip goodSacClip, badSacClip, loseClip;
 	float fontSize;
 	float nLerpTime = 0.0015f;
+	public GameObject bloodEffect, fireEffect;
+	public Transform sacrificeSpot;
 
 	void Awake(){
 		sacCount = 0;
@@ -330,6 +332,8 @@ public class Sacrifice : MonoBehaviour {
 		if (!failed){
 			failedTime = Time.time;
 			failed = true;
+			//Instantiate(fireEffect, sacrificeSpot.position, Quaternion.identity);
+			fireEffect.SetActive(true);
 
 			StartCoroutine(Shake.ShakeThis(Camera.main.transform, restartTime / 10f, 0.5f));
 
