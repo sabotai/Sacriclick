@@ -3,7 +3,8 @@ using System.Collections;
 
 public class RFX4_DeactivateByTime_Crane : MonoBehaviour {
 
-    public float DeactivateTime = 3;
+    public float DeactivateTime = 3f;
+    public float beginCrane = 1f;
 
     private bool canUpdateState;
 	// Use this for initialization
@@ -17,6 +18,7 @@ public class RFX4_DeactivateByTime_Crane : MonoBehaviour {
         if (canUpdateState) {
             canUpdateState = false;
             Invoke("DeactivateThis", DeactivateTime);
+            Invoke("CraneBegin", beginCrane);
         }
     }
 
@@ -24,6 +26,10 @@ public class RFX4_DeactivateByTime_Crane : MonoBehaviour {
     void DeactivateThis()
     {
         gameObject.SetActive(false);
+    }
+    // Update is called once per frame
+    void CraneBegin()
+    {
         CraneGame.beginCraneGame = true;
-	}
+    }
 }

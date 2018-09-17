@@ -18,5 +18,7 @@ public class Cheat : MonoBehaviour {
 			SceneManager.LoadScene(1);
 		if (Input.GetKey(KeyCode.F12) && Input.GetKeyDown(KeyCode.G))
 			Camera.main.GetComponent<Sacrifice>().easyMode = !Camera.main.GetComponent<Sacrifice>().easyMode;
+		if (Input.GetKey(KeyCode.F12) && Input.GetKeyDown(KeyCode.F5))
+			GetComponent<MasterWaypointer>().bloodEffect.SetActive(true);
 	}
 }

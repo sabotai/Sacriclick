@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.ImageEffects;
 
 public class Sacrifice : MonoBehaviour {
 
@@ -47,6 +48,7 @@ public class Sacrifice : MonoBehaviour {
 	bool hovering = false;
 	public GameObject lightParent;
 	public AudioClip templeHoverClip;
+	EdgeDetection edge;
 	public float pitchMin, pitchMax;
 	public AudioClip goodSacClip, badSacClip, loseClip;
 	float fontSize;
@@ -61,6 +63,7 @@ public class Sacrifice : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		edge = GetComponent<EdgeDetection>();
 		easyMode = false;
 		clickable = GameObject.Find("click-toy");
 		clickOrigScale = clickable.transform.localScale;
@@ -135,6 +138,7 @@ public class Sacrifice : MonoBehaviour {
 						lightParent.GetComponent<AudioSource>().PlayOneShot(templeHoverClip);
 					}
 					hovering = true;
+					if (!failed) edge.edgeExp = 0.3f;
 					//old shrink cursword code when hovering over clickable 
 					/*
 					if (beamHit.collider.gameObject == clickable) {
@@ -184,6 +188,7 @@ public class Sacrifice : MonoBehaviour {
 
 				} else {
 					hovering = false;
+					edge.edgeExp = 0.2f;
 					lights(0.05f);
 				}
 			} else { //in pan mode
