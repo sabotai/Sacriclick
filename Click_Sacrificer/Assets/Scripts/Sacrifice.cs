@@ -291,14 +291,14 @@ public class Sacrifice : MonoBehaviour {
 				//sacCount++;
 				//}
 				GetComponent<BloodMeter>().updateMood();
-				GetComponent<BloodMeter>().bloodAmt += GetComponent<BloodMeter>().sacBloodValue;
+				GetComponent<BloodMeter>().bloodAmt += (MasterWaypointer.vic.GetComponent<MultiSac>().multiplier * GetComponent<BloodMeter>().sacBloodValue);
 				if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) {
 					audio.PlayOneShot(badSacClip, 0.65f); GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, -0.5f));
 					} else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) {
 						audio.PlayOneShot(goodSacClip, 0.65f);
 			GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, 0.5f * GetComponent<BloodMeter>().sacBloodValue));
 					}
-				sacCount++;
+				sacCount += (int)MasterWaypointer.vic.GetComponent<MultiSac>().multiplier;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 				scoreCount = sacCount - expenses;

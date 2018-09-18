@@ -8,9 +8,9 @@ public class MasterWaypointer : MonoBehaviour {
 	public GameObject[] movables;
 	public Vector3 velo;
 	public GameObject sacrificer;
-	GameObject vic;
+	public static GameObject vic;
 	public bool vicReady = true;
-	public GameObject prefab;
+	public GameObject prefab, dblPrefab, triplePrefab;
 	public Transform macuahuitl;
 	public Vector3 spawnRotation = new Vector3(-90, 0, 180);
 	public float waySpeed = 5f;
@@ -32,6 +32,8 @@ public class MasterWaypointer : MonoBehaviour {
 	public int firstSpecialEligible = 10;
 	public float specialSpawnRate = 1000;
 	public VictimHider victimHid;
+	public int doubleThresh = 100;
+	public int tripleThresh = 300;
 
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
@@ -256,8 +258,12 @@ public class MasterWaypointer : MonoBehaviour {
 	void SpawnReplacement(){
 
 		Vector3 point = wayParent.GetChild(wayParent.childCount - 1).position;
-		GameObject newVic = Instantiate(prefab, point, Quaternion.Euler(spawnRotation));
 		int myNewNumber = sacrificer.GetComponent<Sacrifice>().sacCount + howMany;
+
+		GameObject spawnPrefab = prefab;
+		if (myNewNumber >= doubleThresh && myNewNumber % 5 == 0) spawnPrefab = dblPrefab;
+		if (myNewNumber >= tripleThresh && myNewNumber % 8 == 0) spawnPrefab = triplePrefab;
+		GameObject newVic = Instantiate(spawnPrefab, point, Quaternion.Euler(spawnRotation));
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);
 		GameObject label = newVic.transform.GetChild(1).gameObject;

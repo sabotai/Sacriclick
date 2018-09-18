@@ -34,6 +34,12 @@ public class UpdateLabel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (GameState.state == 2) {
+			GetComponent<MeshRenderer>().enabled = true;
+		} else {
+
+			GetComponent<MeshRenderer>().enabled = false;
+		}
 
 		if (GetComponent<SpecialStatus>().specialStat) {
 			//if (GetComponent<TextMesh>().text == label) label
