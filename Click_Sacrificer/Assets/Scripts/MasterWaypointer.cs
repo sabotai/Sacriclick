@@ -10,7 +10,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public GameObject sacrificer;
 	public static GameObject vic;
 	public bool vicReady = true;
-	public GameObject prefab, dblPrefab, triplePrefab;
+	public GameObject prefab, dblPrefab, triplePrefab, quintPrefab;
 	public Transform macuahuitl;
 	public Vector3 spawnRotation = new Vector3(-90, 0, 180);
 	public float waySpeed = 5f;
@@ -33,7 +33,8 @@ public class MasterWaypointer : MonoBehaviour {
 	public float specialSpawnRate = 1000;
 	public VictimHider victimHid;
 	public int doubleThresh = 100;
-	public int tripleThresh = 300;
+	public int tripleThresh = 200;
+	public int quintThresh = 300;
 
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
@@ -261,8 +262,10 @@ public class MasterWaypointer : MonoBehaviour {
 		int myNewNumber = sacrificer.GetComponent<Sacrifice>().sacCount + howMany;
 
 		GameObject spawnPrefab = prefab;
-		if (myNewNumber >= doubleThresh && myNewNumber % 5 == 0) spawnPrefab = dblPrefab;
-		if (myNewNumber >= tripleThresh && myNewNumber % 8 == 0) spawnPrefab = triplePrefab;
+		int rando = (int)Random.Range(0, 100);
+		if (myNewNumber >= doubleThresh && rando < 40) spawnPrefab = dblPrefab;
+		else if (myNewNumber >= tripleThresh && rando < 60) spawnPrefab = triplePrefab;
+		else if (myNewNumber >= quintThresh && rando < 70) spawnPrefab = quintPrefab;
 		GameObject newVic = Instantiate(spawnPrefab, point, Quaternion.Euler(spawnRotation));
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);

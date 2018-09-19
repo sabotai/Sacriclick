@@ -298,7 +298,9 @@ public class Sacrifice : MonoBehaviour {
 						audio.PlayOneShot(goodSacClip, 0.65f);
 			GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, 0.5f * GetComponent<BloodMeter>().sacBloodValue));
 					}
-				sacCount += (int)MasterWaypointer.vic.GetComponent<MultiSac>().multiplier;
+
+				int multi = (int)MasterWaypointer.vic.GetComponent<MultiSac>().multiplier;
+				sacCount += multi;
 				//sacReady = false;
 				//sacCountDisplay.text = "Total Sacrificed:	" + sacCount;
 				scoreCount = sacCount - expenses;
@@ -307,9 +309,14 @@ public class Sacrifice : MonoBehaviour {
 				if (diffManager.GetComponent<MasterWaypointer>() != null) {
 					GameObject heart = Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity) as GameObject;
 					var main = heart.GetComponent<ParticleSystem>().main;
-					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 150f);
-					if (maxx < 25) maxx = 0;
+					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 50f);
+					if (maxx < 50) maxx /= 2;
+					if (maxx < 20) maxx = 0;
+					Debug.Log("maxx = " + maxx);
 					main.maxParticles = maxx;
+					main.startSize = 3f * ((float)maxx / 50f);
+					var emission = heart.GetComponent<ParticleSystem>().emission;
+					emission.rate = 13f * ((float)maxx / 50f);
 					diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				} else {
 					Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
