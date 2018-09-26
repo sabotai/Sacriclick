@@ -92,7 +92,6 @@ public class MasterWaypointer : MonoBehaviour {
 				if (randoGen < 0.8f){
 					if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "NEVER SACRIFICE WITHOUT CONSENT");// "You sacrificed someone without their consent!");
 				} else {
-
 					if (!sacrificer.GetComponent<Inventory>().failed) sacrificer.GetComponent<Sacrifice>().Fail(2f, "SENO EKTO GAMAT!");// "You sacrificed someone without their consent!");
 
 				}

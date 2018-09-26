@@ -51,12 +51,15 @@ public class GameState : MonoBehaviour {
 			state = 2;
 		} else if (CraneGame.beginCraneGame){
 			state = 3;
-		}else {
+		}  else if (EndGame.endState > 0){
+			state = 4;
+		} else {
 			state = 1;
 		}
+		//Debug.Log("state = " + state);
 
 
-		if (Input.GetKeyDown("escape") && state != 0) {
+		if (Input.GetKeyDown("escape") && state != 0 && state != 4) {
 			if (!paused){
 				Pause();
 			} else {
@@ -69,10 +72,10 @@ public class GameState : MonoBehaviour {
 
 	void FixedUpdate(){
 
-		if (Tips.displayingTip) {
+		if (Tips.displayingTip && state != 4) {
 			Defocus(50f);
 		} else {
-			if (!paused) Refocus(50f);
+			if (!paused && state != 4) Refocus(50f);
 		}
 	}
 	public void Defocus(float speed){

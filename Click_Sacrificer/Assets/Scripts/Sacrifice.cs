@@ -52,7 +52,7 @@ public class Sacrifice : MonoBehaviour {
 	public float pitchMin, pitchMax;
 	public AudioClip goodSacClip, badSacClip, loseClip;
 	float fontSize;
-	float nLerpTime = 0.0015f;
+	public float nLerpTime = 0.0015f;
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
 
@@ -341,7 +341,7 @@ public class Sacrifice : MonoBehaviour {
 		GetComponent<Drag>().panCam = Vector3.zero;
 		GetComponent<CameraMove>().forceAmt = 0f;
 
-		if (!failed){
+		if (!failed){ //initiate single-call actions
 			failedTime = Time.time;
 			failed = true;
 			//Instantiate(fireEffect, sacrificeSpot.position, Quaternion.identity);
@@ -363,13 +363,12 @@ public class Sacrifice : MonoBehaviour {
 		}
 
 		if (failedTime + restartTime < Time.time){
-			
-			if (Input.anyKey)	{
-				easyMode = false;
-				PlayerPrefs.SetInt("init", 1);
-				if (scoreCount > HighScore.minGodsAccess * 2) SceneManager.LoadScene(1);
-				else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-			}
+			//if (easyMode){
+			//	easyMode = false;
+				GameObject.Find("GameOverPanel").GetComponent<EndGame>().enabled = true;
+			//}
+			//failObj.GetComponent<Text>().text = failMsg;
+
 		} else {
 
 			//Camera.main.transform.DetachChildren();
