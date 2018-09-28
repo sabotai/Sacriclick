@@ -312,7 +312,7 @@ public class Sacrifice : MonoBehaviour {
 					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 50f);
 					if (maxx < 50) maxx /= 2;
 					if (maxx < 20) maxx = 0;
-					Debug.Log("maxx = " + maxx);
+					//Debug.Log("maxx = " + maxx);
 					main.maxParticles = maxx;
 					main.startSize = 3f * ((float)maxx / 50f);
 					var emission = heart.GetComponent<ParticleSystem>().emission;
