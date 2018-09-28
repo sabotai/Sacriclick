@@ -14,6 +14,7 @@ public class Mood : MonoBehaviour {
 	public float diff = 0.5f;
 	public float diffProgression = 0.01f;
 	public int initialFreebies = 15;
+	public GameObject influenceSphere;
 
 	void Awake(){
 
@@ -57,7 +58,9 @@ public class Mood : MonoBehaviour {
 			mood = Mathf.Clamp(mood, -1f, 1f);
 			moodDir = Mathf.Clamp(moodDir, -1f, 1f);
 		}
-		moodDir = neighborMood();
+		if (influenceSphere != null) {
+			if (!influenceSphere.activeInHierarchy) moodDir = neighborMood();
+		}
 	}
 
 
@@ -80,6 +83,17 @@ public class Mood : MonoBehaviour {
 			neighborMoodAvg /= count;
 		}
 		return neighborMoodAvg;
+	}
+
+	void OnTriggerStay(Collider col){
+		if (col.gameObject.name == "InfluenceSphere"){
+			Mood infMood = col.transform.parent.gameObject.GetComponent<Mood>();
+			if (infMood != null){
+				moodDir = (moodDir + infMood.moodDir * 2f)/3f;
+				moodSpeedMult = (moodSpeedMult + infMood.moodSpeedMult * 2f)/3f;
+				mood = (mood * 99f + infMood.mood)/100f;
+			}
+		}
 	}
 
 }

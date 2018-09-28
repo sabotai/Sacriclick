@@ -55,6 +55,7 @@ public class Sacrifice : MonoBehaviour {
 	public float nLerpTime = 0.0015f;
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
+	public Transform[] failDisable;
 
 	void Awake(){
 		sacCount = 0;
@@ -329,6 +330,9 @@ public class Sacrifice : MonoBehaviour {
 
 
 	public void Fail(float restartTime, string failMsg){
+		for (int i = 0; i < failDisable.Length; i++){
+			failDisable[i].gameObject.SetActive(false);
+		}
 		failObj.GetComponent<Text>().text = failMsg;
 		//failObj.GetComponent<Text>().fontSize = (int)(fontSize);
 		Vector3 startScale = new Vector3(0.001f, 0.001f, 0.001f);

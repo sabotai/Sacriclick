@@ -132,6 +132,7 @@ public class Inventory : MonoBehaviour {
 			vicParent.GetChild(i).GetComponent<Mood>().moodDir = 1f;
 			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult += 2f;
 			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult *= 5f;
+			vicParent.GetChild(i).GetComponent<Mood>().mood += 0.3f;
 		}
 	}
 
