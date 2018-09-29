@@ -37,6 +37,7 @@ public class GameState : MonoBehaviour {
         dof.focusDistance.Override(0.1f);
         dof.aperture.Override(2.5f);
         dof.focalLength.Override(minFL);
+        dof.kernelSize.Override(KernelSize.Small);
 
         m_Volume = PostProcessManager.instance.QuickVolume(Camera.main.gameObject.layer, 100f, dof);
 	}

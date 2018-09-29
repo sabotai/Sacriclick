@@ -229,7 +229,7 @@ public class MasterWaypointer : MonoBehaviour {
 					if (myDeathMood < 0f){
 						for (int z = 0; z < chainLength; z++){
 							if (myMoodLvl > 0){
-								float affectLvl = myMoodLvl * ((chainLength - (float)z) / chainLength) * -chainIncrements;
+								float affectLvl = myMoodLvl * ((chainLength - (float)z) / chainLength) * - chainIncrements;
 		     					StartCoroutine(callMoodShift(z, affectLvl, z));
 		     				}
 							//Invoke("callMoodShift(movables[i])", i);
@@ -239,7 +239,7 @@ public class MasterWaypointer : MonoBehaviour {
 					} else if (myDeathMood > 0.99f){
 						//bonus for good sacs
 
-						for (int z = 0; z < chainLength/3; z++){
+						for (int z = 0; z < chainLength/4; z++){
 							float affectLvl = ((chainLength - (float)z) / chainLength) * (0.5f * chainIncrements);
 	     					StartCoroutine(callMoodShift(z, affectLvl, z));
 							//Invoke("callMoodShift(movables[i])", i);
@@ -265,7 +265,7 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void DragInsert(GameObject swap, GameObject swap_){
-		//Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
+		Debug.Log("player drag insert: swapping " + swap.name + " for " + swap_.name);
 		int swapSibCnt = swap.transform.GetSiblingIndex();
 		int swap_SibCnt = swap_.transform.GetSiblingIndex();
 		swap.transform.SetSiblingIndex(swap_SibCnt);
@@ -273,14 +273,16 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	public void ThrowInsert(GameObject swap, GameObject swap_){
-		//Debug.Log("player drag: swapping " + swap.name + " for " + swap_.name);
+		Debug.Log("player toss insert: swapping " + swap.name + " for " + swap_.name);
 		int swapSibCnt = swap.transform.GetSiblingIndex();
 		int swap_SibCnt = swap_.transform.GetSiblingIndex();
 
-		for (int i = swapSibCnt; i < swap_SibCnt; i++){
-			swap_.transform.parent.GetChild(i + 1).SetSiblingIndex(i);
+		for (int i = swapSibCnt + 1; i < swap_SibCnt; i++){
+			swap_.transform.parent.GetChild(i).SetSiblingIndex(i - 1);
 		}
 		swap.transform.SetParent(swap_.transform.parent);
+		
+		//related to forward throwing
 		swap.transform.SetSiblingIndex(swap_SibCnt);
 	}
 

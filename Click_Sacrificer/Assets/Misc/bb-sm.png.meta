@@ -33,7 +33,7 @@ TextureImporter:
     aniso: -1
     mipBias: -1
     wrapU: 1
-    wrapV: 1
+    wrapV: 0
     wrapW: -1
   nPOTScale: 0
   lightmap: 0
@@ -95,7 +95,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 817eeff220e6a7849b700e35b0b6a57c
     vertices: []
     indices: 
     edges: []
