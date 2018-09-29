@@ -36,6 +36,9 @@ public class MasterWaypointer : MonoBehaviour {
 	public int tripleThresh = 200;
 	public int quintThresh = 300;
 	public int sexThresh = 400;
+	public int chainLength = 15;
+	public float chainIncrements = 0.3f;
+	public bool boostAll = false;
 
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
@@ -119,6 +122,10 @@ public class MasterWaypointer : MonoBehaviour {
 				}
 			}
 		}
+
+		if (boostAll) {
+			BoostAll();
+		}
 	}
 
 	void InitRandomSpecial(){
@@ -197,36 +204,63 @@ public class MasterWaypointer : MonoBehaviour {
 			//destroy doughnut hole
 			//Destroy(transform.GetChild(0).gameObject);
 			//game failed if you sacrificed one who did not conset
-			float myDeathMood = vic.GetComponent<Mood>().mood;
-			float mt = vic.GetComponent<Mood>().moodFailThresh;
+			if (vic.GetComponent<Mood>() != null){
+				float myDeathMood = vic.GetComponent<Mood>().mood;
+				float myMoodLvl = vic.GetComponent<Mood>().moodLevel;
+				float mt = vic.GetComponent<Mood>().moodFailThresh;
 
 
-			if (Sacrifice.playScreams){
-				if (myDeathMood < mt){
-					Debug.Log("sacrificed someone without consent! " + myDeathMood + "  " + vic.name);
-					myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
-					if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
-				} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
-					myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
-				} else { //pos moods
-					myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+				if (Sacrifice.playScreams){
+					if (myDeathMood < mt){
+						Debug.Log("sacrificed someone without consent! " + myDeathMood + "  " + vic.name);
+						myClip = (AudioClip)negScreams[Random.Range(0, negScreams.Length)];
+						if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+					} else if (myDeathMood >= mt && myDeathMood <= Mathf.Abs(mt)) { //middle moods
+						myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+					} else { //pos moods
+						myClip = (AudioClip)posScreams[Random.Range(0, posScreams.Length)];
+					}
+					
+					AudioSource audio = vic.GetComponent<AudioSource>();
+					audio.pitch = Random.Range(0.8f, 1.2f);
+					audio.PlayOneShot(myClip);
+
+				} else {
+					if (myDeathMood < 0f){
+						for (int z = 0; z < chainLength; z++){
+							if (myMoodLvl > 0){
+								float affectLvl = myMoodLvl * ((chainLength - (float)z) / chainLength) * -chainIncrements;
+		     					StartCoroutine(callMoodShift(z, affectLvl, z));
+		     				}
+							//Invoke("callMoodShift(movables[i])", i);
+							//movables[i].GetComponent<Mood>().shiftMood(-0.3f * movables[i].GetComponent<Mood>().moodLevel); //affect neighbors in queue
+						}
+						//if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
+					} else if (myDeathMood > 0.99f){
+						//bonus for good sacs
+
+						for (int z = 0; z < chainLength/3; z++){
+							float affectLvl = ((chainLength - (float)z) / chainLength) * (0.5f * chainIncrements);
+	     					StartCoroutine(callMoodShift(z, affectLvl, z));
+							//Invoke("callMoodShift(movables[i])", i);
+							//movables[i].GetComponent<Mood>().shiftMood(-0.3f * movables[i].GetComponent<Mood>().moodLevel); //affect neighbors in queue
+						}
+					}
+					
 				}
-				
-				AudioSource audio = vic.GetComponent<AudioSource>();
-				audio.pitch = Random.Range(0.8f, 1.2f);
-				audio.PlayOneShot(myClip);
-
-			} else {
-				if (myDeathMood < mt){
-					if (sacrificer.GetComponent<BloodMeter>().failureAllowed) failed = true;
-				}
-				
 			}
 
 			ReleaseVic(vic);
 			MoveUp();
 			//instantiate the new one
 			SpawnReplacement();
+		}
+	}
+	 IEnumerator callMoodShift(int index, float lvl, float delayTime){
+     	yield return new WaitForSeconds(delayTime/10f);
+     	GameObject moodObj = movables[index];
+     	if (moodObj.GetComponent<Mood>() != null){
+			moodObj.GetComponent<Mood>().shiftMood(lvl);
 		}
 	}
 
@@ -295,6 +329,8 @@ public class MasterWaypointer : MonoBehaviour {
 		releaseMe.GetComponent<Rigidbody>().freezeRotation = false;
 		releaseMe.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 		releaseMe.GetComponent<MeshRenderer> ().material.color = Color.red;
+		releaseMe.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
+		releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
 		
 		//destroy mood to release multiples
 		Destroy(releaseMe.GetComponent<Mood>());
@@ -332,5 +368,15 @@ public class MasterWaypointer : MonoBehaviour {
 		}
 	}
 
+	public void BoostAll(){
+		Debug.Log("boost all...");
+		int numMovables = movables.Length;
+		for (int i = 0; i < numMovables; i++){
+			float boost = ((float)numMovables - (float)i + 1f)/ (float)numMovables;
+			Debug.Log("boost: " + boost);
+			movables[i].GetComponent<Mood>().shiftMood(boost);
+		}
+		boostAll = false;
+	}
 
 }

@@ -92,19 +92,20 @@ public class ConsentMeter : MonoBehaviour {
 				dirLabel.GetComponent<TextMesh>().text = "▲";
 			}
 
-			if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh * 1f){
+			float moodLvl = transform.parent.gameObject.GetComponent<Mood>().moodLevel;
+			if (moodLvl > 2f){
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!!!";
-			} else if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh / 1.2f){
+			} else if (moodLvl == 2f){
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
 				dirLabel.GetComponent<TextMesh>().fontSize = 180;
 				dirLabel.GetComponent<TextMesh>().text = "!!";
-			} else if (transform.parent.gameObject.GetComponent<Mood>().mood < transform.parent.gameObject.GetComponent<Mood>().moodFailThresh / 1.4f){
+			} else if (moodLvl == 1f){
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;

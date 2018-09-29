@@ -56,6 +56,7 @@ public class Sacrifice : MonoBehaviour {
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
 	public Transform[] failDisable;
+	EndGame endPanel;
 
 	void Awake(){
 		sacCount = 0;
@@ -64,6 +65,7 @@ public class Sacrifice : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		endPanel =  GameObject.Find("GameOverPanel").GetComponent<EndGame>();
 		edge = GetComponent<EdgeDetection>();
 		easyMode = false;
 		clickable = GameObject.Find("click-toy");
@@ -288,17 +290,21 @@ public class Sacrifice : MonoBehaviour {
 				//audio.PlayOneShot(screams[Random.Range(0, screams.Length)]);
 				int rando = (int)Random.Range(0, rumbleSound.Length);
 				if (cps > 2.5f) audio.Stop();
-				audio.PlayOneShot(rumbleSound[rando]);
+				audio.PlayOneShot(rumbleSound[rando], 1f);
 				//sacCount++;
 				//}
 				GetComponent<BloodMeter>().updateMood();
 				GetComponent<BloodMeter>().bloodAmt += (MasterWaypointer.vic.GetComponent<MultiSac>().multiplier * GetComponent<BloodMeter>().sacBloodValue);
+
+				
+				if (GetComponent<BloodMeter>().sacBloodValue > 0f) audio.PlayOneShot(goodSacClip, 0.65f * MasterWaypointer.vic.GetComponent<Mood>().mood);
 				if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) {
-					audio.PlayOneShot(badSacClip, 0.65f); GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, -0.5f));
-					} else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) {
-						audio.PlayOneShot(goodSacClip, 0.65f);
-			GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, 0.5f * GetComponent<BloodMeter>().sacBloodValue));
-					}
+					//audio.PlayOneShot(badSacClip, 0.65f); 
+					GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, -0.5f));
+				} else if (GetComponent<BloodMeter>().sacBloodValue > 0.25f) {
+
+					GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, 0.5f * GetComponent<BloodMeter>().sacBloodValue));
+				}
 
 				int multi = (int)MasterWaypointer.vic.GetComponent<MultiSac>().multiplier;
 				sacCount += multi;
@@ -369,7 +375,7 @@ public class Sacrifice : MonoBehaviour {
 		if (failedTime + restartTime < Time.time){
 			//if (easyMode){
 			//	easyMode = false;
-				GameObject.Find("GameOverPanel").GetComponent<EndGame>().enabled = true;
+			endPanel.enabled = true;
 			//}
 			//failObj.GetComponent<Text>().text = failMsg;
 

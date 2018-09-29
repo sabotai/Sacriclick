@@ -41,7 +41,15 @@ public class EndGame : MonoBehaviour {
 			//fade in quote half way through sequence
 			if (defocusAmt > defocusCap/2f)	quote.color = new Color(1f, 1f, 1f, quote.color.a + (Time.deltaTime/2));
 			//endState = 2;
-
+			if (Input.anyKey)	{
+				PlayerPrefs.SetInt("init", 1);
+				sac.easyMode = false;
+				GameState.state = 1;
+				endState = 0;
+				//if (scoreCount > HighScore.minGodsAccess * 2) SceneManager.LoadScene(1);
+				//else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+				SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+			}
 		} else if (endState == 2) {
 			instruct.enabled = true;
 			//instruct.color = new Color(instruct.color.r, instruct.color.g, instruct.color.b, instruct.color.a + (Time.deltaTime));

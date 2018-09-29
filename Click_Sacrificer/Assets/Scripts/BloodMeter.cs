@@ -135,6 +135,8 @@ public class BloodMeter : MonoBehaviour {
 			//	int leader = victims.transform.childCount - 1 - GetComponent<Sacrifice>().sacCount;
 			int leader = 0 - GetComponent<Sacrifice>().sacCount;
 			if (leader < 0) leader = 0;
+			GameObject mdObj = victims.transform.GetChild(leader).gameObject;
+			if (mdObj.GetComponent<Mood>() != null)
 			sacBloodValue = origSacBloodValue * victims.transform.GetChild(leader).gameObject.GetComponent<Mood>().mood * Mathf.Max(1f, victims.transform.GetChild(leader).gameObject.GetComponent<MultiSac>().multiplier / 3f);
 			//Debug.Log("currentSacBloodValue = " + sacBloodValue);
 		}

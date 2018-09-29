@@ -15,6 +15,8 @@ public class Mood : MonoBehaviour {
 	public float diffProgression = 0.01f;
 	public int initialFreebies = 15;
 	public GameObject influenceSphere;
+	public GameObject notifPrefab;
+	public float moodLevel = 0f;
 
 	void Awake(){
 
@@ -49,7 +51,9 @@ public class Mood : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		if (mood < moodFailThresh * 1f) moodLevel = 5f; //worst level - !!!
+		else if (mood < moodFailThresh / 1.5f) moodLevel = 2f; //second worst - !!
+		else if (mood < moodFailThresh / 2f) moodLevel = 1f; //second worst - !!
 
 		if (moodShiftThresh < Mathf.Abs(moodDir)){
 			mood += moodDir * moodSpeedMult * Time.deltaTime;
@@ -94,6 +98,13 @@ public class Mood : MonoBehaviour {
 				mood = (mood * 99f + infMood.mood)/100f;
 			}
 		}
+	}
+
+	public void shiftMood(float amt){
+		mood += amt;
+		GameObject moodNotif = Instantiate(notifPrefab, transform);
+		moodNotif.GetComponent<MoodNotification>().moodMod = amt;
+		moodNotif.GetComponent<MoodNotification>().enabled = true;
 	}
 
 }

@@ -47,6 +47,13 @@ public class CraneGame : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if (beginCraneGame){
+
+			//debug helper
+			if (Input.GetKeyDown(KeyCode.F12) && Input.GetKey(KeyCode.F10)){
+
+			CraneGame.beginCraneGame = false;
+			 StartCoroutine(Camera.main.gameObject.GetComponent<CraneGame>().winCraneGame(20));
+				}
 			Camera.main.allowHDR = false;
 
 			if (!craneParent.active){
@@ -194,6 +201,7 @@ public class CraneGame : MonoBehaviour {
 
 		}
 		Camera.main.gameObject.GetComponent<Sacrifice>().easyMode = false;
+		diffManager.GetComponent<MasterWaypointer>().boostAll = true;
 
 		yield return null;
 	}
