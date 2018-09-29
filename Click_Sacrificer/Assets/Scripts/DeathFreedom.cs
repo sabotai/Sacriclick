@@ -19,6 +19,11 @@ public class DeathFreedom : MonoBehaviour {
 				gameObject.AddComponent<Rigidbody>();
 				gameObject.GetComponent<CapsuleCollider>().enabled = true;
 			}
+		} else {
+			Invoke("disable", 8f);
 		}
+	}
+	void disable(){
+		gameObject.SetActive(false);
 	}
 }

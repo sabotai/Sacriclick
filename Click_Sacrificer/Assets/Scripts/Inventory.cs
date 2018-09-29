@@ -20,8 +20,8 @@ public class Inventory : MonoBehaviour {
 	public AudioClip timerSnd;
 	public AudioClip campaignSnd;
 	public bool failed = false;
-	public GameObject[] storeItems = new GameObject[3];
-	public int[] storeCosts = new int[3];
+	public GameObject[] storeItems = new GameObject[4];
+	public int[] storeCosts = new int[4];
 	public int storeEntryMin = 100;
 	public Transform vicParent;
 	public GameObject storeParent;
@@ -119,6 +119,9 @@ public class Inventory : MonoBehaviour {
 			case 2:
 				createCampaign();
 				break;
+			case 3:
+				createInfluencer();
+				break;
 			}
 	}
 	public void createCampaign(){
@@ -158,6 +161,11 @@ public class Inventory : MonoBehaviour {
 
 	}
 
+	public void createInfluencer(){
+
+		GameObject lastChild = vicParent.GetChild(vicParent.childCount - 1).GetChild(3).gameObject;
+		if (lastChild.name == "InfluenceSphere") lastChild.SetActive(true);
+	}
 
 	public void createAuto(){
 		//bloodAmt -= (bloodJarAmt * jarEfficiency);

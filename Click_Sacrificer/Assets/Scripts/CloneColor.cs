@@ -8,7 +8,7 @@ public class CloneColor : MonoBehaviour {
 	public bool setEmission = true;
 	public bool setTint = false;
 	public bool customA = false;
-	public float aAmount = 0.25f;
+	float aAmount = 0.05f;
 
 	// Use this for initialization
 	void Start () {

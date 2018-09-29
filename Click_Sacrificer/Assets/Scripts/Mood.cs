@@ -42,7 +42,7 @@ public class Mood : MonoBehaviour {
 			mood = 0.99f;//go easy on them for the first few
 			moodDir = 1f;
 		}
-
+		if (influenceSphere == null) influenceSphere = transform.GetChild(3).gameObject;
 		//Debug.Log(this.transform.GetSiblingIndex() + ". " + mood + " w/dir of: " + moodDir);
 		
 	}

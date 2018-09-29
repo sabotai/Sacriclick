@@ -105,6 +105,7 @@ public class MasterWaypointer : MonoBehaviour {
 			}
 			if (releaseVics){
 				//hide the labels
+				//Debug.Log("releasing vics...");
 				failed = true;
 				GameObject[] labels = GameObject.FindGameObjectsWithTag("label");
 
@@ -294,6 +295,9 @@ public class MasterWaypointer : MonoBehaviour {
 		releaseMe.GetComponent<Rigidbody>().freezeRotation = false;
 		releaseMe.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 		releaseMe.GetComponent<MeshRenderer> ().material.color = Color.red;
+		
+		//destroy mood to release multiples
+		Destroy(releaseMe.GetComponent<Mood>());
 
 
 		if (!failed){ //only complete death if not failed
