@@ -13,6 +13,7 @@ public class GameState : MonoBehaviour {
 	bool paused = false;
 	public GameObject pauseObj;
 	public GameObject[] pauseOptionsObj;
+	public GameObject[] hideDuringPauseObj;
 	public GameObject tipPanel;
 	int prevState;
 	PostProcessVolume m_Volume;
@@ -116,17 +117,27 @@ public class GameState : MonoBehaviour {
 		Defocus(50f);
 		pauseObj.SetActive(true);
 		tipObj.SetActive(false);
+		for (int i = 0; i < hideDuringPauseObj.Length; i++){
+			hideDuringPauseObj[i].SetActive(false);
+		}
+
+		RenderSettings.fog = false;
 		prevState = state;
 	}
 	public void Resume(){
 		paused = false;
 		pauseObj.SetActive(false);
+		RenderSettings.fog = true;
 		dof.enabled.value = false;
 
 		pauseOptionsObj[0].SetActive(true);
 		for (int i = 1; i < pauseOptionsObj.Length; i++){
 			pauseOptionsObj[i].SetActive(false);
 		}
+		for (int i = 0; i < hideDuringPauseObj.Length; i++){
+			hideDuringPauseObj[i].SetActive(true);
+		}
+
 
 		//tipObj.SetActive(true);
 		state = prevState;
