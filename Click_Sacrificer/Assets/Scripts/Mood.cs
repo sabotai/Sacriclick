@@ -51,9 +51,10 @@ public class Mood : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (mood < moodFailThresh * 1f) moodLevel = 5f; //worst level - !!!
-		else if (mood < moodFailThresh / 1.5f) moodLevel = 2f; //second worst - !!
-		else if (mood < moodFailThresh / 2f) moodLevel = 1f; //second worst - !!
+		if (mood < moodFailThresh) moodLevel = 5f; //worst level - !!!
+		else if (mood < moodFailThresh / 2f) moodLevel = 2f; //second worst - !!
+		else if (mood < moodFailThresh / 3f) moodLevel = 1f; //second worst - !!
+		else moodLevel = 0f;
 
 		if (moodShiftThresh < Mathf.Abs(moodDir)){
 			mood += moodDir * moodSpeedMult * Time.deltaTime;
@@ -68,7 +69,7 @@ public class Mood : MonoBehaviour {
 	}
 
 
-	float neighborMood(){
+	public float neighborMood(){
 		Transform victimParent;
 		int sibIndex = this.transform.GetSiblingIndex();
 		float neighborMoodAvg = 0f;

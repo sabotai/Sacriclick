@@ -229,7 +229,7 @@ public class MasterWaypointer : MonoBehaviour {
 					if (myDeathMood < 0f){
 						for (int z = 0; z < chainLength; z++){
 							if (myMoodLvl > 0){
-								float affectLvl = myMoodLvl * ((chainLength - (float)z) / chainLength) * - chainIncrements;
+								float affectLvl = movables[z].GetComponent<MultiSac>().multiplier * myMoodLvl * ((chainLength - (float)z) / chainLength) * - chainIncrements;
 		     					StartCoroutine(callMoodShift(z, affectLvl, z));
 		     				}
 							//Invoke("callMoodShift(movables[i])", i);
@@ -240,7 +240,7 @@ public class MasterWaypointer : MonoBehaviour {
 						//bonus for good sacs
 
 						for (int z = 0; z < chainLength/4; z++){
-							float affectLvl = ((chainLength - (float)z) / chainLength) * (0.5f * chainIncrements);
+							float affectLvl = movables[z].GetComponent<MultiSac>().multiplier *  ((chainLength - (float)z) / chainLength) * (0.5f * chainIncrements);
 	     					StartCoroutine(callMoodShift(z, affectLvl, z));
 							//Invoke("callMoodShift(movables[i])", i);
 							//movables[i].GetComponent<Mood>().shiftMood(-0.3f * movables[i].GetComponent<Mood>().moodLevel); //affect neighbors in queue
