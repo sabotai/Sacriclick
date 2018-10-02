@@ -10,7 +10,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public GameObject sacrificer;
 	public static GameObject vic;
 	public bool vicReady = true;
-	public GameObject prefab, dblPrefab, triplePrefab, quintPrefab, sexPrefab;
+	public GameObject prefab, dblPrefab, triplePrefab, quintPrefab, sexPrefab, tenPrefab;
 	public Transform macuahuitl;
 	public Vector3 spawnRotation = new Vector3(-90, 0, 180);
 	public float waySpeed = 5f;
@@ -36,6 +36,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public int tripleThresh = 200;
 	public int quintThresh = 300;
 	public int sexThresh = 400;
+	public int tenThresh = 1000;
 	public int chainLength = 15;
 	public float chainIncrements = 0.3f;
 	public bool boostAll = false;
@@ -304,6 +305,7 @@ public class MasterWaypointer : MonoBehaviour {
 		else if (myNewNumber >= tripleThresh && rando < 60) spawnPrefab = triplePrefab;
 		else if (myNewNumber >= quintThresh && rando < 70) spawnPrefab = quintPrefab;
 		else if (myNewNumber >= sexThresh && rando < 90) spawnPrefab = sexPrefab;
+		else if (myNewNumber >= tenThresh) spawnPrefab = tenPrefab;
 		GameObject newVic = Instantiate(spawnPrefab, point, Quaternion.Euler(spawnRotation));
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);
