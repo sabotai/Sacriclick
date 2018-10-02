@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Intro : MonoBehaviour {
 	public GameObject introObj;
+	public GameObject[] introHide;
 	public GameObject bloodMeter;
 	public GameObject helpObj;
 	public GameObject tipPanel;
@@ -21,6 +22,10 @@ public class Intro : MonoBehaviour {
 			GameObject.Find("Main Camera").GetComponent<CameraMove>().enabled = true;
 		} else {
 			introObj.SetActive(true);
+			for (int i = 0; i < introHide.Length; i++){
+
+			introHide[i].SetActive(false);
+			}
 		}
 
 	}
