@@ -97,19 +97,19 @@ public class ConsentMeter : MonoBehaviour {
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
-				dirLabel.GetComponent<TextMesh>().fontSize = 180;
+				dirLabel.GetComponent<TextMesh>().fontSize = 150;
 				dirLabel.GetComponent<TextMesh>().text = "!!!";
 			} else if (moodLvl == 2f){
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
-				dirLabel.GetComponent<TextMesh>().fontSize = 180;
+				dirLabel.GetComponent<TextMesh>().fontSize = 130;
 				dirLabel.GetComponent<TextMesh>().text = "!!";
 			} else if (moodLvl == 1f){
 
 				dirLabel.SetActive(true);
 				dirLabel.GetComponent<TextMesh>().color = nonconsentColor;
-				dirLabel.GetComponent<TextMesh>().fontSize = 180;
+				dirLabel.GetComponent<TextMesh>().fontSize = 100;
 				dirLabel.GetComponent<TextMesh>().text = "!";
 			}
 		} else {

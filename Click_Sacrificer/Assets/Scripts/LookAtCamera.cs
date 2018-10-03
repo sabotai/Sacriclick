@@ -12,7 +12,7 @@ public class LookAtCamera : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		if (lookHere == null) lookHere = Camera.main.transform;
-		if (lockReadyVics) lookPip = GameObject.Find("PiP Camera").transform;
+		if (lockReadyVics && GameObject.Find("PiP Camera")) lookPip = GameObject.Find("PiP Camera").transform;
 	}
 	
 	// Update is called once per frame
