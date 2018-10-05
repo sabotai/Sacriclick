@@ -8,6 +8,7 @@ using UnityStandardAssets.ImageEffects;
 public class Sacrifice : MonoBehaviour {
 
 	public GameObject headPrefab;
+	public ParticleSystem[] dustEmitters;
 	public GameObject clickable;
 	public GameObject sword;
 	Vector3 swordOrigScale;
@@ -314,7 +315,10 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.text = " " + scoreCount;//Sacrifices";
 				advance = true;
 				if (diffManager.GetComponent<MasterWaypointer>() != null) {
+					//Debug.Log("quality = " + QualitySettings.GetQualityLevel());
 					GameObject heart = Instantiate(headPrefab, diffManager.GetComponent<MasterWaypointer>().movables[0].transform.position, Quaternion.identity) as GameObject;
+					
+					//blood system
 					var main = heart.GetComponent<ParticleSystem>().main;
 					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 50f);
 					if (maxx < 50) maxx /= 2;
@@ -324,6 +328,14 @@ public class Sacrifice : MonoBehaviour {
 					main.startSize = 3f * ((float)maxx / 50f);
 					var emission = heart.GetComponent<ParticleSystem>().emission;
 					emission.rate = 13f * ((float)maxx / 50f);
+
+					//dust system
+					if (QualitySettings.GetQualityLevel() > 4) {
+						foreach(ParticleSystem dusty in dustEmitters){
+							dusty.Play();
+						}
+					}
+
 					diffManager.GetComponent<MasterWaypointer>().SacrificeVic();
 				} else {
 					Instantiate(headPrefab, objHit.transform.position + bloodOffset, Quaternion.identity);
