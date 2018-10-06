@@ -40,6 +40,9 @@ public class MasterWaypointer : MonoBehaviour {
 	public int chainLength = 15;
 	public float chainIncrements = 0.3f;
 	public bool boostAll = false;
+	public bool cleanDeath = true;
+	public GameObject[] cleanRemains;
+	Transform trashCan;
 
 	public GameObject bloodEffect, fireEffect;
 	public Transform sacrificeSpot;
@@ -83,6 +86,7 @@ public class MasterWaypointer : MonoBehaviour {
 		// print("AudioClips " + Resources.FindObjectsOfTypeAll(typeof(AudioClip)).Length);
 		//audio = GetComponent<AudioSource>();
 		//myClip = (AudioClip)neuScreams[Random.Range(0, neuScreams.Length)];
+		trashCan = GameObject.Find("trashBin").transform;
 	}
 	
 	// Update is called once per frame
@@ -329,39 +333,54 @@ public class MasterWaypointer : MonoBehaviour {
 	}
 
 	void ReleaseVic(GameObject releaseMe){ 
+		if (cleanDeath){
+			for (int i = 0; i < cleanRemains.Length; i++){
+				GameObject remain = Instantiate(cleanRemains[i], releaseMe.transform);
+				remain.transform.parent = trashCan;
+				remain.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 
-		releaseMe.GetComponent<Rigidbody>().freezeRotation = false;
-		releaseMe.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
-		releaseMe.GetComponent<MeshRenderer> ().material.color = Color.red;
-		releaseMe.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
-		releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
-		
-		//destroy mood to release multiples
-		Destroy(releaseMe.GetComponent<Mood>());
+				remain.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
 
-
-		if (!failed){ //only complete death if not failed
-			releaseMe.layer = LayerMask.NameToLayer("Ignore Raycast");
-			//defreeze statue body to break into pieces
-			if (releaseMe.transform.GetChild(2) != null){
-				Destroy(releaseMe.transform.GetChild(2).gameObject);
+				remain.layer = LayerMask.NameToLayer("Ignore Raycast");
+				releaseMe.transform.parent = trashCan;
+				releaseMe.SetActive(false);
+				//Destroy(releaseMe);
 			}
-			if (releaseMe.transform.GetChild(1) != null){
-				Destroy(releaseMe.transform.GetChild(1).gameObject);
-			}
-			if (releaseMe.transform.GetChild(0) != null){
-				releaseMe.transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
-				releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
-				releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-				releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().isKinematic = false;
-				releaseMe.transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-				releaseMe.transform.GetChild(0).parent = GameObject.Find("trashBin").transform;
-			}
+		} else {
 
-			releaseMe.transform.parent = GameObject.Find("trashBin").transform;
-			Destroy(releaseMe.GetComponent<Pathfinder>());
+			releaseMe.GetComponent<Rigidbody>().freezeRotation = false;
+			releaseMe.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
+			releaseMe.GetComponent<MeshRenderer> ().material.color = Color.red;
+			releaseMe.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
+			releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
+			
+			//destroy mood to release multiples
 			Destroy(releaseMe.GetComponent<Mood>());
-			Destroy(releaseMe.GetComponent<CheckSwordHover>());
+
+
+			if (!failed){ //only complete death if not failed
+				releaseMe.layer = LayerMask.NameToLayer("Ignore Raycast");
+				//defreeze statue body to break into pieces
+				if (releaseMe.transform.GetChild(2) != null){
+					Destroy(releaseMe.transform.GetChild(2).gameObject);
+				}
+				if (releaseMe.transform.GetChild(1) != null){
+					Destroy(releaseMe.transform.GetChild(1).gameObject);
+				}
+				if (releaseMe.transform.GetChild(0) != null){
+					releaseMe.transform.GetChild(0).gameObject.GetComponent<CapsuleCollider> ().isTrigger = false;
+					releaseMe.transform.GetChild(0).gameObject.GetComponent<MeshRenderer> ().material.color = Color.red;
+					releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+					releaseMe.transform.GetChild(0).gameObject.GetComponent<Rigidbody>().isKinematic = false;
+					releaseMe.transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+					releaseMe.transform.GetChild(0).parent = trashCan;
+				}
+
+				releaseMe.transform.parent = trashCan;
+				Destroy(releaseMe.GetComponent<Pathfinder>());
+				Destroy(releaseMe.GetComponent<Mood>());
+				Destroy(releaseMe.GetComponent<CheckSwordHover>());
+			}
 		}
 	}
 
