@@ -11,6 +11,9 @@ public class UIRelease : MonoBehaviour {
 	public ParticleSystem bloodSys;
 	GameObject diffMan;
 	public bool resume = false;
+	public bool quit = false;
+	public bool restart = false;
+	public bool openLink = false;
 	public AudioClip clip, clip2;
 	public GameObject[] deathComponents;
 	public float timeOut = 0f;
@@ -53,7 +56,7 @@ public class UIRelease : MonoBehaviour {
 		target.GetComponent<Rigidbody>().freezeRotation = false;
 		target.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;		
 
-		if (target.GetComponent<UIRelease>().resume) {
+		if (target.GetComponent<UIRelease>().resume || target.GetComponent<UIRelease>().restart || target.GetComponent<UIRelease>().quit) {
 			target.GetComponent<MeshRenderer>().enabled = false;
 			target.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().enabled = false;
 			Destroy(target.GetComponent<CapsuleCollider>());
@@ -103,12 +106,17 @@ public class UIRelease : MonoBehaviour {
 			gameObject.SetActive(false);
 			if (resume){
 				diffMan.GetComponent<GameState>().Resume();
+			} else if (restart){
+				diffMan.GetComponent<GameState>().RestartGame();
+			} else if (quit){
+				diffMan.GetComponent<GameState>().QuitGame();
+				if (openLink) diffMan.GetComponent<OpenHyperlink>().OpenLink();
 			} else {
 
-			if (Camera.main.GetComponent<AudioSource>()) {
-				Camera.main.GetComponent<AudioSource>().PlayOneShot(clip);
-				Camera.main.GetComponent<AudioSource>().PlayOneShot(clip2);
-			}
+				if (Camera.main.GetComponent<AudioSource>()) {
+					Camera.main.GetComponent<AudioSource>().PlayOneShot(clip);
+					Camera.main.GetComponent<AudioSource>().PlayOneShot(clip2);
+				}
 			}
 	}
 }

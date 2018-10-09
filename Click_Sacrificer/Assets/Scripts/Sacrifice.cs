@@ -59,6 +59,8 @@ public class Sacrifice : MonoBehaviour {
 	public Transform[] failDisable;
 	EndGame endPanel;
 
+	GameObject[] templePieces;
+
 	void Awake(){
 		sacCount = 0;
 		scoreCount = 0;
@@ -86,6 +88,8 @@ public class Sacrifice : MonoBehaviour {
 		cpsDisplay.text = cpm/60 + " /second";
 		failObj = GameObject.Find("GameOver");
 		failObj.GetComponent<Text>().text = "";
+
+		templePieces = GameObject.FindGameObjectsWithTag("particletrigger");
 
 		int cpsSampleNum = 60; //based on 60fps
 		cpsSamples = new float[cpsSampleNum];
@@ -322,15 +326,17 @@ public class Sacrifice : MonoBehaviour {
 					var main = heart.GetComponent<ParticleSystem>().main;
 					int maxx = (int)(GetComponent<BloodMeter>().sacBloodValue * 50f);
 					if (maxx < 50) maxx /= 2;
-					if (maxx < 20) maxx = 0;
-					//Debug.Log("maxx = " + maxx);
-					main.maxParticles = maxx;
-					main.startSize = 3f * ((float)maxx / 50f);
-					var emission = heart.GetComponent<ParticleSystem>().emission;
-					emission.rate = 13f * ((float)maxx / 50f);
+					//if (maxx < 20) maxx = 0;
 
-					//dust system
-					if (QualitySettings.GetQualityLevel() > 4) {
+					if (maxx > 20){
+					//Debug.Log("maxx = " + maxx);
+						main.maxParticles = maxx;
+						main.startSize = 3f * ((float)maxx / 50f);
+						var emission = heart.GetComponent<ParticleSystem>().emission;
+						emission.rate = 13f * ((float)maxx / 50f);
+					} else if (QualitySettings.GetQualityLevel() > 4) { //play dust instead
+
+						main.maxParticles = 0;
 						foreach(ParticleSystem dusty in dustEmitters){
 							dusty.Play();
 						}
@@ -371,7 +377,6 @@ public class Sacrifice : MonoBehaviour {
 
 			StartCoroutine(Shake.ShakeThis(Camera.main.transform, restartTime / 10f, 0.5f));
 
-			GameObject[] templePieces = GameObject.FindGameObjectsWithTag("particletrigger");
 			foreach(GameObject temp in templePieces){
 				if (temp.GetComponent<ParticleSystem>() != null) temp.GetComponent<ParticleSystem>().Play();
 				if (temp.GetComponents<BoxCollider>() != null)	{

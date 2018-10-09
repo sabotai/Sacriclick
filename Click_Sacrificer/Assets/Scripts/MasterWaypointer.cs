@@ -10,7 +10,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public GameObject sacrificer;
 	public static GameObject vic;
 	public bool vicReady = true;
-	public GameObject prefab, dblPrefab, triplePrefab, quintPrefab, sexPrefab, tenPrefab;
+	public GameObject prefab, dblPrefab, triplePrefab, quintPrefab, sexPrefab, tenPrefab, fiftyPrefab;
 	public Transform macuahuitl;
 	public Vector3 spawnRotation = new Vector3(-90, 0, 180);
 	public float waySpeed = 5f;
@@ -37,6 +37,7 @@ public class MasterWaypointer : MonoBehaviour {
 	public int quintThresh = 300;
 	public int sexThresh = 400;
 	public int tenThresh = 1000;
+	public int fiftyThresh = 1200;
 	public int chainLength = 15;
 	public float chainIncrements = 0.3f;
 	public bool boostAll = false;
@@ -123,7 +124,12 @@ public class MasterWaypointer : MonoBehaviour {
 
 				//UpdateOrder();
 				for (int i  = 0; i < movables.Length; i++){
-					ReleaseVic(movables[i]);			
+					//randomize so some roll around and some break up
+					if (i % 3 == 0) cleanDeath = !cleanDeath;
+					if (i == 0) cleanDeath = false;
+
+					//cleanDeath = false; //roll around
+					if (movables[i] != null) ReleaseVic(movables[i]);			
 				}
 			}
 		}
@@ -309,7 +315,8 @@ public class MasterWaypointer : MonoBehaviour {
 		else if (myNewNumber >= tripleThresh && rando < 60) spawnPrefab = triplePrefab;
 		else if (myNewNumber >= quintThresh && rando < 70) spawnPrefab = quintPrefab;
 		else if (myNewNumber >= sexThresh && rando < 90) spawnPrefab = sexPrefab;
-		else if (myNewNumber >= tenThresh) spawnPrefab = tenPrefab;
+		else if (myNewNumber >= tenThresh && rando < 99) spawnPrefab = tenPrefab;
+		else if (myNewNumber >= fiftyThresh) spawnPrefab = fiftyPrefab;
 		GameObject newVic = Instantiate(spawnPrefab, point, Quaternion.Euler(spawnRotation));
 		//Debug.Log("instantiating #" + myNewNumber);
 		newVic.name = "VicClone " + (myNewNumber);
@@ -334,17 +341,19 @@ public class MasterWaypointer : MonoBehaviour {
 
 	void ReleaseVic(GameObject releaseMe){ 
 		if (cleanDeath){
-			for (int i = 0; i < cleanRemains.Length; i++){
-				GameObject remain = Instantiate(cleanRemains[i], releaseMe.transform);
-				remain.transform.parent = trashCan;
-				remain.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
+			if (releaseMe){
+				for (int i = 0; i < cleanRemains.Length; i++){
+					GameObject remain = Instantiate(cleanRemains[i], releaseMe.transform);
+					remain.transform.parent = trashCan;
+					remain.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 
-				remain.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
+					remain.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
 
-				remain.layer = LayerMask.NameToLayer("Ignore Raycast");
-				releaseMe.transform.parent = trashCan;
-				releaseMe.SetActive(false);
-				//Destroy(releaseMe);
+					remain.layer = LayerMask.NameToLayer("Ignore Raycast");
+					releaseMe.transform.parent = trashCan;
+					//releaseMe.SetActive(false);
+					Destroy(releaseMe);
+				}
 			}
 		} else {
 
