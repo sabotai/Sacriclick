@@ -58,6 +58,32 @@ public class Inventory : MonoBehaviour {
 			//if (bloodJarNumber > 0) storeItems[0].SetActive(true);
 			//if (autosacNumber > 0) storeItems[1].SetActive(true);
 		}
+
+		//replace with new item if reached limit
+		if (bloodJarNumber >= itemLimit){
+			storeItems[0].transform.GetChild(0).gameObject.SetActive(false);
+			if (autosacNumber >= itemLimit){ //replace with campaign
+				storeItems[0].transform.GetChild(1).gameObject.SetActive(false);
+
+				storeItems[0].transform.GetChild(2).gameObject.SetActive(true);
+
+			} else { //replace with macahuitl
+				storeItems[0].transform.GetChild(2).gameObject.SetActive(false);
+				storeItems[0].transform.GetChild(1).gameObject.SetActive(true);
+
+			}
+		} else {
+			storeItems[0].transform.GetChild(0).gameObject.SetActive(true);
+			storeItems[0].transform.GetChild(1).gameObject.SetActive(false);
+			storeItems[0].transform.GetChild(2).gameObject.SetActive(false);
+		}
+		if (autosacNumber >= itemLimit){
+			storeItems[1].transform.GetChild(0).gameObject.SetActive(false);
+			storeItems[1].transform.GetChild(1).gameObject.SetActive(true);
+		} else {
+			storeItems[1].transform.GetChild(0).gameObject.SetActive(true);
+			storeItems[1].transform.GetChild(1).gameObject.SetActive(false);
+		}
 	}
 
 
@@ -159,7 +185,12 @@ public class Inventory : MonoBehaviour {
 		} else {
 			Debug.Log("blood overflow autosac being created...");
 			//create auto clicker?
-			if (autosacNumber < itemLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
+			//if (autosacNumber < itemLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
+			if (autosacNumber < itemLimit) {
+				createAuto();
+				} else {
+					createCampaign();
+				}
 
 		}
 

@@ -343,17 +343,19 @@ public class MasterWaypointer : MonoBehaviour {
 		if (cleanDeath){
 			if (releaseMe){
 				for (int i = 0; i < cleanRemains.Length; i++){
-					GameObject remain = Instantiate(cleanRemains[i], releaseMe.transform);
-					remain.transform.parent = trashCan;
-					remain.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
+					for (int j = 0; j < releaseMe.GetComponent<MultiSac>().multiplier; j++){
+						GameObject remain = Instantiate(cleanRemains[i], releaseMe.transform);
+						remain.transform.parent = trashCan;
+						remain.GetComponent<Rigidbody>().AddForce(Random.insideUnitSphere * 1000f);
 
-					remain.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
+						remain.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", ColorblindMode.cbRed);
 
-					remain.layer = LayerMask.NameToLayer("Ignore Raycast");
-					releaseMe.transform.parent = trashCan;
-					//releaseMe.SetActive(false);
-					Destroy(releaseMe);
+						remain.layer = LayerMask.NameToLayer("Ignore Raycast");
+					}	
 				}
+				releaseMe.transform.parent = trashCan;
+				//releaseMe.SetActive(false);
+				Destroy(releaseMe);
 			}
 		} else {
 
