@@ -19,6 +19,8 @@ public class Inventory : MonoBehaviour {
 	public AudioClip shatterSnd;
 	public AudioClip timerSnd;
 	public AudioClip campaignSnd;
+	public AudioClip influencerSnd;
+	public AudioClip bankruptSnd;
 	public bool failed = false;
 	public GameObject[] storeItems = new GameObject[4];
 	public int[] storeCosts = new int[4];
@@ -50,7 +52,7 @@ public class Inventory : MonoBehaviour {
 		//show them after the player has earned enough
 		if (!storeItems[storeItems.Length - 1].activeSelf){
 			for (int i = 0; i < storeItems.Length; i++){
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[i] + storeEntryMin)){
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[i] * storeEntryMin)){
 					storeItems[i].SetActive(true);
 				}
 			}
@@ -60,11 +62,11 @@ public class Inventory : MonoBehaviour {
 		}
 
 		//replace with new item if reached limit
-		if (bloodJarNumber >= itemLimit){
+		if (bloodJarNumber >= itemLimit && GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin){
 			storeItems[0].transform.GetChild(0).gameObject.SetActive(false);
-			if (autosacNumber >= itemLimit){ //replace with campaign
-				storeItems[0].transform.GetChild(1).gameObject.SetActive(false);
 
+			if (autosacNumber >= itemLimit && GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin){ //replace with influencer
+				storeItems[0].transform.GetChild(1).gameObject.SetActive(false);
 				storeItems[0].transform.GetChild(2).gameObject.SetActive(true);
 
 			} else { //replace with macahuitl
@@ -72,12 +74,14 @@ public class Inventory : MonoBehaviour {
 				storeItems[0].transform.GetChild(1).gameObject.SetActive(true);
 
 			}
-		} else {
+		} else { //no upgrade available
 			storeItems[0].transform.GetChild(0).gameObject.SetActive(true);
 			storeItems[0].transform.GetChild(1).gameObject.SetActive(false);
 			storeItems[0].transform.GetChild(2).gameObject.SetActive(false);
 		}
-		if (autosacNumber >= itemLimit){
+
+		
+		if (autosacNumber >= itemLimit && GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin){
 			storeItems[1].transform.GetChild(0).gameObject.SetActive(false);
 			storeItems[1].transform.GetChild(1).gameObject.SetActive(true);
 		} else {
@@ -127,7 +131,11 @@ public class Inventory : MonoBehaviour {
 					GetComponent<Sacrifice>().expenses += cost;
 					createItem(i, true);
 				} else {
-					failed = true;
+					//failed = true;
+					audsrc.Stop();
+					audsrc.clip = bankruptSnd;
+					audsrc.Play();
+
 				}
 			}
 		}
@@ -143,10 +151,10 @@ public class Inventory : MonoBehaviour {
 				createAuto();
 				break;
 			case 2:
-				createCampaign();
+				createInfluencer();
 				break;
 			case 3:
-				createInfluencer();
+				createCampaign();
 				break;
 			}
 	}
@@ -187,9 +195,11 @@ public class Inventory : MonoBehaviour {
 			//create auto clicker?
 			//if (autosacNumber < itemLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
 			if (autosacNumber < itemLimit) {
-				createAuto();
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin))
+					createAuto();
 				} else {
-					createCampaign();
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin))
+					createInfluencer();
 				}
 
 		}
@@ -197,6 +207,9 @@ public class Inventory : MonoBehaviour {
 	}
 
 	public void createInfluencer(){
+		audsrc.Stop();
+		audsrc.clip = influencerSnd;
+		audsrc.Play();
 
 		GameObject lastChild = vicParent.GetChild(vicParent.childCount - 1).GetChild(3).gameObject;
 		if (lastChild.name == "InfluenceSphere") lastChild.SetActive(true);
@@ -224,7 +237,8 @@ public class Inventory : MonoBehaviour {
 			newAutosac.transform.position = autoSpwn;
 			//Debug.Log("spawn auto... " + );
 		} else {
-			createCampaign();
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin))
+			createInfluencer();
 		}
 
 	}
