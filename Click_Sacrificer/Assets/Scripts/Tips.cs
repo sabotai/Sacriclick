@@ -5,6 +5,12 @@ using UnityEngine.UI;
 
 public class Tips : MonoBehaviour
 {
+	public int numColumns = 10;
+	public int bloodTipNum = 0;
+	public int storeTipNum = 0;
+	public int brokerTipNum = 0;
+	public int clawTipNum = 0;
+
 	[TextArea]
 	public string[] bloodTips;
 	[TextArea]
@@ -34,9 +40,25 @@ public class Tips : MonoBehaviour
 	int pState;
 	public Color returnGameColor;
 
+	public string language = "English";
+	public TextAsset csvFile; // Reference of CSV file
+	//public InputField rollNoInputField;// Reference of rollno input field
+	//public InputField nameInputField; // Reference of name input filed
+	//public Text contentArea; // Reference of contentArea where records are displayed
+	 
+	private char lineSeperater = '\n'; // It defines line seperate character
+	private char fieldSeperator = ';'; // It defines field seperate chracter
+	public string[,] data;
+
 	// Use this for initialization
 	void Start ()
 	{
+		bloodTips = new string[numColumns];
+		storeTips = new string[numColumns];
+		brokerTips = new string[numColumns];
+		clawTips = new string[numColumns];
+		readData();
+
 		currentClawTip = 0;
 		currentBrokerTip = 0;
 		currentBloodTip = 0;
@@ -52,10 +74,13 @@ public class Tips : MonoBehaviour
 		if (tipPanel == null)
 			tipPanel = GameObject.Find ("TipPanel");
 
+     
+/*
 		bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
 		brokerTipObj.GetComponent<Text> ().text = brokerTips [currentBrokerTip];
 		clawTipObj.GetComponent<Text> ().text = clawTips [currentClawTip];
 		storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
+*/
 		//dispBloodTip = true;
 		//dispClawTip = true;
 		//dispBrokerTip = true;
@@ -66,10 +91,75 @@ public class Tips : MonoBehaviour
 		}
 		storeMinimum = Camera.main.GetComponent<Inventory>().storeCosts[0] + Camera.main.GetComponent<Inventory>().storeEntryMin;
 	}
-	
+
+	private void readData()	{
+		string[] lines = csvFile.text.Split (lineSeperater);
+		Debug.Log("# lines = " + lines.Length);
+
+		data = new string[lines.Length,10];
+		for (int i = 0; i < lines.Length; i++){
+			string[] fields = lines[i].Split(fieldSeperator);
+			for (int j = 0; j < fields.Length-2; j++){
+
+				data[i,j] = fields[j]; //storing all our lines and fields in data
+
+				if (fields[0] == language){
+					if (fields[1] == "HowTo_Blood"){
+						bloodTips[j] = fields[j+2];
+						Debug.Log("field =" + bloodTips[j] + "; length =" + bloodTips[j].Length + ";");
+						if (bloodTips[j].Length <= 1 && bloodTipNum == 0) {
+							bloodTipNum = j;
+							Debug.Log("bloodtipnum = " + bloodTipNum);
+						}
+					}
+					if (fields[1] == "HowTo_Broker"){
+						brokerTips[j] = fields[j+2];
+						if (brokerTips[j].Length <= 1 && brokerTipNum == 0) {
+							brokerTipNum = j;
+						}
+					}
+					if (fields[1] == "HowTo_Store"){
+						storeTips[j] = fields[j+2];
+						if (storeTips[j].Length <= 1 && storeTipNum == 0) {
+							storeTipNum = j;
+						}
+					}
+					if (fields[1] == "HowTo_Minigame"){
+						clawTips[j] = fields[j+2];
+						if (clawTips[j].Length <= 1 && clawTipNum == 0) {
+							clawTipNum = j;
+						}
+					}
+				}
+				//contentArea.text += field + "\t";
+			}
+		}
+
+		cleanUp();
+	}
+
+	void cleanUp(){
+		string[] newBloodTips = new string[bloodTipNum];
+		System.Array.Copy(bloodTips, newBloodTips, bloodTipNum); 
+		bloodTips = newBloodTips;
+
+		string[] newBrokerTips = new string[brokerTipNum];
+		System.Array.Copy(brokerTips, newBrokerTips, brokerTipNum); 
+		brokerTips = newBrokerTips;
+
+		string[] newStoreTips = new string[storeTipNum];
+		System.Array.Copy(storeTips, newStoreTips, storeTipNum); 
+		storeTips = newStoreTips;
+
+		string[] newClawTips = new string[clawTipNum];
+		System.Array.Copy(clawTips, newClawTips, clawTipNum); 
+		clawTips = newClawTips;
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
+
 		if (PlayerPrefs.GetInt ("help") == 0)
 			tipPanel.SetActive (false);
 
@@ -135,7 +225,7 @@ public class Tips : MonoBehaviour
 					currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
 				} else {
 					currentTipObj.GetComponent<Text> ().font = tipFont;
-					currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleLeft;
+					currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
 				}
 				if (currentTip == tips.Length - 1) {
 					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
