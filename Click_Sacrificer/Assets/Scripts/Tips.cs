@@ -191,6 +191,8 @@ public class Tips : MonoBehaviour
 				if (PlayerPrefs.GetInt ("help") == 1){
 
 					if (!tipPanel.activeSelf && currentBloodTip == 0)	{
+
+						GetComponent<AudioSource>().PlayOneShot(inClip, 0.75f);
 						tipPanel.SetActive (true);
 						bloodTipObj.SetActive(true);
 
@@ -203,6 +205,7 @@ public class Tips : MonoBehaviour
 							storeTipObj.SetActive (false);
 						} else {
 							if (currentBloodTip > 0 && currentStoreTip == 0 && PlayerPrefs.GetInt ("help") == 1 && !tipPanel.activeSelf){
+								GetComponent<AudioSource>().PlayOneShot(inClip, .75f);
 								tipPanel.SetActive (true);
 
 							}
@@ -245,16 +248,16 @@ public class Tips : MonoBehaviour
 
 			if (currentTip != tips.Length) {
 				//update the tips if the fading is done
-				if (bloodTipObj.GetComponent<FadeTMP>().fadeIn)
+				if (bloodTipObj.GetComponent<FadeTMP>().fadeIn && currentBloodTip != bloodTips.Length)
 					bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
 
-				if (brokerTipObj.GetComponent<FadeTMP>().fadeIn)
+				if (brokerTipObj.GetComponent<FadeTMP>().fadeIn && currentBrokerTip != brokerTips.Length)
 				brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
 
-				if (clawTipObj.GetComponent<FadeTMP>().fadeIn)
+				if (clawTipObj.GetComponent<FadeTMP>().fadeIn && currentClawTip != clawTips.Length)
 				clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
 
-				if (storeTipObj.GetComponent<FadeTMP>().fadeIn)
+				if (storeTipObj.GetComponent<FadeTMP>().fadeIn && currentStoreTip != storeTips.Length)
 				storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
 
 				if (currentTip == tips.Length - 1) {
@@ -287,7 +290,7 @@ public class Tips : MonoBehaviour
 		foreach (Toggle helpToggle in helpToggles){
 			helpToggle.isOn = tipsOn;
 		}
-		if (!helpOn){
+		if (!helpOn || PlayerPrefs.GetInt ("init") == 0){
 			currentBloodTip = 0;
 			currentBrokerTip = 0;
 			currentClawTip = 0;
