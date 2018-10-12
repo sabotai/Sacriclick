@@ -237,15 +237,21 @@ public class Tips : MonoBehaviour
 	public void DisplayTips(GameObject currentTipObj, int currentTip, string[] tips){
 			if (backwardButton.activeSelf && currentTip == 0)
 				backwardButton.SetActive (false);
+
 			if (currentTip != tips.Length) {
-				if (currentTip == 0) {
-					currentTipObj.GetComponent<TextMeshProUGUI> ().font = titleFontTMP;
-					//currentTipObj.GetComponent<TextMeshPro> ().alignment = AlignmentTypes.Left;
-					//currentTipObj.GetComponent<TextMeshPro> ().anchor = AnchorPositions.Center;
-				} else {
-					currentTipObj.GetComponent<TextMeshProUGUI> ().font = tipFontTMP;
-					//currentTipObj.GetComponent<Text> ().alignment = TextAnchor.MiddleCenter;
-				}
+				//update the tips if the fading is done
+				if (bloodTipObj.GetComponent<FadeTMP>().fadeIn)
+					bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+
+				if (brokerTipObj.GetComponent<FadeTMP>().fadeIn)
+				brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
+
+				if (clawTipObj.GetComponent<FadeTMP>().fadeIn)
+				clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
+
+				if (storeTipObj.GetComponent<FadeTMP>().fadeIn)
+				storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
+
 				if (currentTip == tips.Length - 1) {
 					forwardButton.transform.GetChild (0).gameObject.GetComponent<Text> ().color = returnGameColor; 
 				} else {
@@ -296,7 +302,8 @@ public class Tips : MonoBehaviour
 				if (currentBloodTip < bloodTips.Length) {	
 					if (!backwardButton.activeSelf)
 						backwardButton.SetActive (true);	
-					bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+					//bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+						bloodTipObj.GetComponent<FadeTMP>().FadeOut();
 					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
 
 					GetComponent<AudioSource>().Stop();
@@ -312,7 +319,7 @@ public class Tips : MonoBehaviour
 				if (currentStoreTip < storeTips.Length) {	
 					if (!backwardButton.activeSelf)
 						backwardButton.SetActive (true);	
-					storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
+					storeTipObj.GetComponent<FadeTMP>().FadeOut();
 					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
 
 
@@ -329,9 +336,15 @@ public class Tips : MonoBehaviour
 		case 2:
 			currentBrokerTip++;
 			if (currentBrokerTip < brokerTips.Length) {
-				if (!backwardButton.activeSelf)
-					backwardButton.SetActive (true);	
-				brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
+				if (!backwardButton.activeSelf){
+					backwardButton.SetActive (true);
+				}
+
+				
+
+				
+				brokerTipObj.GetComponent<FadeTMP>().FadeOut();
+				
 				//if (currentBrokerTip == brokerTips.Length - 1) currentBrokerTip++;
 
 					GetComponent<AudioSource>().Stop();
@@ -347,7 +360,7 @@ public class Tips : MonoBehaviour
 			if (currentClawTip < clawTips.Length) {	
 				if (!backwardButton.activeSelf)
 					backwardButton.SetActive (true);	
-				clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
+				clawTipObj.GetComponent<FadeTMP>().FadeOut();
 				//if (currentClawTip == clawTips.Length - 1) currentClawTip++;
 
 
@@ -375,24 +388,24 @@ public class Tips : MonoBehaviour
 
 					currentBloodTip--;
 
-					bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+					bloodTipObj.GetComponent<FadeTMP>().FadeOut();
 				} else {
 
 					currentStoreTip--;
-					storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
+					storeTipObj.GetComponent<FadeTMP>().FadeOut();
 				}
 
 			break;
 		case 2:
 			if (currentBrokerTip > 0) {	
 				currentBrokerTip--;
-				brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
+				brokerTipObj.GetComponent<FadeTMP>().FadeOut();
 			}
 			break;
 		case 3:
 			if (currentClawTip > 0) {	
 				currentClawTip--;
-				clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
+				clawTipObj.GetComponent<FadeTMP>().FadeOut();
 			} 
 			break;
 		}

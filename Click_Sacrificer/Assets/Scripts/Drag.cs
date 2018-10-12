@@ -6,7 +6,7 @@ public class Drag : MonoBehaviour {
 	[System.NonSerialized]public GameObject dragItem;
 	[System.NonSerialized]public GameObject hoverItem;
 	[System.NonSerialized]public GameObject flickItem;
-	GameObject vicParent;
+	//GameObject vicParent;
 	Color origColor;
 	public Color highlightColor;
 	Color origEmissionColor;
@@ -44,10 +44,11 @@ public class Drag : MonoBehaviour {
 	public float dragZoomAmt = 49f;
 	float origEndZoomAmt;
 	public float panSpeed = 1.5f;
+	public GameObject vicParent;
 
 	// Use this for initialization
 	void Start () {
-		vicParent = GameObject.Find("Victims");
+		//vicParent = GameObject.Find("Victims");
 		diffManager = GameObject.Find("DifficultyManager");
 		panCam = new Vector3(0f,0f,0f);
 
@@ -57,9 +58,9 @@ public class Drag : MonoBehaviour {
 
 		int lastVisiblePan = 2;
 		if (diffManager.GetComponent<MasterWaypointer>() != null){
-			maxPanRight = GameObject.Find("Victims").transform.GetChild(GameObject.Find("Victims").transform.childCount - 1 - lastVisiblePan).position.x;
+			maxPanRight = vicParent.transform.GetChild(vicParent.transform.childCount - 1 - lastVisiblePan).position.x;
 		} else {
-			maxPanRight = GameObject.Find("Victims").transform.GetChild(lastVisiblePan).position.x;
+			maxPanRight = vicParent.transform.GetChild(lastVisiblePan).position.x;
 		}
 
 		if (ColorblindMode.cbMode || PlayerPrefs.GetInt("color") > 2){

@@ -30,6 +30,7 @@ public class DifficultyManager : MonoBehaviour {
 	public float easyDiff = 3f;
 	public float mediumDiff = 8f;
 	public float hardDiff = 11f;
+	public GameObject victimParent;
 
 	void Awake(){
 
@@ -50,7 +51,7 @@ public class DifficultyManager : MonoBehaviour {
 		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = bloodSecondRatio;
 		Camera.main.gameObject.GetComponent<BloodMeter>().useAutoJar = useAutoJar;
 
-		GameObject victimParent = GameObject.Find("Victims");
+		//GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
 		for (int i = 0; i < victimz.Length; i++){ //assign each one
 			victimz[i] = victimParent.transform.GetChild(i).gameObject;
@@ -89,7 +90,7 @@ public class DifficultyManager : MonoBehaviour {
 		diffProgression = (float)(diffNumber * 0.0005f);
 		Camera.main.gameObject.GetComponent<BloodMeter>().bloodSecondRatio = 0.75f + (0.75f * ((diffNumber-1)/9f));
 
-		GameObject victimParent = GameObject.Find("Victims");
+		//GameObject victimParent = GameObject.Find("Victims");
 		GameObject[] victimz = new GameObject[victimParent.transform.childCount]; //setup victimz array with space for each child
 		for (int i = 0; i < victimz.Length; i++){ //assign each one
 			victimz[i] = victimParent.transform.GetChild(i).gameObject;

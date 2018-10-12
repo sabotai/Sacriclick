@@ -25,7 +25,7 @@ public class BloodMeter : MonoBehaviour {
 	public VideoPlayer bloodPlayer;
 	public AudioSource audsrc;
 	public bool useMood = true;
-	GameObject victims;
+	public GameObject victims;
 	public bool useAutoJar = true;
 	public static bool firstClick = false;
 	public bool slowBroker = true;
@@ -42,7 +42,7 @@ public class BloodMeter : MonoBehaviour {
 		secondsRemaining = bloodAmt * bloodSecondRatio;
 		failed = false;
 		bloodCanvasItem = GameObject.Find("RawImage");
-		victims = GameObject.Find("Victims");
+		//victims = GameObject.Find("Victims");
 		origSacBloodValue = sacBloodValue;
 		firstClick = false;
 		lastShake = 0f;
