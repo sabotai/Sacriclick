@@ -75,7 +75,7 @@ public class UIRelease : MonoBehaviour {
 				Camera.main.GetComponent<AudioSource>().PlayOneShot(target.GetComponent<UIRelease>().clip2);
 				//target.GetComponent<Rigidbody>().AddExplosionForce(10f, Random.insideUnitSphere, 0.1f, 3f);
 			}
-			target.GetComponent<UIRelease>().timeOut = 2f; 
+			target.GetComponent<UIRelease>().timeOut = 1.25f; 
 		}
 		target.GetComponent<UIRelease>().startTime = Time.time;
 	}

@@ -22,12 +22,14 @@ public class GameState : MonoBehaviour {
     float minAperture = 11f;
     float maxFL = 15;
     float minFL = 5;
+    public GameObject victimParent;
 
 
 
 	// Use this for initialization
 	void Start () {
 		if (intro == null) intro = GameObject.Find("Intro");
+		//if (!intro.activeSelf) victimParent.SetActive(true);
 		if (pauseObj == null) pauseObj = GameObject.Find("Pause");
 		
 		pauseObj.SetActive(false);
@@ -57,6 +59,7 @@ public class GameState : MonoBehaviour {
 			state = 4;
 		} else {
 			state = 1;
+			if (!victimParent.activeSelf) victimParent.SetActive(true);
 		}
 		//Debug.Log("state = " + state);
 
@@ -152,6 +155,7 @@ public class GameState : MonoBehaviour {
 
 	public void RestartGame(){
 		StartCoroutine(LoudYourAsyncScene());
+		PlayerPrefs.SetInt("init", 0);
 		SceneManager.LoadScene(0);
 	}
 

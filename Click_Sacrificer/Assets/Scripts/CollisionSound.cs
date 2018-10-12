@@ -15,7 +15,7 @@ public class CollisionSound : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision col){
-		GetComponent<AudioSource>().PlayOneShot(clip, 0.03f);
+		GetComponent<AudioSource>().PlayOneShot(clip, 0.01f);
 
 	}
 }

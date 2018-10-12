@@ -15,9 +15,15 @@ public class Intro : MonoBehaviour {
 		if (PlayerPrefs.GetInt("init") > 0){
 			introObj.SetActive(false);
 			bloodMeter.SetActive(true);
-			if (PlayerPrefs.GetInt("help") == 1) tipPanel.SetActive(true); else tipPanel.SetActive(false);
-			if (PlayerPrefs.GetInt("help") == 1) helpObj.SetActive(true);
-			if (PlayerPrefs.GetInt("help") == 0) helpObj.SetActive(false);
+			if (PlayerPrefs.GetInt("help") == 1) {
+				//tipPanel.SetActive(true); 
+				//if ()
+				helpObj.SetActive(true);
+			} else {
+				tipPanel.SetActive(false); 
+				helpObj.SetActive(false);
+
+			}
 			PlayerPrefs.SetInt("init", 0); 
 			GameObject.Find("Main Camera").GetComponent<CameraMove>().enabled = true;
 		} else {

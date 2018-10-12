@@ -20,10 +20,10 @@ public class Tips : MonoBehaviour
 	public string[] brokerTips;
 	[TextArea]
 	public string[] clawTips;
-	[SerializeField]int currentBloodTip;
-	[SerializeField]int currentBrokerTip;
-	[SerializeField]int currentClawTip;
-	[SerializeField]int currentStoreTip;
+	[SerializeField]public static int currentBloodTip;
+	[SerializeField]public static int currentBrokerTip;
+	[SerializeField]public static int currentClawTip;
+	[SerializeField]public static int currentStoreTip;
 	//bool dispBloodTip, dispBrokerTip, dispClawTip;
 	public GameObject bloodTipObj;
 	public GameObject storeTipObj;
@@ -62,10 +62,10 @@ public class Tips : MonoBehaviour
 		clawTips = new string[numColumns];
 		readData();
 
-		currentClawTip = 0;
+		/*currentClawTip = 0;
 		currentBrokerTip = 0;
 		currentBloodTip = 0;
-		currentStoreTip = 0;
+		currentStoreTip = 0;*/
 		if (bloodTipObj == null)
 			bloodTipObj = GameObject.Find ("BloodTip");
 		if (brokerTipObj == null)
@@ -78,12 +78,8 @@ public class Tips : MonoBehaviour
 			tipPanel = GameObject.Find ("TipPanel");
 
      
-/*
-		bloodTipObj.GetComponent<Text> ().text = bloodTips [currentBloodTip];
-		brokerTipObj.GetComponent<Text> ().text = brokerTips [currentBrokerTip];
-		clawTipObj.GetComponent<Text> ().text = clawTips [currentClawTip];
-		storeTipObj.GetComponent<Text> ().text = storeTips [currentStoreTip];
-*/
+
+
 		//dispBloodTip = true;
 		//dispClawTip = true;
 		//dispBrokerTip = true;
@@ -95,6 +91,14 @@ public class Tips : MonoBehaviour
 			}
 		}
 		storeMinimum = Camera.main.GetComponent<Inventory>().storeCosts[0] * Camera.main.GetComponent<Inventory>().storeEntryMin;
+
+
+
+		bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+		brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
+		clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
+		storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
+
 	}
 
 	private void readData()	{
@@ -188,16 +192,17 @@ public class Tips : MonoBehaviour
 
 					if (!tipPanel.activeSelf && currentBloodTip == 0)	{
 						tipPanel.SetActive (true);
+						bloodTipObj.SetActive(true);
 
 					} else {
-						if (Camera.main.GetComponent<Sacrifice>().scoreCount <= storeMinimum){
+						if (Camera.main.GetComponent<Sacrifice>().scoreCount <= storeMinimum || currentBloodTip == 0){
 
 							DisplayTips(bloodTipObj, currentBloodTip, bloodTips);
 							brokerTipObj.SetActive (false);
 							clawTipObj.SetActive (false);
 							storeTipObj.SetActive (false);
 						} else {
-							if (currentStoreTip == 0 && PlayerPrefs.GetInt ("help") == 1 && !tipPanel.activeSelf){
+							if (currentBloodTip > 0 && currentStoreTip == 0 && PlayerPrefs.GetInt ("help") == 1 && !tipPanel.activeSelf){
 								tipPanel.SetActive (true);
 
 							}
@@ -282,15 +287,17 @@ public class Tips : MonoBehaviour
 		foreach (Toggle helpToggle in helpToggles){
 			helpToggle.isOn = tipsOn;
 		}
-		currentBloodTip = 0;
-		currentBrokerTip = 0;
-		currentClawTip = 0;
-		currentStoreTip = 0;
+		if (!helpOn){
+			currentBloodTip = 0;
+			currentBrokerTip = 0;
+			currentClawTip = 0;
+			currentStoreTip = 0;
+			bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+			brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
+			clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
+			storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
+		}
 
-		bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
-		brokerTipObj.GetComponent<TextMeshProUGUI> ().text = brokerTips [currentBrokerTip];
-		clawTipObj.GetComponent<TextMeshProUGUI> ().text = clawTips [currentClawTip];
-		storeTipObj.GetComponent<TextMeshProUGUI> ().text = storeTips [currentStoreTip];
 	}
 
 	public void AdvanceTip ()
@@ -302,14 +309,14 @@ public class Tips : MonoBehaviour
 				if (currentBloodTip < bloodTips.Length) {	
 					if (!backwardButton.activeSelf)
 						backwardButton.SetActive (true);	
-					//bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+						//bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
 						bloodTipObj.GetComponent<FadeTMP>().FadeOut();
-					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
+						//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
 
 					GetComponent<AudioSource>().Stop();
 					GetComponent<AudioSource>().Play();
 				} else {
-				GetComponent<AudioSource>().Stop();
+					GetComponent<AudioSource>().Stop();
 					GetComponent<AudioSource>().PlayOneShot(outClip, 0.75f);
 					tipPanel.SetActive (false);
 				}
