@@ -239,7 +239,7 @@ public class Sacrifice : MonoBehaviour {
 			if (sun.GetComponent<SunPct>() != null && sun.GetComponent<SunPct>().manControl == false )
 				sun.GetComponent<SunPct>().rotAmt = (sun.GetComponent<SunPct>().rotAmt * 0.7f) + ((cps / maxCps) * 0.3f);
 
-		cpsDisplay.text = (int)cps + "/s.  " + (int)cpm + "/m.";
+		cpsDisplay.text = (int)cps + "/s.";//"  " + (int)cpm + "/m.";
 
 
 		//if fast enough to generate autosac

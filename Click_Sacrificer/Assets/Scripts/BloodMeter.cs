@@ -34,6 +34,8 @@ public class BloodMeter : MonoBehaviour {
 	float bloodUIOrigY;
 	public AudioSource rumbleAud;
 	float lastShake;
+	MasterWaypointer master;
+	float anx = 0f;
 
 
 	// Use this for initialization
@@ -42,6 +44,8 @@ public class BloodMeter : MonoBehaviour {
 		secondsRemaining = bloodAmt * bloodSecondRatio;
 		failed = false;
 		bloodCanvasItem = GameObject.Find("RawImage");
+		master = GameObject.Find("DifficultyManager").GetComponent<MasterWaypointer>();
+		anx = master.anxietySpeed;
 		//victims = GameObject.Find("Victims");
 		origSacBloodValue = sacBloodValue;
 		firstClick = false;
@@ -119,6 +123,11 @@ public class BloodMeter : MonoBehaviour {
 				}
 				
 				float bloodPct = bloodAmt / 20f;
+
+				if (GetComponent<Inventory>().bloodJarNumber == 0){
+					master.anxietySpeed = 3f * (anx * (1f - bloodPct));
+				}
+
 				float maxA = 0.22f;
 				float bloodA = maxA - maxA * (bloodAmt / 20f);
 				bloodMat.SetColor("_TintColor", new Color (bloodColor.r, bloodColor.g, bloodColor.b, bloodA));
