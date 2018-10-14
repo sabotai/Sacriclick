@@ -56,9 +56,15 @@ public class ConsentMeter : MonoBehaviour {
 		}
 		GetComponent<TextMesh>().color = consentColor;
 
+			transform.parent.gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
+			transform.parent.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
+
 		//make sure the person is colored the same
-		transform.parent.gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
-		transform.parent.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
+		foreach (Material mat in transform.parent.gameObject.GetComponent<MeshRenderer>().materials){
+			mat.SetColor ("_EmissionColor", consentColor);
+			//transform.parent.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetColor ("_EmissionColor", consentColor);
+			
+		}
 		//consentPct -= decreaseAmt * Time.deltaTime;
 		consentPct = mommy.GetComponent<Mood>().mood;
 		moodDir = mommy.GetComponent<Mood>().moodDir;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour {
 
+	public string label;
 	public Transform startFocus;
 	public Transform endFocus;
 	public float startZoomAmt = 38f;

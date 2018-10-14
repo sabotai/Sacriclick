@@ -28,6 +28,7 @@ public class Inventory : MonoBehaviour {
 	public Transform vicParent;
 	public GameObject storeParent;
 	public GameObject inventoryParent;
+	public bool freeUpgrades = false;
 
 
 	// Use this for initialization
@@ -167,7 +168,8 @@ public class Inventory : MonoBehaviour {
 			
 			//vicParent.GetChild(i).gameObject.GetComponent<Mood>().mood = 1f;
 			vicParent.GetChild(i).GetComponent<Mood>().moodDir = 1f;
-			vicParent.GetChild(i).GetComponent<Mood>().mood += 1f;
+			vicParent.GetChild(i).GetComponent<Mood>().shiftMood(1f);
+			//vicParent.GetChild(i).GetComponent<Mood>().mood += 1f;
 			/*
 			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult += 2f;
 			vicParent.GetChild(i).GetComponent<Mood>().moodSpeedMult *= 5f;
@@ -195,10 +197,10 @@ public class Inventory : MonoBehaviour {
 			//create auto clicker?
 			//if (autosacNumber < itemLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
 			if (autosacNumber < itemLimit) {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin))
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin) && freeUpgrades)
 					createAuto();
 				} else {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin))
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && freeUpgrades)
 					createInfluencer();
 				}
 
@@ -237,7 +239,7 @@ public class Inventory : MonoBehaviour {
 			newAutosac.transform.position = autoSpwn;
 			//Debug.Log("spawn auto... " + );
 		} else {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin))
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && freeUpgrades)
 			createInfluencer();
 		}
 

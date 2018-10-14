@@ -20,5 +20,10 @@ public class Cheat : MonoBehaviour {
 			Camera.main.GetComponent<Sacrifice>().easyMode = !Camera.main.GetComponent<Sacrifice>().easyMode;
 		if (Input.GetKey(KeyCode.F12) && Input.GetKeyDown(KeyCode.F5))
 			GetComponent<MasterWaypointer>().bloodEffect.SetActive(true);
+
+		if (Input.GetKey(KeyCode.F12) && Input.GetKeyDown(KeyCode.A)){
+			Camera.main.GetComponent<Sacrifice>().scoreCount += 100;
+			Camera.main.GetComponent<Sacrifice>().sacCount += 100;
+		}
 	}
 }
