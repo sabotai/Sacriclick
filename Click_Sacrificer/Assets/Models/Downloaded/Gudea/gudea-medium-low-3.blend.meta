@@ -14,7 +14,27 @@ ModelImporter:
     4300000: uu-exported
     7400000: Default Take
     9500000: //RootNode
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_0__uu-exported01_jpg
+    second: {fileID: 2100000, guid: fdc5dd1d296a26846ad0397606f38120, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_1
+    second: {fileID: 2100000, guid: b9c0cd62e5420c6429c260235d52d598, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_1__uu-exported02_jpg
+    second: {fileID: 2100000, guid: 022382014a1af8044a1bfdf3b641c453, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_2__uu-exported03_jpg
+    second: {fileID: 2100000, guid: 8898f8a8e85294347bffd1d34de00534, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

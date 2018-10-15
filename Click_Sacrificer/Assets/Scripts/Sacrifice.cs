@@ -302,7 +302,7 @@ public class Sacrifice : MonoBehaviour {
 				GetComponent<BloodMeter>().bloodAmt += (MasterWaypointer.vic.GetComponent<MultiSac>().multiplier * GetComponent<BloodMeter>().sacBloodValue);
 
 				
-				if (GetComponent<BloodMeter>().sacBloodValue > 0f) audio.PlayOneShot(goodSacClip, 0.65f * MasterWaypointer.vic.GetComponent<Mood>().mood);
+				if (GetComponent<BloodMeter>().sacBloodValue > 0f && MasterWaypointer.vic.GetComponent<Mood>()) audio.PlayOneShot(goodSacClip, 0.65f * MasterWaypointer.vic.GetComponent<Mood>().mood);
 				if (GetComponent<BloodMeter>().sacBloodValue < 0.25f) {
 					//audio.PlayOneShot(badSacClip, 0.65f); 
 					GetComponent<BloodMeter>().bloodMat.SetColor("_TintColor", Color.Lerp(GetComponent<BloodMeter>().bloodMat.GetColor("_TintColor"), GetComponent<BloodMeter>().positiveBloodColor, -0.5f));
@@ -354,6 +354,11 @@ public class Sacrifice : MonoBehaviour {
 
 
 	public void Fail(float restartTime, string failMsg){
+		if (scoreCount > 1000){
+			AltTemple.altTemple = true;
+		} else {
+			AltTemple.altTemple = false;
+		}
 		for (int i = 0; i < failDisable.Length; i++){
 			failDisable[i].gameObject.SetActive(false);
 		}

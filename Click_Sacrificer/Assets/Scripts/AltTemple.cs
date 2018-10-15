@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AltTemple : MonoBehaviour {
 
-	public bool altTemple = true;
+	public static bool altTemple = false;
 	//public CameraMove camMover;
 	public CameraMove altCam, normCam;
 	public GameObject[] enableObjs;
@@ -16,7 +16,7 @@ public class AltTemple : MonoBehaviour {
 	public GameObject[] altCleanRemains;
 	// Use this for initialization
 	void Awake () {
-		if (Random.value > 0.5f) altTemple = true; else altTemple = false;
+		//if (Random.value > 0.5f) altTemple = true; else altTemple = false;
 		if (altTemple){
 			master.prefab = altPrefab;
 			master.cleanRemains = altCleanRemains;
