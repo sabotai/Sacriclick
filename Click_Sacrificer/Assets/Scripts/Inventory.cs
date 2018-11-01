@@ -190,7 +190,7 @@ public class Inventory : MonoBehaviour {
 			audsrc.Play();
 			Debug.Log("playing jar audio " + audsrc.isPlaying);
 			Vector3 bldSpwn = bloodSpawn.position;
-			bldSpwn += (newJar.transform.up * -1.2f * (bloodJarNumber - 1));
+			bldSpwn += (newJar.transform.up * 1.2f * (bloodJarNumber - 1));
 			newJar.transform.position = bldSpwn;
 		} else {
 			Debug.Log("blood overflow autosac being created...");
@@ -235,7 +235,7 @@ public class Inventory : MonoBehaviour {
 			//audsrc.PlayOneShot(pourSnd);
 			Vector3 autoSpwn = autosacSpawn.position;
 			//bldSpwn += new Vector3(0,-1.2f,0f) * (bloodJarNumber - 1);
-			autoSpwn += (-newAutosac.transform.right * -1.2f * (autosacNumber - 1));
+			autoSpwn += (-newAutosac.transform.right * 1.2f * (autosacNumber - 1));
 			newAutosac.transform.position = autoSpwn;
 			//Debug.Log("spawn auto... " + );
 		} else {
