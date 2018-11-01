@@ -270,7 +270,7 @@ public class MasterWaypointer : MonoBehaviour {
 	 IEnumerator callMoodShift(int index, float lvl, float delayTime){
      	yield return new WaitForSeconds(delayTime/10f);
      	GameObject moodObj = movables[index];
-     	if (moodObj.GetComponent<Mood>() != null){
+     	if (moodObj) if (moodObj.GetComponent<Mood>() != null){
 			moodObj.GetComponent<Mood>().shiftMood(lvl);
 		}
 	}

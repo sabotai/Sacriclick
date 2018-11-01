@@ -70,10 +70,12 @@ public class CameraMove : MonoBehaviour {
 
 			MoveCamera();
 			}
-			if (zoomable){
+			if (zoomable && endZoomAmt < 120f && endZoomAmt > GetComponent<Drag>().dragZoomAmt){
 
 				float scrolled = Input.GetAxis("Mouse ScrollWheel") * -10f;
 				//startZoomAmt += scrolled;
+				//startZoomAmt += scrolled;
+				//GetComponent<Drag>().dragZoomAmt += scrolled * 0.5f;
 				endZoomAmt += scrolled;
 			}
 		}

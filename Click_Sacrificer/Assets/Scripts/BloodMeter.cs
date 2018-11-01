@@ -23,6 +23,7 @@ public class BloodMeter : MonoBehaviour {
 	public bool failed;
 	GameObject bloodCanvasItem;
 	public VideoPlayer bloodPlayer;
+	float origVideoSpeed;
 	public AudioSource audsrc;
 	public bool useMood = true;
 	public GameObject victims;
@@ -37,10 +38,13 @@ public class BloodMeter : MonoBehaviour {
 	MasterWaypointer master;
 	float anx = 0f;
 	public static bool bloodRunning = false;
+	public float warningThreshold = 0.09f;
+	public Transform startFocus, endFocus;
 
 
 	// Use this for initialization
 	void Start () {
+		origVideoSpeed = bloodPlayer.playbackSpeed;
 		bloodUIOrigY = bloodUI.localPosition.y;
 		secondsRemaining = bloodAmt * bloodSecondRatio;
 		failed = false;
@@ -99,22 +103,35 @@ public class BloodMeter : MonoBehaviour {
 					secondsRemaining = bloodAmt / bloodSecondRatio;
 				}
 
-				if (bloodAmt > 0.01 && bloodAmt < (bloodScreenAmt * 0.09) && GetComponent<Inventory>().bloodJarNumber == 0 && !failed){ //signal to the player that their time is running out
+				//make the video play faster if blood is running out
+				/*
+				if (bloodAmt > 0.01 && bloodAmt < (bloodScreenAmt * 0.3f) && GetComponent<Inventory>().bloodJarNumber == 0 && !failed){ //signal to the player that their time is running out
+					bloodPlayer.playbackSpeed = origVideoSpeed / (bloodAmt / (bloodScreenAmt * 0.3f));
+
+				} else {
+					bloodPlayer.playbackSpeed = origVideoSpeed;
+				}
+				*/
+				//test for almost out of time
+				if (bloodAmt > 0.01 && bloodAmt < (bloodScreenAmt * warningThreshold) && GetComponent<Inventory>().bloodJarNumber == 0 && !failed){ //signal to the player that their time is running out
 					//pitchF.pitch *= 1.5f;
 					rumbleAud.volume = 1f - (bloodAmt / bloodScreenAmt);
 					//if (!rumbleAud.isPlaying) rumbleAud.Play();
-					if (bloodAmt < (bloodScreenAmt * 0.07) && Time.time > lastShake + 0.05f) {
+					if (bloodAmt < (bloodScreenAmt * (warningThreshold * 0.8f)) && Time.time > lastShake + 0.05f) {
 
 						//increase rumble amt as time runs out
 						float rumbleAmt = 0.000000001f * (1f - (bloodAmt / bloodScreenAmt));
 
 						StartCoroutine(Shake.ShakeThis(Camera.main.transform, 0.001f, rumbleAmt));
+						//StartCoroutine(Shake.ShakeThis(startFocus, 0.001f, rumbleAmt));
+						//StartCoroutine(Shake.ShakeThis(endFocus, 0.001f, rumbleAmt));
 						lastShake = Time.time;
 					}
-				} else if (bloodAmt > bloodScreenAmt) { //increment blood jars if enough blood is shed
+				} 
+				if (bloodAmt > bloodScreenAmt) { //increment blood jars if enough blood is shed
 					GetComponent<Inventory>().createJar(false);
 
-				} else if (bloodAmt < 0.01f && GetComponent<Inventory>().bloodJarNumber > 0 && useAutoJar){
+				} else if (bloodAmt < 0.01f && GetComponent<Inventory>().bloodJarNumber > 0f && useAutoJar){
 					GetComponent<Inventory>().useJar(GetComponent<Inventory>().bloodSpawn.GetChild(GetComponent<Inventory>().bloodSpawn.childCount - 1).gameObject);
 				} else {
 					rumbleAud.volume -= 0.1f;

@@ -177,6 +177,7 @@ public class Tips : MonoBehaviour
 		} else {
 			displayingTip = false;
 		}
+		//if (displayingTip && Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) AdvanceTip ();
 
 		if (currentBloodTip == bloodTips.Length && currentBrokerTip == brokerTips.Length && currentClawTip == clawTips.Length && currentStoreTip == storeTips.Length) {
 			SetHelpBool (false);
@@ -187,7 +188,7 @@ public class Tips : MonoBehaviour
 			tipPanel.SetActive (false);
 			break;
 		case 1:	
-			if (Camera.main.GetComponent<CameraMove>().oldZoom < .85f	&& Camera.main.GetComponent<CameraMove>().oldZoom > .25f	){	//make sure camera has moved on from intro
+			if (Camera.main.GetComponent<CameraMove>().oldZoom < .85f && Camera.main.GetComponent<CameraMove>().oldZoom > .25f	){	//make sure camera has moved on from intro
 				if (PlayerPrefs.GetInt ("help") == 1){
 
 					if (!tipPanel.activeSelf && currentBloodTip == 0)	{
@@ -243,10 +244,15 @@ public class Tips : MonoBehaviour
 	}
 
 	public void DisplayTips(GameObject currentTipObj, int currentTip, string[] tips){
+
+
 			if (backwardButton.activeSelf && currentTip == 0)
 				backwardButton.SetActive (false);
 
 			if (currentTip != tips.Length) {
+
+				
+
 				//update the tips if the fading is done
 				if (bloodTipObj.GetComponent<FadeTMP>().fadeIn && currentBloodTip != bloodTips.Length)
 					bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
@@ -309,12 +315,13 @@ public class Tips : MonoBehaviour
 		case 1:
 			if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
 				currentBloodTip++;
+				Debug.Log("currentBloodTip= " + currentBloodTip);
 				if (currentBloodTip < bloodTips.Length) {	
 					if (!backwardButton.activeSelf)
 						backwardButton.SetActive (true);	
-						//bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
-						bloodTipObj.GetComponent<FadeTMP>().FadeOut();
-						//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
+					//bloodTipObj.GetComponent<TextMeshProUGUI> ().text = bloodTips [currentBloodTip];
+					bloodTipObj.GetComponent<FadeTMP>().FadeOut();
+					//if (currentBloodTip == bloodTips.Length - 1) currentBloodTip++; //overflow so wont display again
 
 					GetComponent<AudioSource>().Stop();
 					GetComponent<AudioSource>().Play();
@@ -361,7 +368,7 @@ public class Tips : MonoBehaviour
 					GetComponent<AudioSource>().Play();
 			} else {
 				GetComponent<AudioSource>().Stop();
-					GetComponent<AudioSource>().PlayOneShot(outClip, 0.75f);
+				GetComponent<AudioSource>().PlayOneShot(outClip, 0.75f);
 				tipPanel.SetActive (false);
 			}
 			break;
@@ -396,6 +403,7 @@ public class Tips : MonoBehaviour
 
 				if (Camera.main.GetComponent<Sacrifice>().scoreCount < storeMinimum){
 
+				Debug.Log("currentBloodTip= " + currentBloodTip);
 					currentBloodTip--;
 
 					bloodTipObj.GetComponent<FadeTMP>().FadeOut();
