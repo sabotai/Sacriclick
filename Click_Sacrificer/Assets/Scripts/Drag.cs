@@ -51,6 +51,8 @@ public class Drag : MonoBehaviour {
 		//vicParent = GameObject.Find("Victims");
 		diffManager = GameObject.Find("DifficultyManager");
 		panCam = new Vector3(0f,0f,0f);
+		//panToggle = false;
+		panMode = false;
 
 		origEndZoomAmt = CameraMove.endZoomAmt;
 		cam = Camera.main.gameObject.GetComponent<CameraMove>().startFocus;
