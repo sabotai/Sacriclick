@@ -14,6 +14,8 @@ ModelImporter:
     2100000: model__2018-10-05_18-02-21_jpg
     2100002: model_001__2018-10-05_18-02-21_jpg_001
     2100004: model_002__2018-10-05_18-02-21_jpg_002
+    2100006: model_002__2018-10-05_18-02-21_jpg_001
+    2100008: model_002__2018-10-05_18-02-21_jpg
     2300000: lowPolyBody
     2300002: lowPolyHead
     2300004: lowPolyWhole
@@ -25,10 +27,25 @@ ModelImporter:
     4300004: lowPolyBody
     7400000: Default Take
     9500000: //RootNode
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: model_002__2018-10-05_18-02-21_jpg
+    second: {fileID: 2100000, guid: 483be750eecd35547898926362a898ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: model_002__2018-10-05_18-02-21_jpg_001
+    second: {fileID: 2100000, guid: da4416c3839519642b14f5dd7fcb0e92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: model_002__2018-10-05_18-02-21_jpg_002
+    second: {fileID: 2100000, guid: f0575b2f9fa99d04386d814cf4468e61, type: 2}
   materials:
     importMaterials: 1
-    materialName: 0
+    materialName: 1
     materialSearch: 1
     materialLocation: 1
   animations:

@@ -245,7 +245,7 @@ public class Sacrifice : MonoBehaviour {
 		//if fast enough to generate autosac
 		if (cps > autoThresh){
 			if (GetComponent<Inventory>().autosacNumber < 8){
-				GetComponent<Inventory>().createAuto();
+				GetComponent<Inventory>().createAuto(false);
 				
 				//reset the samples so they cant spam it
 				for (int i = 0; i < cpsSamples.Length; i++){

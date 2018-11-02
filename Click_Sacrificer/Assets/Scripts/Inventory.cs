@@ -149,7 +149,7 @@ public class Inventory : MonoBehaviour {
 				createJar(purchased);
 				break;
 			case 1:
-				createAuto();
+				createAuto(purchased);
 				break;
 			case 2:
 				createInfluencer();
@@ -197,12 +197,13 @@ public class Inventory : MonoBehaviour {
 			//create auto clicker?
 			//if (autosacNumber < itemLimit && !GetComponent<Sacrifice>().easyMode) createAuto();
 			if (autosacNumber < itemLimit) {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin) && freeUpgrades)
-					createAuto();
-				} else {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && freeUpgrades)
-					createInfluencer();
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[1] * storeEntryMin) && (freeUpgrades || purchased)){
+					createAuto(purchased);
 				}
+			} else if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && (freeUpgrades || purchased)) {
+					createInfluencer();
+				
+			}
 
 		}
 
@@ -217,7 +218,7 @@ public class Inventory : MonoBehaviour {
 		if (lastChild.name == "InfluenceSphere") lastChild.SetActive(true);
 	}
 
-	public void createAuto(){
+	public void createAuto(bool purchased){
 		//bloodAmt -= (bloodJarAmt * jarEfficiency);
 
 		GetComponent<BloodMeter>().bloodAmt = 5f;
@@ -239,7 +240,7 @@ public class Inventory : MonoBehaviour {
 			newAutosac.transform.position = autoSpwn;
 			//Debug.Log("spawn auto... " + );
 		} else {
-				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && freeUpgrades)
+				if ((GetComponent<Sacrifice>().scoreCount > storeCosts[2] * storeEntryMin) && (freeUpgrades || purchased))
 			createInfluencer();
 		}
 
