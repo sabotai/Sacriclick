@@ -12,14 +12,15 @@ public class PitchFollow : MonoBehaviour {
 	public AudioClip[] clips;
 	float originalVol;
 	public float adjustedVol = 0.4f;
+	int currentClip = 0;
 
 
 	// Use this for initialization
 	void Start () {
 		audio = GetComponent<AudioSource>();
 		pitch = audio.pitch;
-
-		audio.clip = clips[(int)Random.Range(0, clips.Length)];
+		currentClip = (int)Random.Range(0, clips.Length);
+		audio.clip = clips[currentClip];
 		audio.Stop();
 		audio.Play();
 		originalVol = audio.volume;
@@ -36,5 +37,12 @@ public class PitchFollow : MonoBehaviour {
 		float yVelocity = 0.0F;
 		if (GameState.state == 1 || GameState.state == 2) audio.pitch = Mathf.SmoothDamp(audio.pitch, pitch, ref yVelocity, smoothTime);
 		if (Tips.displayingTip) audio.volume = adjustedVol; else audio.volume = originalVol;
+	}
+
+	public void NextTrack(){
+		if (currentClip < clips.Length - 1)	currentClip++;
+		else currentClip = 0;
+		audio.clip = clips[currentClip];
+		audio.Play();
 	}
 }

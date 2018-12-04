@@ -19,11 +19,13 @@ public class CameraMove : MonoBehaviour {
 	public float initialWideZoom = 120f;
 	public static float currentEndZoom;
 	public bool initialFlyIn = true;
+	public bool freezeCamera = false;
 	
 
 	// Use this for initialization
 	void Start () {
 		currentEndZoom = initialWideZoom;
+		freezeCamera = false;
 		/*
 		Ray beam = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -52,7 +54,10 @@ public class CameraMove : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+
 		if (GameState.state > 0){
+
 			if (!Tips.displayingTip || GameState.state != 1){
 				if (initialFlyIn){
 					//initial fly in zoom
@@ -93,6 +98,7 @@ public class CameraMove : MonoBehaviour {
 		zoom = Mathf.Clamp(zoom, 0f, 1f); //prevent from having to return to below 1 after having been forced
 		//Debug.Log("zoomAmt = " + zoom);
 
+		if (freezeCamera) zoom = 1f;
 		//focus should find the new intermediate position based on the zoom amount
 		Vector3 focus = Vector3.Slerp(startFocus.position, endFocus.position, zoom);
 		if (perspectiveCam){
@@ -113,6 +119,10 @@ public class CameraMove : MonoBehaviour {
 		//transform.LookAt(focus);
 		//if (Mathf.Approximately(zoom, 1f)) cameraDone = true; else cameraDone = false;
 		oldZoom = zoom;
+	}
+
+	public void FreezeCam(){
+		freezeCamera = !freezeCamera;
 	}
 /*
 	public Transform PanCamera(Transform startObj, Transform endObj, float pct){

@@ -240,6 +240,20 @@ public class Sacrifice : MonoBehaviour {
 				sun.GetComponent<SunPct>().rotAmt = (sun.GetComponent<SunPct>().rotAmt * 0.7f) + ((cps / maxCps) * 0.3f);
 
 		cpsDisplay.text = (int)cps + "/s.";//"  " + (int)cpm + "/m.";
+		if (sacCountDisplay.transform.localScale.magnitude < 1f + (cps / 6f)) {
+			sacCountDisplay.transform.localScale = Vector3.Lerp(sacCountDisplay.transform.localScale, sacCountDisplay.transform.localScale * 3f, Time.deltaTime);
+		} else {
+				if (sacCountDisplay.transform.localScale.magnitude > 1f){
+			sacCountDisplay.transform.localScale = Vector3.Lerp(sacCountDisplay.transform.localScale, new Vector3(1f, 1f, 1f), Time.deltaTime);
+				} else {
+					sacCountDisplay.transform.localScale = new Vector3(1f, 1f, 1f);
+				}
+		}
+
+
+
+
+		//sacCountDisplay.transform.localScale = new Vector3(1f + (cps / 6f), 1f + (cps / 6f), 1f + (cps / 6f));
 
 
 		//if fast enough to generate autosac
