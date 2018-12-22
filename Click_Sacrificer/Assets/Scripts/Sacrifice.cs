@@ -38,6 +38,7 @@ public class Sacrifice : MonoBehaviour {
 	public int sacCount = 0;
 	public int scoreCount = 0;
 	public int expenses = 0;
+	public static int tempExpense = 0;
 	public bool failed = false;
 	float failedTime = 0.0f;
 	GameObject failObj;
@@ -65,6 +66,7 @@ public class Sacrifice : MonoBehaviour {
 		sacCount = 0;
 		scoreCount = 0;
 		expenses = 0;
+		tempExpense = 0;
 	}
 	// Use this for initialization
 	void Start () {
@@ -114,10 +116,18 @@ public class Sacrifice : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (scoreCount != sacCount - expenses){
+		//if (scoreCount != sacCount - expenses || tempExpense != 0){
 			scoreCount = sacCount - expenses;
-			sacCountDisplay.text = " " + scoreCount;//Sacrifices";
-		}
+			if (tempExpense == 0) {
+				sacCountDisplay.color = Color.white;
+				sacCountDisplay.text = " " + scoreCount;//Sacrifices";
+			} else {
+				Debug.Log("display temp expense");
+				sacCountDisplay.color = Color.red;
+				sacCountDisplay.text = " " + (scoreCount - tempExpense);//Sacrifices";
+
+			}
+		//}
 		if (!CraneGame.beginCraneGame && !Tips.displayingTip){
 			//if (Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
 			if (Drag.panMode){

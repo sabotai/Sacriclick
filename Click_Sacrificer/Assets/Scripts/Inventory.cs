@@ -101,20 +101,26 @@ public class Inventory : MonoBehaviour {
 		Debug.DrawRay(beam.origin, beam.direction * 1000f, Color.blue);
 		RaycastHit beamHit = new RaycastHit();
 
-		if (Input.GetMouseButtonDown(0)){
-			if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("3D-UI"))){
+		
+		if (Physics.Raycast(beam, out beamHit, 1000f, LayerMask.GetMask("3D-UI"))){
+			if (beamHit.collider.gameObject.tag == "jar"){
+				if (Input.GetMouseButtonDown(0)) useJar(beamHit.collider.gameObject);
+			} else if (beamHit.collider.gameObject.tag == "store"){
+				GameObject item = beamHit.collider.transform.parent.gameObject;
 
-				if (beamHit.collider.gameObject.tag == "jar"){
-					useJar(beamHit.collider.gameObject);
+				if (Input.GetMouseButtonDown(0)){
 
-				} else if (beamHit.collider.gameObject.tag == "store"){
-					purchaseItem(beamHit.collider.transform.parent.gameObject);
+					purchaseItem(item);
+				} else {//display cost
+					for (int i = 0; i < storeItems.Length; i++)
+						if (item == storeItems[i]) Sacrifice.tempExpense = storeCosts[i];
+					
+				}
 
-				} 
-
-
-			}
-		}
+			}			
+		} else {
+			Sacrifice.tempExpense = 0;
+		} 
 		if (Input.GetButtonDown("Inventory")){
 			if (bloodJarNumber > 0){	
 				useJar(bloodSpawn.GetChild(bloodSpawn.childCount - 1).gameObject);
