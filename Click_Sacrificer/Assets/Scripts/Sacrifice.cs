@@ -122,7 +122,7 @@ public class Sacrifice : MonoBehaviour {
 				sacCountDisplay.color = Color.white;
 				sacCountDisplay.text = " " + scoreCount;//Sacrifices";
 			} else {
-				Debug.Log("display temp expense");
+				//Debug.Log("display temp expense");
 				sacCountDisplay.color = Color.red;
 				sacCountDisplay.text = " " + (scoreCount - tempExpense);//Sacrifices";
 

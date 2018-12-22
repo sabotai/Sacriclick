@@ -16,6 +16,9 @@ public class OpenHyperlink : MonoBehaviour {
 	}
 
 	public void OpenLink(){
+		//allow game to quit after losing focus
+		Application.runInBackground = true;
+		
 		Application.OpenURL(url);
 	}
 }
